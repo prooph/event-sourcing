@@ -8,11 +8,18 @@
  */
 namespace Prooph\EventSourcing\Repository;
 
-use Prooph\EventSourcing\AggregateChangedEvent;
-use Prooph\EventSourcing\EventStore;
+use Prooph\EventSourcing\DomainEvent\AggregateChangedEvent;
+use Prooph\EventSourcing\Exception\AggregateTypeMismatchException;
+use Prooph\EventSourcing\Mapping\AggregateChangedEventHydrator;
+use Prooph\EventSourcing\Mapping\EventHydratorInterface;
+use Prooph\EventStore\EventStore;
 use Prooph\EventSourcing\EventSourcedAggregateRoot;
-use Prooph\EventSourcing\Exception\InvalidArgumentException;
 use Prooph\EventSourcing\Mapping\AggregateRootDecorator;
+use Prooph\EventStore\Repository\RepositoryInterface;
+use Prooph\EventStore\Stream\AggregateType;
+use Prooph\EventStore\Stream\Stream;
+use Prooph\EventStore\Stream\StreamEvent;
+use Prooph\EventStore\Stream\StreamId;
 
 /**
  *  EventSourcingRepository
@@ -32,7 +39,7 @@ class EventSourcingRepository implements RepositoryInterface
     /**
      * Type of the EventSourcedAggregateRoot for that the repository is responsible
      * 
-     * @var string
+     * @var AggregateType
      */
     protected $aggregateType;
 
@@ -41,12 +48,17 @@ class EventSourcingRepository implements RepositoryInterface
      */
     protected $aggregateRootDecorator;
 
+    /**
+     * @var EventHydratorInterface
+     */
+    protected $eventHydrator;
+
 
     /**
      * @param EventStore $eventStore
-     * @param string $aggregateType
+     * @param AggregateType $aggregateType
      */
-    public function __construct(EventStore $eventStore, $aggregateType)
+    public function __construct(EventStore $eventStore, AggregateType $aggregateType)
     {
         $this->eventStore = $eventStore;
         $this->aggregateType = $aggregateType;
@@ -56,15 +68,15 @@ class EventSourcingRepository implements RepositoryInterface
      * Add an EventSourcedAggregateRoot
      *
      * @param EventSourcedAggregateRoot $anEventSourcedAggregateRoot
-     * @throws \Prooph\EventSourcing\Exception\InvalidArgumentException If AggregateRoot FQCN does not match
+     * @throws AggregateTypeMismatchException If AggregateRoot FQCN does not match
      * @return void
      */
-    public function add(EventSourcedAggregateRoot $anEventSourcedAggregateRoot)
+    public function addToStore(EventSourcedAggregateRoot $anEventSourcedAggregateRoot)
     {
         try {
-            \Assert\that($anEventSourcedAggregateRoot)->isInstanceOf($this->aggregateType);
+            \Assert\that($anEventSourcedAggregateRoot)->isInstanceOf($this->aggregateType->toString());
         } catch (\InvalidArgumentException $ex) {
-            throw new InvalidArgumentException($ex->getMessage());
+            throw new AggregateTypeMismatchException($ex->getMessage());
         }
 
         $this->eventStore->attach($anEventSourcedAggregateRoot);
@@ -77,9 +89,9 @@ class EventSourcingRepository implements RepositoryInterface
      *
      * @return EventSourcedAggregateRoot|null
      */
-    public function get($anAggregateId)
+    public function getFromStore($anAggregateId)
     {
-        return $this->eventStore->find($this->aggregateType, $anAggregateId);
+        return $this->eventStore->find($this->aggregateType, new StreamId((string)$anAggregateId));
     }
 
     /**
@@ -88,46 +100,73 @@ class EventSourcingRepository implements RepositoryInterface
      * @param \Prooph\EventSourcing\EventSourcedAggregateRoot $anEventSourcedAggregateRoot
      * @return void
      */
-    public function remove(EventSourcedAggregateRoot $anEventSourcedAggregateRoot)
+    public function removeFromStore(EventSourcedAggregateRoot $anEventSourcedAggregateRoot)
     {
         $this->eventStore->detach($anEventSourcedAggregateRoot);
     }
 
     //@TODO: add method removeAll
 
-
-
     /**
-     * @param object $anEventSourcedAggregateRoot
-     * @return string representation of the EventSourcedAggregateRoot
-     */
-    public function extractAggregateIdAsString($anEventSourcedAggregateRoot)
-    {
-        return (string)$this->getAggregateRootDecorator()->getAggregateId($anEventSourcedAggregateRoot);
-    }
-
-    /**
-     * @param string $anAggregateType
-     * @param string $anAggregateId
-     * @param AggregateChangedEvent[] $historyEvents
+     *
+     * @param \Prooph\EventStore\Stream\Stream $stream
+     * @throws \RuntimeException
      * @return object reconstructed EventSourcedAggregateRoot
      */
-    public function constructAggregateFromHistory($anAggregateType, $anAggregateId, array $historyEvents)
+    public function constructAggregateFromHistory(Stream $stream)
     {
-        $ref = new \ReflectionClass($anAggregateType);
+        $ref = new \ReflectionClass($stream->aggregateType()->toString());
 
         $prototype = $ref->newInstanceWithoutConstructor();
 
-        return $this->getAggregateRootDecorator()->fromHistory($prototype, $anAggregateId, $historyEvents);
+        $aggregateChangedEvents = $this->getEventHydrator()->toAggregateChangedEvents($stream->streamId(), $stream->streamEvents());
+
+        if (count($aggregateChangedEvents) === 0) {
+            throw new \RuntimeException(
+                sprintf(
+                    "Can not construct Aggregate %s (id: %s) from history. No stream events given",
+                    $stream->aggregateType()->toString(),
+                    $stream->streamId()->toString()
+                )
+            );
+        }
+
+        return $this->getAggregateRootDecorator()
+            ->fromHistory($prototype, $aggregateChangedEvents[0]->aggregateId(), $aggregateChangedEvents);
     }
 
     /**
      * @param object $anEventSourcedAggregateRoot
-     * @return AggregateChangedEvent[]
+     * @return StreamId representation of the EventSourcedAggregateRoot
      */
-    public function extractPendingEvents($anEventSourcedAggregateRoot)
+    public function extractStreamId($anEventSourcedAggregateRoot)
     {
-        return $this->getAggregateRootDecorator()->extractPendingEvents($anEventSourcedAggregateRoot);
+        $aggregateId = (string)$this->getAggregateRootDecorator()->getAggregateId($anEventSourcedAggregateRoot);
+
+        return new StreamId($aggregateId);
+    }
+
+    /**
+     * @param object $anEventSourcedAggregateRoot
+     * @return StreamEvent[]
+     */
+    public function extractPendingStreamEvents($anEventSourcedAggregateRoot)
+    {
+        $aggregateChangedEvents = $this->getAggregateRootDecorator()->extractPendingEvents($anEventSourcedAggregateRoot);
+
+        return $this->getEventHydrator()->toStreamEvents($aggregateChangedEvents);
+    }
+
+    /**
+     * @return EventHydratorInterface
+     */
+    protected function getEventHydrator()
+    {
+        if (is_null($this->eventHydrator)) {
+            $this->eventHydrator = new AggregateChangedEventHydrator();
+        }
+
+        return $this->eventHydrator;
     }
 
     /**

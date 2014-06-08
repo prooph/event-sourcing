@@ -13,6 +13,7 @@ namespace Prooph\EventSourcingTest\Repository;
 
 use Prooph\EventSourcingTest\Mock\User;
 use Prooph\EventSourcingTest\TestCase;
+use Prooph\EventStore\Stream\AggregateType;
 
 /**
  * Class EventSourcingRepositoryTest
@@ -40,17 +41,17 @@ class EventSourcingRepositoryTest extends TestCase
     {
         $this->getTestEventStore()->beginTransaction();
 
-        $repository = $this->getTestEventStore()->getRepository('Prooph\EventSourcingTest\Mock\User');
+        $repository = $this->getTestEventStore()->getRepository(new AggregateType('Prooph\EventSourcingTest\Mock\User'));
 
         $user = new User("Alex");
 
-        $repository->add($user);
+        $repository->addToStore($user);
 
         $this->getTestEventStore()->commit();
 
         $this->getTestEventStore()->clear();
 
-        $equalUser = $repository->get($user->id());
+        $equalUser = $repository->getFromStore($user->id());
 
         $this->assertInstanceOf('Prooph\EventSourcingTest\Mock\User', $equalUser);
 
@@ -68,15 +69,15 @@ class EventSourcingRepositoryTest extends TestCase
     {
         $this->getTestEventStore()->beginTransaction();
 
-        $repository = $this->getTestEventStore()->getRepository('Prooph\EventSourcingTest\Mock\User');
+        $repository = $this->getTestEventStore()->getRepository(new AggregateType('Prooph\EventSourcingTest\Mock\User'));
 
         $user = new User("Alex");
 
-        $repository->add($user);
+        $repository->addToStore($user);
 
-        $repository->remove($user);
+        $repository->removeFromStore($user);
 
-        $this->assertNull($repository->get($user->id()));//possibility
+        $this->assertNull($repository->getFromStore($user->id()));//possibility
     }
 }
  
