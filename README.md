@@ -3,6 +3,8 @@ ProophEventSourcing
 
 Provides basic functionality for event-sourced aggregates
 
+[![Build Status](https://travis-ci.org/prooph/event-sourcing.svg?branch=master)](https://travis-ci.org/prooph/event-sourcing)
+
 #Used Third-Party Libraries
 
 - ProophEventSourcing uses [ZF2 components](http://framework.zend.com/) to offer event-driven capabilities.
