@@ -23,9 +23,9 @@
     "require": {
         "php": ">=5.4",
         "rhumsaa/uuid" : "2.5.*",
-        "codeliner/php-equalsbuilder": "1.1.*",
-        "codeliner/array-reader": "1.0.*",
-        "codeliner/shared-domain-set": "1.2.*",
+        "codeliner/php-equalsbuilder": "~1.1",
+        "codeliner/array-reader": "~1.1",
+        "codeliner/shared-domain-set": "~1.2",
         "beberlei/assert": "*",
         "zendframework/zend-eventmanager" : "~2.3"
     },
