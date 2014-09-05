@@ -9,7 +9,7 @@
  * Date: 08.06.14 - 14:25
  */
 
-namespace Prooph\EventSourcing\Mapping;
+namespace Prooph\EventSourcing\EventStoreIntegration;
 
 use Prooph\EventSourcing\DomainEvent\AggregateChangedEvent;
 use Prooph\EventStore\Stream\EventId;

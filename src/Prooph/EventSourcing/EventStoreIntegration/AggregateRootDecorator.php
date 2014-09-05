@@ -9,7 +9,7 @@
  * Date: 19.04.14 - 20:24
  */
 
-namespace Prooph\EventSourcing\Mapping;
+namespace Prooph\EventSourcing\EventStoreIntegration;
 
 use Prooph\EventSourcing\EventSourcedAggregateRoot;
 use Prooph\EventSourcing\LifeCycleEvent\GetIdentifierProperty;

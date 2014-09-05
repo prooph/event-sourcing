@@ -6,7 +6,7 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-namespace Prooph\EventSourcing\Repository;
+namespace Prooph\EventSourcing\EventStoreIntegration;
 
 use Prooph\EventSourcing\DomainEvent\AggregateChangedEvent;
 use Prooph\EventSourcing\Exception\AggregateTypeMismatchException;

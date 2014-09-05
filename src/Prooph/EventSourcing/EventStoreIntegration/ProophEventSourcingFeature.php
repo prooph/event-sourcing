@@ -9,7 +9,7 @@
  * Date: 08.06.14 - 12:44
  */
 
-namespace Prooph\EventSourcing\EventStoreFeature;
+namespace Prooph\EventSourcing\EventStoreIntegration;
 
 use Prooph\EventStore\EventStore;
 use Prooph\EventStore\Feature\FeatureInterface;
