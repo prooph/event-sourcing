@@ -6,15 +6,14 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-namespace Prooph\EventSourcing\EventStoreIntegration;
+namespace Prooph\EventSourcing;
 
-use Prooph\EventSourcing\AggregateChangedEvent;
 use Prooph\EventSourcing\Exception\AggregateTypeMismatchException;
-use Prooph\EventSourcing\Mapping\AggregateChangedEventHydrator;
-use Prooph\EventSourcing\Mapping\EventHydratorInterface;
+use Prooph\EventSourcing\EventStoreIntegration\AggregateChangedEventHydrator;
+use Prooph\EventSourcing\EventStoreIntegration\EventHydratorInterface;
 use Prooph\EventStore\EventStore;
 use Prooph\EventSourcing\AggregateRoot;
-use Prooph\EventSourcing\Mapping\AggregateRootDecorator;
+use Prooph\EventSourcing\EventStoreIntegration\AggregateRootDecorator;
 use Prooph\EventStore\Repository\RepositoryInterface;
 use Prooph\EventStore\Stream\AggregateType;
 use Prooph\EventStore\Stream\Stream;
