@@ -11,22 +11,19 @@ namespace Prooph\EventSourcing;
 use Prooph\EventSourcing\Exception\AggregateTypeMismatchException;
 use Prooph\EventSourcing\EventStoreIntegration\AggregateChangedEventHydrator;
 use Prooph\EventSourcing\EventStoreIntegration\EventHydratorInterface;
-use Prooph\EventStore\EventStore;
-use Prooph\EventSourcing\AggregateRoot;
 use Prooph\EventSourcing\EventStoreIntegration\AggregateRootDecorator;
-use Prooph\EventStore\Repository\RepositoryInterface;
-use Prooph\EventStore\Stream\AggregateType;
+use Prooph\EventStore\Aggregate\AggregateRepository;
+use Prooph\EventStore\EventStore;
 use Prooph\EventStore\Stream\Stream;
 use Prooph\EventStore\Stream\StreamEvent;
-use Prooph\EventStore\Stream\StreamId;
 
 /**
- *  EventSourcingRepository
+ *  Repository
  * 
  * @author Alexander Miertsch <contact@prooph.de>
  * @package Prooph\EventSourcing\Repository
  */
-class EventSourcingRepository implements RepositoryInterface
+class Repository extends AggregateRepository
 {
     /**
      * The EventStore instance
@@ -35,12 +32,7 @@ class EventSourcingRepository implements RepositoryInterface
      */
     protected $eventStore;
     
-    /**
-     * Type of the AggregateRoot for that the repository is responsible
-     * 
-     * @var AggregateType
-     */
-    protected $aggregateType;
+
 
     /**
      * @var AggregateRootDecorator
