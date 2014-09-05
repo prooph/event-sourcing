@@ -10,7 +10,7 @@
  */
 
 namespace Prooph\EventSourcing\EventStoreIntegration;
-use Prooph\EventSourcing\DomainEvent\AggregateChangedEvent;
+use Prooph\EventSourcing\AggregateChangedEvent;
 use Prooph\EventStore\Stream\StreamEvent;
 use Prooph\EventStore\Stream\StreamId;
 

@@ -6,7 +6,7 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-namespace Prooph\EventSourcing\DomainEvent;
+namespace Prooph\EventSourcing;
 
 use Codeliner\ArrayReader\ArrayReader;
 use Rhumsaa\Uuid\Uuid;

@@ -11,13 +11,12 @@
 
 namespace Prooph\EventSourcing\EventStoreIntegration;
 
-use Prooph\EventSourcing\DomainEvent\AggregateChangedEvent;
+use Prooph\EventSourcing\AggregateChangedEvent;
 use Prooph\EventStore\Stream\EventId;
 use Prooph\EventStore\Stream\EventName;
 use Prooph\EventStore\Stream\StreamEvent;
 use Prooph\EventStore\Stream\StreamId;
 use Rhumsaa\Uuid\Uuid;
-use ValueObjects\DateTime\DateTime;
 use Zend\EventManager\Event;
 use Zend\EventManager\EventManager;
 
@@ -41,7 +40,7 @@ class AggregateChangedEventHydrator implements EventHydratorInterface
      */
     public function toStreamEvents(array $aggregateChangedEvents)
     {
-        \Assert\that($aggregateChangedEvents)->all()->isInstanceOf('Prooph\EventSourcing\DomainEvent\AggregateChangedEvent');
+        \Assert\that($aggregateChangedEvents)->all()->isInstanceOf('Prooph\EventSourcing\AggregateChangedEvent');
         $streamEvents = array();
 
         foreach ($aggregateChangedEvents as $aggregateChangedEvent) {
@@ -138,7 +137,7 @@ class AggregateChangedEventHydrator implements EventHydratorInterface
         if (! $event instanceof AggregateChangedEvent) {
             throw new \RuntimeException(
                 sprintf(
-                    'Event %s can not be constructed. It is not a Prooph\EventSourcing\DomainEvent\AggregateChangedEvent',
+                    'Event %s can not be constructed. It is not a Prooph\EventSourcing\AggregateChangedEvent',
                     $streamEvent->eventName()
                 )
             );

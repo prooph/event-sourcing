@@ -11,7 +11,7 @@
 
 namespace Prooph\EventSourcing\LifeCycleEvent;
 
-use Prooph\EventSourcing\DomainEvent\AggregateChangedEvent;
+use Prooph\EventSourcing\AggregateChangedEvent;
 use Prooph\EventSourcing\AggregateRoot;
 use Zend\EventManager\Event;
 

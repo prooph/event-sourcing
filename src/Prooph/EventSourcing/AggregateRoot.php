@@ -8,7 +8,6 @@
  */
 namespace Prooph\EventSourcing;
 
-use Prooph\EventSourcing\DomainEvent\AggregateChangedEvent;
 use Prooph\EventSourcing\Exception\IdentifierPropertyNotFoundException;
 use Prooph\EventSourcing\Exception\NoHandlerFoundException;
 use Prooph\EventSourcing\LifeCycleEvent\DetermineEventHandler;
@@ -46,7 +45,7 @@ abstract class AggregateRoot
     
     /**    
      * @param mixed $aggregateId
-     * @param array $historyEvents
+     * @param AggregateChangedEvent[] $historyEvents
      */
     protected function initializeFromHistory($aggregateId, array $historyEvents)
     {

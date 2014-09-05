@@ -24,7 +24,7 @@ class AggregateRootDecorator extends AggregateRoot
 {
     /**
      * @param AggregateRoot $anAggregate
-     * @return \Prooph\EventSourcing\DomainEvent\AggregateChangedEvent[]
+     * @return \Prooph\EventSourcing\AggregateChangedEvent[]
      */
     public function extractPendingEvents(AggregateRoot $anAggregate)
     {

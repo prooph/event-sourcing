@@ -8,7 +8,7 @@
  */
 namespace Prooph\EventSourcing\EventStoreIntegration;
 
-use Prooph\EventSourcing\DomainEvent\AggregateChangedEvent;
+use Prooph\EventSourcing\AggregateChangedEvent;
 use Prooph\EventSourcing\Exception\AggregateTypeMismatchException;
 use Prooph\EventSourcing\Mapping\AggregateChangedEventHydrator;
 use Prooph\EventSourcing\Mapping\EventHydratorInterface;

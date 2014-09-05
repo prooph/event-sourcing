@@ -9,7 +9,7 @@
  * Date: 05.09.14 - 22:43
  */
 
-namespace Prooph\EventSourcing\DomainEvent;
+namespace Prooph\EventSourcing;
 
 use Rhumsaa\Uuid\Uuid;
 

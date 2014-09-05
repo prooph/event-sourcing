@@ -11,7 +11,7 @@
 
 namespace Prooph\EventSourcing\Mapping;
 
-use Prooph\EventSourcing\DomainEvent\AggregateChangedEvent;
+use Prooph\EventSourcing\AggregateChangedEvent;
 use Prooph\EventSourcing\LifeCycleEvent\DetermineEventHandler;
 use Zend\EventManager\AbstractListenerAggregate;
 use Zend\EventManager\EventManagerInterface;
