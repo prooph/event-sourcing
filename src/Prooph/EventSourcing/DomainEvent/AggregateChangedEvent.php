@@ -9,9 +9,7 @@
 namespace Prooph\EventSourcing\DomainEvent;
 
 use Codeliner\ArrayReader\ArrayReader;
-use Codeliner\Domain\Shared\DomainEventInterface;
 use Rhumsaa\Uuid\Uuid;
-use ValueObjects\DateTime\DateTime;
 
 /**
  * AggregateChangedEvent
@@ -19,7 +17,7 @@ use ValueObjects\DateTime\DateTime;
  * @author Alexander Miertsch <contact@prooph.de>
  * @package Prooph\EventSourcing
  */
-class AggregateChangedEvent implements DomainEventInterface
+class AggregateChangedEvent implements DomainEvent
 {
     /**
      * @var Uuid
@@ -44,20 +42,38 @@ class AggregateChangedEvent implements DomainEventInterface
     protected $payload;
 
     /**
-     * @var DateTime
+     * @var \DateTime
      */
     protected $occurredOn;
 
     /**
      * @param mixed $aggregateId
-     * @param array $aPayload
+     * @param array $payload
+     * @param Uuid $uuid
+     * @param \DateTime $occurredOn
      */
-    public function __construct($aggregateId, array $aPayload)
+    public function __construct($aggregateId, array $payload, Uuid $uuid = null, \DateTime $occurredOn = null)
     {
+        if (is_null($uuid)) {
+            $uuid = Uuid::uuid4();
+        }
+
+        if (is_null($occurredOn)) {
+            $occurredOn = new \DateTime();
+        }
+
         $this->aggregateId = $aggregateId;
-        $this->payload     = $aPayload;
-        $this->uuid        = Uuid::uuid4();
-        $this->occurredOn  = DateTime::now();
+        $this->payload     = $payload;
+        $this->uuid        = $uuid;
+        $this->occurredOn  = $occurredOn;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function aggregateId()
+    {
+        return $this->aggregateId;
     }
 
     /**
@@ -77,7 +93,7 @@ class AggregateChangedEvent implements DomainEventInterface
     }
 
     /**
-     * @return DateTime
+     * @return \DateTime
      */
     public function occurredOn()
     {
@@ -98,13 +114,5 @@ class AggregateChangedEvent implements DomainEventInterface
     public function toPayloadReader()
     {
         return new ArrayReader($this->payload());
-    }
-
-    /**
-     * @return mixed
-     */
-    public function aggregateId()
-    {
-        return $this->aggregateId;
     }
 }

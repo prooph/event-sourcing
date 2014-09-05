@@ -22,16 +22,15 @@
     ],
     "require": {
         "php": ">=5.4",
-        "rhumsaa/uuid" : "2.5.*",
+        "rhumsaa/uuid" : "~2.5",
         "codeliner/php-equalsbuilder": "~1.1",
         "codeliner/array-reader": "~1.1",
-        "codeliner/shared-domain-set": "~1.2",
-        "beberlei/assert": "*",
+        "beberlei/assert": "~2.0",
         "zendframework/zend-eventmanager" : "~2.3"
     },
     "require-dev": {
         "phpunit/phpunit": "3.7.*",
-        "prooph/event-store" : "dev-master"
+        "prooph/event-store" : "dev-0.5-dev"
     },
     "autoload": {
         "psr-0": { 
