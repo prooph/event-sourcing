@@ -9,10 +9,9 @@
  * Date: 17.04.14 - 22:11
  */
 
-namespace Prooph\EventSourcing\Mapping;
+namespace Prooph\EventSourcing\InternalEventSystem;
 
 use Prooph\EventSourcing\AggregateChangedEvent;
-use Prooph\EventSourcing\LifeCycleEvent\DetermineEventHandler;
 use Zend\EventManager\AbstractListenerAggregate;
 use Zend\EventManager\EventManagerInterface;
 

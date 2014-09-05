@@ -9,7 +9,7 @@
  * Date: 17.04.14 - 23:03
  */
 
-namespace Prooph\EventSourcing\LifeCycleEvent;
+namespace Prooph\EventSourcing\InternalEventSystem;
 
 use Zend\EventManager\Event;
 

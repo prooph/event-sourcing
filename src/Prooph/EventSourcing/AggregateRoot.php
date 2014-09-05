@@ -10,8 +10,8 @@ namespace Prooph\EventSourcing;
 
 use Prooph\EventSourcing\Exception\IdentifierPropertyNotFoundException;
 use Prooph\EventSourcing\Exception\NoHandlerFoundException;
-use Prooph\EventSourcing\LifeCycleEvent\DetermineEventHandler;
-use Prooph\EventSourcing\LifeCycleEvent\GetIdentifierProperty;
+use Prooph\EventSourcing\InternalEventSystem\DetermineEventHandler;
+use Prooph\EventSourcing\InternalEventSystem\GetIdentifierProperty;
 use Prooph\EventSourcing\Mapping\OnEventNameHandlerStrategy;
 use Zend\EventManager\EventManager;
 
@@ -41,7 +41,7 @@ abstract class AggregateRoot
     /**
      * @var EventManager
      */
-    protected $lifeCycleEvents;
+    protected $internalEventSystem;
     
     /**    
      * @param mixed $aggregateId
@@ -49,7 +49,7 @@ abstract class AggregateRoot
      */
     protected function initializeFromHistory($aggregateId, array $historyEvents)
     {
-        $result = $this->getLifeCycleEvents()->trigger(new GetIdentifierProperty($this));
+        $result = $this->getInternalEventSystem()->trigger(new GetIdentifierProperty($this));
         $identifierProp = $result->last();
         $this->$identifierProp = $aggregateId;
 
@@ -116,17 +116,17 @@ abstract class AggregateRoot
     /**
      * @return EventManager
      */
-    protected function getLifeCycleEvents()
+    protected function getInternalEventSystem()
     {
-        if (is_null($this->lifeCycleEvents)) {
-            $this->lifeCycleEvents = new EventManager(array(
+        if (is_null($this->internalEventSystem)) {
+            $this->internalEventSystem = new EventManager(array(
                 'AggregateRoot',
                 get_class($this)
             ));
 
-            $this->lifeCycleEvents->attachAggregate(new OnEventNameHandlerStrategy());
+            $this->internalEventSystem->attachAggregate(new OnEventNameHandlerStrategy());
 
-            $this->lifeCycleEvents->attach(
+            $this->internalEventSystem->attach(
                 GetIdentifierProperty::NAME,
                 function(GetIdentifierProperty $e) {
                     if (property_exists($e->getTarget(), 'id')) {
@@ -145,7 +145,7 @@ abstract class AggregateRoot
             );
         }
 
-        return $this->lifeCycleEvents;
+        return $this->internalEventSystem;
     }
 
     /**
@@ -155,7 +155,7 @@ abstract class AggregateRoot
      */
     protected function getEventHandlerMethod(AggregateChangedEvent $anAggregateChangedEvent)
     {
-        $result = $this->getLifeCycleEvents()->triggerUntil(
+        $result = $this->getInternalEventSystem()->triggerUntil(
             new DetermineEventHandler($this, $anAggregateChangedEvent),
             function ($handlerMethod) {
                 return is_string($handlerMethod);

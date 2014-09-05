@@ -9,7 +9,7 @@
  * Date: 17.04.14 - 22:01
  */
 
-namespace Prooph\EventSourcing\LifeCycleEvent;
+namespace Prooph\EventSourcing\InternalEventSystem;
 
 use Prooph\EventSourcing\AggregateChangedEvent;
 use Prooph\EventSourcing\AggregateRoot;

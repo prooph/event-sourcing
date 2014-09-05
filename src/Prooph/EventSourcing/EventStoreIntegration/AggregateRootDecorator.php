@@ -37,7 +37,7 @@ class AggregateRootDecorator extends AggregateRoot
      */
     public function getAggregateId(AggregateRoot $anAggregate)
     {
-        $result = $anAggregate->getLifeCycleEvents()->trigger(new GetIdentifierProperty($anAggregate));
+        $result = $anAggregate->getInternalEventSystem()->trigger(new GetIdentifierProperty($anAggregate));
 
         $property = $result->last();
 
