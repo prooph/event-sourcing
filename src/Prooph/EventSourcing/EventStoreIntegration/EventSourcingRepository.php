@@ -13,7 +13,7 @@ use Prooph\EventSourcing\Exception\AggregateTypeMismatchException;
 use Prooph\EventSourcing\Mapping\AggregateChangedEventHydrator;
 use Prooph\EventSourcing\Mapping\EventHydratorInterface;
 use Prooph\EventStore\EventStore;
-use Prooph\EventSourcing\EventSourcedAggregateRoot;
+use Prooph\EventSourcing\AggregateRoot;
 use Prooph\EventSourcing\Mapping\AggregateRootDecorator;
 use Prooph\EventStore\Repository\RepositoryInterface;
 use Prooph\EventStore\Stream\AggregateType;
@@ -37,7 +37,7 @@ class EventSourcingRepository implements RepositoryInterface
     protected $eventStore;
     
     /**
-     * Type of the EventSourcedAggregateRoot for that the repository is responsible
+     * Type of the AggregateRoot for that the repository is responsible
      * 
      * @var AggregateType
      */
@@ -65,13 +65,13 @@ class EventSourcingRepository implements RepositoryInterface
     }
 
     /**
-     * Add an EventSourcedAggregateRoot
+     * Add an AggregateRoot
      *
-     * @param EventSourcedAggregateRoot $anEventSourcedAggregateRoot
+     * @param AggregateRoot $anEventSourcedAggregateRoot
      * @throws AggregateTypeMismatchException If AggregateRoot FQCN does not match
      * @return void
      */
-    public function addToStore(EventSourcedAggregateRoot $anEventSourcedAggregateRoot)
+    public function addToStore(AggregateRoot $anEventSourcedAggregateRoot)
     {
         try {
             \Assert\that($anEventSourcedAggregateRoot)->isInstanceOf($this->aggregateType->toString());
@@ -83,11 +83,11 @@ class EventSourcingRepository implements RepositoryInterface
     }
 
     /**
-     * Get an EventSourcedAggregateRoot by it's id
+     * Get an AggregateRoot by it's id
      *
      * @param string $anAggregateId
      *
-     * @return EventSourcedAggregateRoot|null
+     * @return AggregateRoot|null
      */
     public function getFromStore($anAggregateId)
     {
@@ -95,12 +95,12 @@ class EventSourcingRepository implements RepositoryInterface
     }
 
     /**
-     * Remove an EventSourcedAggregateRoot
+     * Remove an AggregateRoot
      *
-     * @param \Prooph\EventSourcing\EventSourcedAggregateRoot $anEventSourcedAggregateRoot
+     * @param \Prooph\EventSourcing\AggregateRoot $anEventSourcedAggregateRoot
      * @return void
      */
-    public function removeFromStore(EventSourcedAggregateRoot $anEventSourcedAggregateRoot)
+    public function removeFromStore(AggregateRoot $anEventSourcedAggregateRoot)
     {
         $this->eventStore->detach($anEventSourcedAggregateRoot);
     }
@@ -111,7 +111,7 @@ class EventSourcingRepository implements RepositoryInterface
      *
      * @param \Prooph\EventStore\Stream\Stream $stream
      * @throws \RuntimeException
-     * @return object reconstructed EventSourcedAggregateRoot
+     * @return object reconstructed AggregateRoot
      */
     public function constructAggregateFromHistory(Stream $stream)
     {
@@ -137,7 +137,7 @@ class EventSourcingRepository implements RepositoryInterface
 
     /**
      * @param object $anEventSourcedAggregateRoot
-     * @return StreamId representation of the EventSourcedAggregateRoot
+     * @return StreamId representation of the AggregateRoot
      */
     public function extractStreamId($anEventSourcedAggregateRoot)
     {

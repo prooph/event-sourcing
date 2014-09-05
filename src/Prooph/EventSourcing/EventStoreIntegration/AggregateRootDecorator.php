@@ -11,7 +11,7 @@
 
 namespace Prooph\EventSourcing\EventStoreIntegration;
 
-use Prooph\EventSourcing\EventSourcedAggregateRoot;
+use Prooph\EventSourcing\AggregateRoot;
 use Prooph\EventSourcing\LifeCycleEvent\GetIdentifierProperty;
 
 /**
@@ -20,22 +20,22 @@ use Prooph\EventSourcing\LifeCycleEvent\GetIdentifierProperty;
  * @package Prooph\EventSourcing\Mapping
  * @author Alexander Miertsch <kontakt@codeliner.ws>
  */
-class AggregateRootDecorator extends EventSourcedAggregateRoot
+class AggregateRootDecorator extends AggregateRoot
 {
     /**
-     * @param EventSourcedAggregateRoot $anAggregate
+     * @param AggregateRoot $anAggregate
      * @return \Prooph\EventSourcing\DomainEvent\AggregateChangedEvent[]
      */
-    public function extractPendingEvents(EventSourcedAggregateRoot $anAggregate)
+    public function extractPendingEvents(AggregateRoot $anAggregate)
     {
         return $anAggregate->getPendingEvents();
     }
 
     /**
-     * @param EventSourcedAggregateRoot $anAggregate
+     * @param AggregateRoot $anAggregate
      * @return mixed AggregateId
      */
-    public function getAggregateId(EventSourcedAggregateRoot $anAggregate)
+    public function getAggregateId(AggregateRoot $anAggregate)
     {
         $result = $anAggregate->getLifeCycleEvents()->trigger(new GetIdentifierProperty($anAggregate));
 

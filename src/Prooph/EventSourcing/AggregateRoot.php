@@ -17,13 +17,13 @@ use Prooph\EventSourcing\Mapping\OnEventNameHandlerStrategy;
 use Zend\EventManager\EventManager;
 
 /**
- * EventSourcedAggregateRoot
+ * AggregateRoot
  * 
  * @author Alexander Miertsch <contact@prooph.de>
  *
  * @package Prooph\EventSourcing
  */
-abstract class EventSourcedAggregateRoot
+abstract class AggregateRoot
 {
     /**
      * Current version
@@ -121,7 +121,7 @@ abstract class EventSourcedAggregateRoot
     {
         if (is_null($this->lifeCycleEvents)) {
             $this->lifeCycleEvents = new EventManager(array(
-                'EventSourcedAggregateRoot',
+                'AggregateRoot',
                 get_class($this)
             ));
 

@@ -12,7 +12,7 @@
 namespace Prooph\EventSourcingTest\Mock;
 
 use Prooph\EventSourcing\DomainEvent\AggregateChangedEvent;
-use Prooph\EventSourcing\EventSourcedAggregateRoot;
+use Prooph\EventSourcing\AggregateRoot;
 use Rhumsaa\Uuid\Uuid;
 
 /**
@@ -21,7 +21,7 @@ use Rhumsaa\Uuid\Uuid;
  * @package Prooph\EventStoreTest\Mock
  * @author Alexander Miertsch <contact@prooph.de>
  */
-class User extends EventSourcedAggregateRoot
+class User extends AggregateRoot
 {
     /**
      * @var string

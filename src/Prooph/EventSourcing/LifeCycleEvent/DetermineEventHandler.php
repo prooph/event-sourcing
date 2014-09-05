@@ -12,7 +12,7 @@
 namespace Prooph\EventSourcing\LifeCycleEvent;
 
 use Prooph\EventSourcing\DomainEvent\AggregateChangedEvent;
-use Prooph\EventSourcing\EventSourcedAggregateRoot;
+use Prooph\EventSourcing\AggregateRoot;
 use Zend\EventManager\Event;
 
 /**
@@ -26,10 +26,10 @@ class DetermineEventHandler extends Event
     const NAME = "DetermineEventHandler";
 
     /**
-     * @param EventSourcedAggregateRoot $anAggregateRoot
+     * @param AggregateRoot $anAggregateRoot
      * @param AggregateChangedEvent $anAggregateChangedEvent
      */
-    public function __construct(EventSourcedAggregateRoot $anAggregateRoot, AggregateChangedEvent $anAggregateChangedEvent)
+    public function __construct(AggregateRoot $anAggregateRoot, AggregateChangedEvent $anAggregateChangedEvent)
     {
         $this->setName(self::NAME);
         $this->setTarget($anAggregateRoot);
