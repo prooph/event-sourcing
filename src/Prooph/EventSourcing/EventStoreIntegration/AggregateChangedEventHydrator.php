@@ -11,14 +11,11 @@
 
 namespace Prooph\EventSourcing\EventStoreIntegration;
 
-use Prooph\EventSourcing\AggregateChangedEvent;
+use Prooph\EventSourcing\AggregateChanged;
 use Prooph\EventStore\Stream\EventId;
 use Prooph\EventStore\Stream\EventName;
 use Prooph\EventStore\Stream\StreamEvent;
-use Prooph\EventStore\Stream\StreamId;
 use Rhumsaa\Uuid\Uuid;
-use Zend\EventManager\Event;
-use Zend\EventManager\EventManager;
 
 /**
  * Class AggregateChangedEventHydrator
@@ -29,18 +26,13 @@ use Zend\EventManager\EventManager;
 class AggregateChangedEventHydrator implements EventHydratorInterface
 {
     /**
-     * @var EventManager
-     */
-    protected $lifeCycleEvents;
-
-
-    /**
-     * @param AggregateChangedEvent[] $aggregateChangedEvents
+     * @param AggregateChanged[] $aggregateChangedEvents
      * @return StreamEvent[]
      */
     public function toStreamEvents(array $aggregateChangedEvents)
     {
-        \Assert\that($aggregateChangedEvents)->all()->isInstanceOf('Prooph\EventSourcing\AggregateChangedEvent');
+        \Assert\that($aggregateChangedEvents)->all()->isInstanceOf('Prooph\EventSourcing\AggregateChanged');
+
         $streamEvents = array();
 
         foreach ($aggregateChangedEvents as $aggregateChangedEvent) {
@@ -51,144 +43,67 @@ class AggregateChangedEventHydrator implements EventHydratorInterface
     }
 
     /**
-     * @param \Prooph\EventStore\Stream\StreamId $streamId
      * @param StreamEvent[] $streamEvents
-     * @return AggregateChangedEvent[]
+     * @return AggregateChanged[]
      */
-    public function toAggregateChangedEvents(StreamId $streamId, array $streamEvents)
+    public function toAggregateChangedEvents(array $streamEvents)
     {
         $aggregateChangedEvents = array();
 
         foreach ($streamEvents as $streamEvent)
         {
-            $aggregateChangedEvents[] = $this->translateToAggregateChangedEvent($streamId, $streamEvent);
+            $aggregateChangedEvents[] = $this->translateToAggregateChangedEvent($streamEvent);
         }
 
         return $aggregateChangedEvents;
     }
 
     /**
-     * @return EventManager
-     */
-    public function getLifeCycleEvents()
-    {
-        if (is_null($this->lifeCycleEvents)) {
-            $this->setEventManager(new EventManager());
-        }
-
-        return $this->lifeCycleEvents;
-    }
-
-    /**
-     * @param EventManager $eventManager
-     */
-    public function setEventManager(EventManager $eventManager)
-    {
-        $eventManager->attach('translateStreamId', function (Event $e) {
-            return $e->getParam('streamId')->toString();
-        }, -100);
-
-        $eventManager->addIdentifiers(array(
-            'AggregateChangedEventHydrator',
-            get_class($this)
-        ));
-
-        $this->lifeCycleEvents = $eventManager;
-
-    }
-
-
-    /**
-     * @param AggregateChangedEvent $aggregateChangedEvent
+     * @param AggregateChanged $aggregateChanged
      * @return StreamEvent
      */
-    protected function translateToStreamEvent(AggregateChangedEvent $aggregateChangedEvent)
+    protected function translateToStreamEvent(AggregateChanged $aggregateChanged)
     {
         return new StreamEvent(
-            new EventId($aggregateChangedEvent->uuid()->toString()),
-            new EventName(get_class($aggregateChangedEvent)),
-            $aggregateChangedEvent->payload(),
-            $aggregateChangedEvent->version(),
-            $aggregateChangedEvent->occurredOn()->toNativeDateTime()
+            new EventId($aggregateChanged->uuid()->toString()),
+            new EventName(get_class($aggregateChanged)),
+            array_merge($aggregateChanged->payload(), array('aggregate_id' => $aggregateChanged->aggregateId())),
+            $aggregateChanged->version(),
+            $aggregateChanged->occurredOn()
         );
     }
 
     /**
-     * @param StreamId $streamId
      * @param StreamEvent $streamEvent
-     * @return AggregateChangedEvent
+     * @return AggregateChanged
      * @throws \RuntimeException if construction fails
      */
-    protected function translateToAggregateChangedEvent(StreamId $streamId, StreamEvent $streamEvent)
+    protected function translateToAggregateChangedEvent(StreamEvent $streamEvent)
     {
-        if (! class_exists($streamEvent->eventName())) {
+        if (! class_exists($streamEvent->eventName()->toString())) {
             throw new \RuntimeException(
                 sprintf(
                     'Event %s can not be constructed. EventName is no valid class name',
-                    $streamEvent->eventName()
+                    $streamEvent->eventName()->toString()
                 )
             );
         }
 
-        $eventRef = new \ReflectionClass($streamEvent->eventName()->toString());
+        $eventClass = $streamEvent->eventName()->toString();
 
-        $event = $eventRef->newInstanceWithoutConstructor();
+        $payload = $streamEvent->payload();
 
-        if (! $event instanceof AggregateChangedEvent) {
-            throw new \RuntimeException(
-                sprintf(
-                    'Event %s can not be constructed. It is not a Prooph\EventSourcing\AggregateChangedEvent',
-                    $streamEvent->eventName()
-                )
-            );
-        }
+        $aggregateId = $payload['aggregate_id'];
 
-        $uuidProp = $eventRef->getProperty('uuid');
+        unset($payload['aggregate_id']);
 
-        $uuidProp->setAccessible(true);
-
-        $uuidProp->setValue($event, Uuid::fromString($streamEvent->eventId()->toString()));
-
-        $aggregateIdProp = $eventRef->getProperty('aggregateId');
-
-        $aggregateIdProp->setAccessible(true);
-
-        $result = $this->getLifeCycleEvents()->triggerUntil('translateStreamId', $this, array('streamId' => $streamId), function ($res) {
-            return ! is_null($res);
-        });
-
-        if ($result->stopped()) {
-            $aggregateId = $result->last();
-        } else {
-            throw new \RuntimeException(
-                sprintf(
-                    "StreamId %s could not be translated to AggregateId",
-                    $streamId->toString()
-                )
-            );
-        }
-
-        $aggregateIdProp->setValue($event, $aggregateId);
-
-        $occurredOnProp = $eventRef->getProperty('occurredOn');
-
-        $occurredOnProp->setAccessible(true);
-
-        $occurredOnProp->setValue($event, DateTime::fromNativeDateTime($streamEvent->occurredOn()));
-
-        $versionProp = $eventRef->getProperty('version');
-
-        $versionProp->setAccessible(true);
-
-        $versionProp->setValue($event, $streamEvent->version());
-
-        $payloadProp = $eventRef->getProperty('payload');
-
-        $payloadProp->setAccessible(true);
-
-        $payloadProp->setValue($event, $streamEvent->payload());
-
-        return $event;
+        return $eventClass::reconstitute(
+            $aggregateId,
+            $payload,
+            Uuid::fromString($streamEvent->eventId()->toString()),
+            $streamEvent->occurredOn(),
+            $streamEvent->version()
+        );
     }
 }
  

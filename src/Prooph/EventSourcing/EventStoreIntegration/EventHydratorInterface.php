@@ -10,7 +10,7 @@
  */
 
 namespace Prooph\EventSourcing\EventStoreIntegration;
-use Prooph\EventSourcing\AggregateChangedEvent;
+use Prooph\EventSourcing\AggregateChanged;
 use Prooph\EventStore\Stream\StreamEvent;
 use Prooph\EventStore\Stream\StreamId;
 
@@ -23,16 +23,15 @@ use Prooph\EventStore\Stream\StreamId;
 interface EventHydratorInterface 
 {
     /**
-     * @param AggregateChangedEvent[] $aggregateChangedEvents
+     * @param AggregateChanged[] $aggregateChangedEvents
      * @return StreamEvent[]
      */
     public function toStreamEvents(array $aggregateChangedEvents);
 
     /**
-     * @param \Prooph\EventStore\Stream\StreamId $streamId
      * @param StreamEvent[] $streamEvents
-     * @return AggregateChangedEvent[]
+     * @return AggregateChanged[]
      */
-    public function toAggregateChangedEvents(StreamId $streamId, array $streamEvents);
+    public function toAggregateChangedEvents(array $streamEvents);
 }
  

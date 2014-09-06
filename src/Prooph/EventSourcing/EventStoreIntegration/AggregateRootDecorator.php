@@ -12,7 +12,6 @@
 namespace Prooph\EventSourcing\EventStoreIntegration;
 
 use Prooph\EventSourcing\AggregateRoot;
-use Prooph\EventSourcing\LifeCycleEvent\GetIdentifierProperty;
 
 /**
  * Class AggregateRootDecorator
@@ -22,39 +21,53 @@ use Prooph\EventSourcing\LifeCycleEvent\GetIdentifierProperty;
  */
 class AggregateRootDecorator extends AggregateRoot
 {
-    /**
-     * @param AggregateRoot $anAggregate
-     * @return \Prooph\EventSourcing\AggregateChangedEvent[]
-     */
-    public function extractPendingEvents(AggregateRoot $anAggregate)
+    public static function newInstance()
     {
-        return $anAggregate->getPendingEvents();
+        return new self();
     }
 
     /**
-     * @param AggregateRoot $anAggregate
-     * @return mixed AggregateId
+     * @param AggregateRoot $anAggregateRoot
+     * @return \Prooph\EventSourcing\AggregateChanged[]
      */
-    public function getAggregateId(AggregateRoot $anAggregate)
+    public function extractRecordedEvents(AggregateRoot $anAggregateRoot)
     {
-        $result = $anAggregate->getInternalEventSystem()->trigger(new GetIdentifierProperty($anAggregate));
-
-        $property = $result->last();
-
-        $aggregateRef = new \ReflectionClass($anAggregate);
-
-        $propertyRef = $aggregateRef->getProperty($property);
-
-        $propertyRef->setAccessible(true);
-
-        return $propertyRef->getValue($anAggregate);
+        return $anAggregateRoot->popRecordedEvents();
     }
 
-    public function fromHistory($aggregatePrototype, $aggregateId, array $historyStream)
+    /**
+     * @param AggregateRoot $anAggregateRoot
+     * @return string
+     */
+    public function extractAggregateId(AggregateRoot $anAggregateRoot)
     {
-        $aggregatePrototype->initializeFromHistory($aggregateId, $historyStream);
+        return $anAggregateRoot->aggregateId();
+    }
 
-        return $aggregatePrototype;
+    /**
+     * @param string $arClass
+     * @param array $aggregateChangedEvents
+     * @return AggregateRoot
+     * @throws \RuntimeException
+     */
+    public function fromHistory($arClass, array $aggregateChangedEvents)
+    {
+        if (! class_exists($arClass)) {
+            throw new \RuntimeException(
+                sprintf("Aggregate root class %s cannot be found", $arClass)
+            );
+        }
+
+        return $arClass::reconstituteFromHistory($aggregateChangedEvents);
+    }
+
+    /**
+     * @throws \BadMethodCallException
+     * @return string representation of the unique identifier of the aggregate root
+     */
+    protected function aggregateId()
+    {
+        throw new \BadMethodCallException("The AggregateRootDecorator does not have an id");
     }
 }
  

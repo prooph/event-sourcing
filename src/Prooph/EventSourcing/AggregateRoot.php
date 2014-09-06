@@ -8,13 +8,6 @@
  */
 namespace Prooph\EventSourcing;
 
-use Prooph\EventSourcing\Exception\IdentifierPropertyNotFoundException;
-use Prooph\EventSourcing\Exception\NoHandlerFoundException;
-use Prooph\EventSourcing\InternalEventSystem\DetermineEventHandler;
-use Prooph\EventSourcing\InternalEventSystem\GetIdentifierProperty;
-use Prooph\EventSourcing\Mapping\OnEventNameHandlerStrategy;
-use Zend\EventManager\EventManager;
-
 /**
  * AggregateRoot
  * 
@@ -34,144 +27,109 @@ abstract class AggregateRoot
     /**
      * List of events that are not committed to the EventStore
      * 
-     * @var AggregateChangedEvent[]
+     * @var AggregateChanged[]
      */
-    protected $pendingEvents = array();
+    protected $recordedEvents = array();
 
     /**
-     * @var EventManager
+     * @param AggregateChanged[] $historyEvents
      */
-    protected $internalEventSystem;
-    
-    /**    
-     * @param mixed $aggregateId
-     * @param AggregateChangedEvent[] $historyEvents
-     */
-    protected function initializeFromHistory($aggregateId, array $historyEvents)
+    protected static function reconstituteFromHistory(array $historyEvents)
     {
-        $result = $this->getInternalEventSystem()->trigger(new GetIdentifierProperty($this));
-        $identifierProp = $result->last();
-        $this->$identifierProp = $aggregateId;
-
-        $this->replay($historyEvents);
+        $instance = new static();
+        $instance->replay($historyEvents);
     }
 
     /**
-     * Get pending events
-     * 
-     * @return AggregateChangedEvent[]
+     * We do not allow public access to __construct, this way we make sure that an aggregate root can only
+     * be constructed by static factories
      */
-    protected function getPendingEvents()
+    protected function __construct()
     {
-        $pendingEvents = $this->pendingEvents;
+    }
+
+    /**
+     * @return string representation of the unique identifier of the aggregate root
+     */
+    abstract protected function aggregateId();
+
+    /**
+     * Get pending events and reset stack
+     * 
+     * @return AggregateChanged[]
+     */
+    protected function popRecordedEvents()
+    {
+        $pendingEvents = $this->recordedEvents;
         
-        $this->pendingEvents = array();
+        $this->recordedEvents = array();
         
         return $pendingEvents;
     }
-    
+
+    /**
+     * Record an aggregate changed event
+     *
+     * @param AggregateChanged $event
+     */
+    protected function recordThat(AggregateChanged $event)
+    {
+        $this->version += 1;
+
+        $event->trackVersion($this->version);
+
+        $this->recordedEvents[] = $event;
+
+        $this->apply($event);
+    }
+
     /**
      * Replay past events
-     * 
-     * @param AggregateChangedEvent[] $historyEvents
-     * 
+     *
+     * @param AggregateChanged[] $historyEvents
+     *
+     * @throws \RuntimeException
      * @return void
      */
     protected function replay(array $historyEvents)
     {
         foreach ($historyEvents as $pastEvent) {
-            $handler = $this->getEventHandlerMethod($pastEvent);
-            
-            $this->{$handler}($pastEvent);
-            
             $this->version = $pastEvent->version();
+
+            $this->apply($pastEvent);
         }
     }
 
     /**
      * Apply given event
      *
-     * @param AggregateChangedEvent $e
-     *
+     * @param AggregateChanged $e
+     * @throws \RuntimeException
      */
-    protected function apply(AggregateChangedEvent $e)
+    protected function apply(AggregateChanged $e)
     {
-        $handler = $this->getEventHandlerMethod($e);
-        
-        $this->{$handler}($e);
+        $handler = $this->determineEventHandlerMethodFor($e);
 
-        $this->version += 1;
-
-        $eventRef = new \ReflectionClass($e);
-
-        $versionProp = $eventRef->getProperty('version');
-
-        $versionProp->setAccessible(true);
-
-        $versionProp->setValue($e, $this->version);
-
-        $this->pendingEvents[] = $e;
-    }
-
-    /**
-     * @return EventManager
-     */
-    protected function getInternalEventSystem()
-    {
-        if (is_null($this->internalEventSystem)) {
-            $this->internalEventSystem = new EventManager(array(
-                'AggregateRoot',
+        if (! method_exists($this, $handler)) {
+            throw new \RuntimeException(sprintf(
+                "Missing event handler method %s for aggregate root %s",
+                $handler,
                 get_class($this)
             ));
-
-            $this->internalEventSystem->attachAggregate(new OnEventNameHandlerStrategy());
-
-            $this->internalEventSystem->attach(
-                GetIdentifierProperty::NAME,
-                function(GetIdentifierProperty $e) {
-                    if (property_exists($e->getTarget(), 'id')) {
-                        return 'id';
-                    }
-
-                    throw new IdentifierPropertyNotFoundException(
-                        sprintf(
-                            'Identifier property of aggregate %s could not be determined. You should register a lister for the %s event!',
-                            get_class($e->getTarget()),
-                            GetIdentifierProperty::NAME
-                        )
-                    );
-                },
-                -100
-            );
         }
-
-        return $this->internalEventSystem;
+        
+        $this->{$handler}($e);
     }
 
     /**
-     * @param AggregateChangedEvent $anAggregateChangedEvent
+     * Determine event name
+     *
+     * @param AggregateChanged $e
+     *
      * @return string
-     * @throws Exception\NoHandlerFoundException
      */
-    protected function getEventHandlerMethod(AggregateChangedEvent $anAggregateChangedEvent)
+    protected function determineEventHandlerMethodFor(AggregateChanged $e)
     {
-        $result = $this->getInternalEventSystem()->triggerUntil(
-            new DetermineEventHandler($this, $anAggregateChangedEvent),
-            function ($handlerMethod) {
-                return is_string($handlerMethod);
-            }
-        );
-
-        if (!$result->stopped() || ! method_exists($this, $result->last())) {
-            throw new NoHandlerFoundException(
-                sprintf(
-                    "Can not determine appropriate event handler method of aggregate %s for event %s",
-                    get_class($this),
-                    get_class($anAggregateChangedEvent)
-                )
-            );
-        }
-
-        return $result->last();
+        return 'when' . join('', array_slice(explode('\\', get_class($e)), -1));
     }
 }
