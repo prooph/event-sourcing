@@ -9,25 +9,24 @@
  * Date: 18.04.14 - 00:03
  */
 
-namespace Prooph\EventSourcingTest\EventSourcing;
+namespace Prooph\EventSourcingTest;
 
 use Prooph\EventSourcingTest\Mock\User;
-use Prooph\EventSourcingTest\TestCase;
 
 /**
- * Class EventSourcedAggregateRootTest
+ * Class AggregateRootTest
  *
  * @package Prooph\EventSourcingTest\EventSourcing
  * @author Alexander Miertsch <contact@prooph.de>
  */
-class EventSourcedAggregateRootTest extends TestCase
+class AggregateRootTest extends TestCase
 {
     /**
      * @test
      */
     public function it_applies_event_by_calling_appropriate_event_handler()
     {
-        $user = new User('John');
+        $user = User::nameNew('John');
 
         $this->assertEquals('John', $user->name());
 
@@ -35,7 +34,7 @@ class EventSourcedAggregateRootTest extends TestCase
 
         $this->assertEquals('Max', $user->name());
 
-        $pendingEvents = $user->accessPendingEvents();
+        $pendingEvents = $user->accessRecordedEvents();
 
         $this->assertEquals(2, count($pendingEvents));
 
@@ -55,15 +54,15 @@ class EventSourcedAggregateRootTest extends TestCase
      */
     public function it_reconstructs_itself_from_history()
     {
-        $user = new User('John');
+        $user = User::nameNew('John');
 
         $this->assertEquals('John', $user->name());
 
         $user->changeName('Max');
 
-        $historyEvents = $user->accessPendingEvents();
+        $historyEvents = $user->accessRecordedEvents();
 
-        $sameUser = User::fromHistory($user->id(), $historyEvents);
+        $sameUser = User::fromHistory($historyEvents);
 
         $this->assertEquals($user->id(), $sameUser->id());
         $this->assertEquals($user->name(), $sameUser->name());
@@ -74,15 +73,15 @@ class EventSourcedAggregateRootTest extends TestCase
      */
     public function it_clears_pending_events_after_returning_them()
     {
-        $user = new User('John');
+        $user = User::nameNew('John');
 
-        $pendingEvents = $user->accessPendingEvents();
+        $recordedEvens = $user->accessRecordedEvents();
 
-        $this->assertEquals(1, count($pendingEvents));
+        $this->assertEquals(1, count($recordedEvens));
 
-        $pendingEvents = $user->accessPendingEvents();
+        $recordedEvens = $user->accessRecordedEvents();
 
-        $this->assertEquals(0, count($pendingEvents));
+        $this->assertEquals(0, count($recordedEvens));
     }
 }
  

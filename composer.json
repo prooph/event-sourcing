@@ -28,11 +28,17 @@
     },
     "require-dev": {
         "phpunit/phpunit": "3.7.*",
-        "prooph/event-store" : "dev-0.5-dev"
+        "prooph/event-store" : "dev-0.5-dev",
+        "satooshi/php-coveralls": "dev-master"
     },
     "autoload": {
         "psr-0": { 
-            "Prooph\\EventSourcing\\": "src/",
+            "Prooph\\EventSourcing\\": "src/"
+
+        }
+    },
+    "autoload-dev": {
+        "psr-0": {
             "Prooph\\EventSourcingTest\\": "tests/"
         }
     }

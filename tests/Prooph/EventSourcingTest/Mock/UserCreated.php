@@ -11,7 +11,7 @@
 
 namespace Prooph\EventSourcingTest\Mock;
 
-use Prooph\EventSourcing\DomainEvent\AggregateChangedEvent;
+use Prooph\EventSourcing\AggregateChanged;
 
 /**
  * Class UserCreated
@@ -19,7 +19,7 @@ use Prooph\EventSourcing\DomainEvent\AggregateChangedEvent;
  * @package Prooph\EventStoreTest\Mock
  * @author Alexander Miertsch <contact@prooph.de>
  */
-class UserCreated extends AggregateChangedEvent
+class UserCreated extends AggregateChanged
 {
     /**
      * @return string

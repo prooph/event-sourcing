@@ -9,25 +9,24 @@
  * Date: 17.04.14 - 21:45
  */
 
-namespace Prooph\EventSourcingTest\EventSourcing;
+namespace Prooph\EventSourcingTest;
 
-use Prooph\EventSourcing\DomainEvent\AggregateChangedEvent;
-use Prooph\EventSourcingTest\TestCase;
+use Prooph\EventSourcing\AggregateChanged;
 
 /**
- * Class AggregateChangedEventTest
+ * Class AggregateChangedTest
  *
  * @package Prooph\EventSourcingTest\EventSourcing
  * @author Alexander Miertsch <contact@prooph.de>
  */
-class AggregateChangedEventTest extends TestCase
+class AggregateChangedTest extends TestCase
 {
     /**
      * @test
      */
     public function it_has_a_new_uuid_after_construct()
     {
-        $event = new AggregateChangedEvent(1, array());
+        $event = AggregateChanged::occur('1', array());
 
         $this->assertInstanceOf('Rhumsaa\Uuid\Uuid', $event->uuid());
     }
@@ -37,7 +36,7 @@ class AggregateChangedEventTest extends TestCase
      */
     public function it_references_an_aggregate()
     {
-        $event = new AggregateChangedEvent(1, array());
+        $event = AggregateChanged::occur('1', array());
 
         $this->assertEquals(1, $event->aggregateId());
     }
@@ -47,9 +46,9 @@ class AggregateChangedEventTest extends TestCase
      */
     public function it_has_an_occurred_on_datetime_after_construct()
     {
-        $event = new AggregateChangedEvent(1, array());
+        $event = AggregateChanged::occur('1', array());
 
-        $this->assertInstanceOf('ValueObjects\DateTime\DateTime', $event->occurredOn());
+        $this->assertInstanceOf('\DateTime', $event->occurredOn());
     }
 
     /**
@@ -59,7 +58,7 @@ class AggregateChangedEventTest extends TestCase
     {
         $payload = array('test payload');
 
-        $event = new AggregateChangedEvent(1, $payload);
+        $event = AggregateChanged::occur('1', $payload);
 
         $this->assertEquals($payload, $event->payload());
     }
@@ -69,9 +68,35 @@ class AggregateChangedEventTest extends TestCase
      */
     public function it_returns_an_array_reader_with_the_populated_payload()
     {
-        $event = new AggregateChangedEvent(1, array('key' => 'value'));
+        $event = AggregateChanged::occur('1', array('key' => 'value'));
 
         $this->assertEquals('value', $event->toPayloadReader()->stringValue('key'));
+    }
+
+    /**
+     * @test
+     */
+    public function it_can_track_aggregate_version()
+    {
+        $event = AggregateChanged::occur('1', array('key' => 'value'));
+
+        $event->trackVersion(2);
+
+        $this->assertEquals(2, $event->version());
+    }
+
+    /**
+     * @test
+     */
+    public function it_only_tracks_version_once()
+    {
+        $event = AggregateChanged::occur('1', array('key' => 'value'));
+
+        $event->trackVersion(2);
+
+        $this->setExpectedException('\BadMethodCallException');
+
+        $event->trackVersion(3);
     }
 }
  

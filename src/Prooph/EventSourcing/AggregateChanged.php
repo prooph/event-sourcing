@@ -47,6 +47,11 @@ class AggregateChanged implements DomainEvent
     protected $occurredOn;
 
     /**
+     * @var ArrayReader
+     */
+    private $payloadReader;
+
+    /**
      * @param string $aggregateId
      * @param array $payload
      * @return static
@@ -170,7 +175,11 @@ class AggregateChanged implements DomainEvent
      */
     public function toPayloadReader()
     {
-        return new ArrayReader($this->payload());
+        if (is_null($this->payloadReader)) {
+            $this->payloadReader = new ArrayReader($this->payload());
+        }
+
+        return $this->payloadReader;
     }
 
     /**

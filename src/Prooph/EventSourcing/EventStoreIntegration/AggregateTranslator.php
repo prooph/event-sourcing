@@ -71,9 +71,9 @@ class AggregateTranslator implements AggregateTranslatorInterface
      */
     public function extractPendingStreamEvents($anEventSourcedAggregateRoot)
     {
-        $aggregateChangedEvents = $this->aggregateRootDecorator->extractRecordedEvents($anEventSourcedAggregateRoot);
+        $aggregateChangedEvents = $this->getAggregateRootDecorator()->extractRecordedEvents($anEventSourcedAggregateRoot);
 
-        return $this->eventHydrator->toStreamEvents($aggregateChangedEvents);
+        return $this->getEventHydrator()->toStreamEvents($aggregateChangedEvents);
     }
 
     /**

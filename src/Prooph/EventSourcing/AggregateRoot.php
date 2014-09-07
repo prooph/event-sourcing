@@ -33,11 +33,14 @@ abstract class AggregateRoot
 
     /**
      * @param AggregateChanged[] $historyEvents
+     * @return static
      */
     protected static function reconstituteFromHistory(array $historyEvents)
     {
         $instance = new static();
         $instance->replay($historyEvents);
+
+        return $instance;
     }
 
     /**
