@@ -4,7 +4,7 @@ ProophEventSourcing
 Simple and lightweight event sourcing library with out of the box support for [ProophEventStore](https://github.com/prooph/event-store)
 
 [![Build Status](https://travis-ci.org/prooph/event-sourcing.svg?branch=master)](https://travis-ci.org/prooph/event-sourcing)
-[![Coverage Status](https://coveralls.io/repos/prooph/event-sourcing/badge.png)](https://coveralls.io/r/prooph/event-sourcing)
+[![Coverage Status](https://img.shields.io/coveralls/prooph/event-sourcing.svg)](https://coveralls.io/r/prooph/event-sourcing?branch=master)
 
 #Used Third-Party Libraries
 
