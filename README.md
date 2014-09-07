@@ -19,7 +19,7 @@ with the bundled [AggregateRoot](https://github.com/prooph/event-sourcing/blob/m
 
 #Example Usage
 
-Our [quickstart](https://github.com/prooph/event-sourcing/blob/master/src/Prooph/EventSourcing/examples/quickstart.php) should give you a starting point.
+Our [quickstart](https://github.com/prooph/event-sourcing/blob/master/examples/quickstart.php) should give you a starting point.
 It's a very small domain but shows you the useage of ProophEventSourcing and the integration with ProophEventStore.
 
 
