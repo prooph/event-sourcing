@@ -6,7 +6,7 @@ Simple and lightweight event sourcing library with out of the box support for [P
 [![Build Status](https://travis-ci.org/prooph/event-sourcing.svg?branch=master)](https://travis-ci.org/prooph/event-sourcing)
 [![Coverage Status](https://img.shields.io/coveralls/prooph/event-sourcing.svg)](https://coveralls.io/r/prooph/event-sourcing?branch=master)
 
-#About Prooph
+#About Prooph Software
 
 Prooph is the organisation behind [gingerframework](https://github.com/gingerframework/gingerframework) - a workflow framework written in PHP.
 The founder and lead developer is [codeliner](https://github.com/codeliner). Prooph provides CQRS+ES infrastructure components for the gingerframework.
