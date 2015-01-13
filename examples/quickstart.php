@@ -210,11 +210,13 @@ namespace My\Infrastructure {
     {
         public function __construct(EventStore $eventStore)
         {
-            //We assign the AggregateType for which our repository is responsible for
-            $this->aggregateType = new AggregateType('My\Model\User');
-
             //We inject a Prooph\EventSourcing\EventStoreIntegration\AggregateTranslator that can handle our AggregateRoots
-            parent::__construct($eventStore, new AggregateTranslator(), new AggregateStreamStrategy($eventStore));
+            parent::__construct(
+                $eventStore,
+                new AggregateTranslator(),
+                new AggregateStreamStrategy($eventStore),
+                AggregateType::fromAggregateRootClass('My\Model\User')
+            );
         }
 
         /**
@@ -231,7 +233,7 @@ namespace My\Infrastructure {
          */
         public function get(Uuid $uuid)
         {
-            return $this->getAggregateRoot($this->aggregateType, $uuid->toString());
+            return $this->getAggregateRoot($uuid->toString());
         }
     }
 }
