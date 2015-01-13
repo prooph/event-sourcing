@@ -75,7 +75,7 @@ class AggregateTranslatorTest extends TestCase
 
         $this->resetRepository();
 
-        $loadedUser = $this->repository->getAggregateRoot(new AggregateType(get_class($user)), $user->id());
+        $loadedUser = $this->repository->getAggregateRoot($user->id());
 
         $this->assertEquals('Max Mustermann', $loadedUser->name());
     }
@@ -85,7 +85,8 @@ class AggregateTranslatorTest extends TestCase
         $this->repository = new AggregateRepository(
             $this->eventStore,
             new AggregateTranslator(),
-            new SingleStreamStrategy($this->eventStore)
+            new SingleStreamStrategy($this->eventStore),
+            AggregateType::fromAggregateRootClass('Prooph\EventSourcingTest\Mock\User')
         );
     }
 }
