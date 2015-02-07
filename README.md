@@ -27,6 +27,11 @@ It's a very small domain but shows you the useage of ProophEventSourcing and the
 ProophEventSourcing ships with a [ProophEventStore](https://github.com/prooph/event-store) AggregateTranslator to connect the store
 with the bundled [AggregateRoot](https://github.com/prooph/event-sourcing/blob/master/src/Prooph/EventSourcing/AggregateRoot.php).
 
+# Support
+
+- Ask any questions on [prooph-users](https://groups.google.com/forum/?hl=de#!forum/prooph) google group.
+- File issues at [https://github.com/prooph/event-sourcing/issues](https://github.com/prooph/event-sourcing/issues).
+
 #Used Third-Party Libraries
 
 - Uuids of the AggregateChangedEvents are generated with [rhumsaa/uuid](https://github.com/ramsey/uuid)
