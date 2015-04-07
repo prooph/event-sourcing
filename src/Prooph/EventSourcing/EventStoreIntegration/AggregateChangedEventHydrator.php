@@ -11,6 +11,7 @@
 
 namespace Prooph\EventSourcing\EventStoreIntegration;
 
+use Assert\Assertion;
 use Prooph\EventSourcing\AggregateChanged;
 use Prooph\EventStore\Stream\EventId;
 use Prooph\EventStore\Stream\EventName;
@@ -31,7 +32,7 @@ class AggregateChangedEventHydrator implements EventHydratorInterface
      */
     public function toStreamEvents(array $aggregateChangedEvents)
     {
-        \Assert\that($aggregateChangedEvents)->all()->isInstanceOf('Prooph\EventSourcing\AggregateChanged');
+        Assertion::allIsInstanceOf($aggregateChangedEvents, 'Prooph\EventSourcing\AggregateChanged');
 
         $streamEvents = array();
 

@@ -8,6 +8,7 @@
  */
 namespace Prooph\EventSourcing;
 
+use Assert\Assertion;
 use Codeliner\ArrayReader\ArrayReader;
 use Rhumsaa\Uuid\Uuid;
 
@@ -149,7 +150,7 @@ class AggregateChanged implements DomainEvent
      */
     protected function setVersion($version)
     {
-        \Assert\that($version)->integer();
+        Assertion::integer($version);
 
         $this->version = $version;
     }
@@ -187,7 +188,8 @@ class AggregateChanged implements DomainEvent
      */
     protected function setAggregateId($aggregateId)
     {
-        \Assert\that($aggregateId)->notEmpty()->string();
+        Assertion::string($aggregateId);
+        Assertion::notEmpty($aggregateId);
 
         $this->aggregateId = $aggregateId;
     }
