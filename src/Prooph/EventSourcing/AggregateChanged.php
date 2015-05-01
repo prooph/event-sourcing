@@ -9,8 +9,7 @@
 namespace Prooph\EventSourcing;
 
 use Assert\Assertion;
-use Codeliner\ArrayReader\ArrayReader;
-use Rhumsaa\Uuid\Uuid;
+use Prooph\Common\Messaging\DomainEvent;
 
 /**
  * AggregateChanged
@@ -18,39 +17,12 @@ use Rhumsaa\Uuid\Uuid;
  * @author Alexander Miertsch <contact@prooph.de>
  * @package Prooph\EventSourcing
  */
-class AggregateChanged implements DomainEvent
+class AggregateChanged extends DomainEvent
 {
     /**
-     * @var Uuid
-     */
-    protected $uuid;
-
-    /**
-     * @var mixed
+     * @var string
      */
     protected $aggregateId;
-
-    /**
-     * This property is injected via Reflection
-     *
-     * @var int
-     */
-    protected $version;
-
-    /**
-     * @var array
-     */
-    protected $payload;
-
-    /**
-     * @var \DateTime
-     */
-    protected $occurredOn;
-
-    /**
-     * @var ArrayReader
-     */
-    private $payloadReader;
 
     /**
      * @param string $aggregateId
@@ -59,47 +31,12 @@ class AggregateChanged implements DomainEvent
      */
     public static function occur($aggregateId, array $payload)
     {
-        return new static($aggregateId, $payload);
-    }
+        $instance = new static(__CLASS__, $payload, 1, null, null, ['aggregate_id' => $aggregateId]);
 
-    /**
-     * @param string $aggregateId
-     * @param array $payload
-     * @param Uuid $uuid
-     * @param \DateTime $occurredOn
-     * @param $version
-     * @return static
-     */
-    public static function reconstitute($aggregateId, array $payload, Uuid $uuid, \DateTime $occurredOn, $version)
-    {
-        return new static($aggregateId, $payload, $uuid, $occurredOn, $version);
-    }
+        //We reset version here, because the AggregateTranslator will inject the version of the aggregate via method trackVersion
+        $instance->version = null;
 
-    /**
-     * @param string $aggregateId
-     * @param array $payload
-     * @param Uuid $uuid
-     * @param \DateTime $occurredOn
-     * @param null|int $version
-     */
-    protected function __construct($aggregateId, array $payload, Uuid $uuid = null, \DateTime $occurredOn = null, $version = null)
-    {
-        if (is_null($uuid)) {
-            $uuid = Uuid::uuid4();
-        }
-
-        if (is_null($occurredOn)) {
-            $occurredOn = new \DateTime();
-        }
-
-        $this->setAggregateId($aggregateId);
-        $this->payload     = $payload;
-        $this->uuid        = $uuid;
-        $this->occurredOn  = $occurredOn;
-
-        if (! is_null($version)) {
-            $this->setVersion($version);
-        }
+        return $instance;
     }
 
     /**
@@ -107,23 +44,7 @@ class AggregateChanged implements DomainEvent
      */
     public function aggregateId()
     {
-        return $this->aggregateId;
-    }
-
-    /**
-     * @return Uuid
-     */
-    public function uuid()
-    {
-        return $this->uuid;
-    }
-
-    /**
-     * @return int
-     */
-    public function version()
-    {
-        return $this->version;
+        return $this->metadata['aggregate_id'];
     }
 
     /**
@@ -156,34 +77,6 @@ class AggregateChanged implements DomainEvent
     }
 
     /**
-     * @return \DateTime
-     */
-    public function occurredOn()
-    {
-        return $this->occurredOn;
-    }
-
-    /**
-     * @return array
-     */
-    public function payload()
-    {
-        return $this->payload;
-    }
-
-    /**
-     * @return ArrayReader
-     */
-    public function toPayloadReader()
-    {
-        if (is_null($this->payloadReader)) {
-            $this->payloadReader = new ArrayReader($this->payload());
-        }
-
-        return $this->payloadReader;
-    }
-
-    /**
      * @param string $aggregateId
      */
     protected function setAggregateId($aggregateId)
@@ -191,6 +84,6 @@ class AggregateChanged implements DomainEvent
         Assertion::string($aggregateId);
         Assertion::notEmpty($aggregateId);
 
-        $this->aggregateId = $aggregateId;
+        $this->metadata['aggregate_id'] = $aggregateId;
     }
 }

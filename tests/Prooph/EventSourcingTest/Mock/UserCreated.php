@@ -26,7 +26,7 @@ class UserCreated extends AggregateChanged
      */
     public function userId()
     {
-        return $this->toPayloadReader()->stringValue('id');
+        return $this->payload['id'];
     }
 
     /**
@@ -34,7 +34,7 @@ class UserCreated extends AggregateChanged
      */
     public function name()
     {
-        return $this->toPayloadReader()->stringValue('name');
+        return $this->payload['name'];
     }
 }
  

@@ -26,7 +26,7 @@ class UserNameChanged extends AggregateChanged
      */
     public function newUsername()
     {
-        return $this->toPayloadReader()->stringValue('username');
+        return $this->payload['username'];
     }
 }
  

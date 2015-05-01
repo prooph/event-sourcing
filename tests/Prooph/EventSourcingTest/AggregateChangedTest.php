@@ -48,7 +48,7 @@ class AggregateChangedTest extends TestCase
     {
         $event = AggregateChanged::occur('1', array());
 
-        $this->assertInstanceOf('\DateTime', $event->occurredOn());
+        $this->assertInstanceOf('\DateTimeImmutable', $event->createdAt());
     }
 
     /**
@@ -61,16 +61,6 @@ class AggregateChangedTest extends TestCase
         $event = AggregateChanged::occur('1', $payload);
 
         $this->assertEquals($payload, $event->payload());
-    }
-
-    /**
-     * @test
-     */
-    public function it_returns_an_array_reader_with_the_populated_payload()
-    {
-        $event = AggregateChanged::occur('1', array('key' => 'value'));
-
-        $this->assertEquals('value', $event->toPayloadReader()->stringValue('key'));
     }
 
     /**

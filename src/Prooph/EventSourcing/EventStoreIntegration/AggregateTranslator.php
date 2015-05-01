@@ -11,9 +11,9 @@
 
 namespace Prooph\EventSourcing\EventStoreIntegration;
 
-use Prooph\EventStore\Aggregate\AggregateTranslatorInterface;
+use Prooph\Common\Messaging\DomainEvent;
 use Prooph\EventStore\Aggregate\AggregateType;
-use Prooph\EventStore\Stream\StreamEvent;
+use Prooph\EventStore\Aggregate\AggregateTranslator as EventStoreAggregateTranslator;
 
 /**
  * Class AggregateTranslator
@@ -21,17 +21,12 @@ use Prooph\EventStore\Stream\StreamEvent;
  * @package Prooph\EventSourcing\EventStoreIntegration
  * @author Alexander Miertsch <kontakt@codeliner.ws>
  */
-class AggregateTranslator implements AggregateTranslatorInterface
+class AggregateTranslator implements EventStoreAggregateTranslator
 {
     /**
      * @var AggregateRootDecorator
      */
     protected $aggregateRootDecorator;
-
-    /**
-     * @var EventHydratorInterface
-     */
-    protected $eventHydrator;
 
     /**
      * @param object $anEventSourcedAggregateRoot
@@ -44,15 +39,13 @@ class AggregateTranslator implements AggregateTranslatorInterface
 
     /**
      * @param AggregateType $aggregateType
-     * @param StreamEvent[] $historyEvents
+     * @param DomainEvent[] $historyEvents
      * @throws \RuntimeException
      * @return object reconstructed AggregateRoot
      */
     public function reconstituteAggregateFromHistory(AggregateType $aggregateType, array $historyEvents)
     {
-        $aggregateChangedEvents = $this->getEventHydrator()->toAggregateChangedEvents($historyEvents);
-
-        if (count($aggregateChangedEvents) === 0) {
+        if (count($historyEvents) === 0) {
             throw new \RuntimeException(
                 sprintf(
                     "Can not reconstitute Aggregate %s from history. No stream events given",
@@ -62,18 +55,16 @@ class AggregateTranslator implements AggregateTranslatorInterface
         }
 
         return $this->getAggregateRootDecorator()
-            ->fromHistory($aggregateType->toString(), $aggregateChangedEvents);
+            ->fromHistory($aggregateType->toString(), $historyEvents);
     }
 
     /**
      * @param object $anEventSourcedAggregateRoot
-     * @return StreamEvent[]
+     * @return DomainEvent[]
      */
     public function extractPendingStreamEvents($anEventSourcedAggregateRoot)
     {
-        $aggregateChangedEvents = $this->getAggregateRootDecorator()->extractRecordedEvents($anEventSourcedAggregateRoot);
-
-        return $this->getEventHydrator()->toStreamEvents($aggregateChangedEvents);
+        return $this->getAggregateRootDecorator()->extractRecordedEvents($anEventSourcedAggregateRoot);
     }
 
     /**
@@ -94,23 +85,6 @@ class AggregateTranslator implements AggregateTranslatorInterface
     public function setAggregateRootDecorator(AggregateRootDecorator $anAggregateRootDecorator)
     {
         $this->aggregateRootDecorator = $anAggregateRootDecorator;
-    }
-
-    /**
-     * @return EventHydratorInterface
-     */
-    public function getEventHydrator()
-    {
-        if (is_null($this->eventHydrator)) {
-            $this->eventHydrator = new AggregateChangedEventHydrator();
-        }
-
-        return $this->eventHydrator;
-    }
-
-    public function setEventHydrator(EventHydratorInterface $eventHydrator)
-    {
-        $this->eventHydrator = $eventHydrator;
     }
 }
  
