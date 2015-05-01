@@ -134,7 +134,7 @@ namespace My\Model {
          */
         public function username()
         {
-            return $this->toPayloadReader()->stringValue('name');
+            return $this->payload['name'];
         }
     }
 
@@ -153,7 +153,7 @@ namespace My\Model {
          */
         public function newName()
         {
-            return $this->toPayloadReader()->stringValue('new_name');
+            return $this->payload['new_name'];
         }
 
         /**
@@ -161,7 +161,7 @@ namespace My\Model {
          */
         public function oldName()
         {
-            return $this->toPayloadReader()->stringValue('old_name');
+            return $this->payload['old_name'];
         }
     }
 
@@ -265,12 +265,12 @@ namespace {
     $userRepository->add($user);
 
     //Before we commit the transaction let's attach a listener to check that the UserWasCreated event is published after commit
-    $eventStore->getPersistenceEvents()->attach('commit.post', function (PostCommitEvent $event) {
+    $eventStore->getActionEventDispatcher()->attachListener('commit.post', function (PostCommitEvent $event) {
         foreach ($event->getRecordedEvents() as $streamEvent) {
             echo sprintf(
                 "Event with name %s was recorded. It occurred on %s /// ",
-                $streamEvent->eventName()->toString(),
-                $streamEvent->occurredOn()->format('Y-m-d H:i:s')
+                $streamEvent->messageName(),
+                $streamEvent->createdAt()->format('Y-m-d H:i:s')
             );
         }
     });
