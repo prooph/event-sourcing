@@ -31,7 +31,7 @@ class AggregateChanged extends DomainEvent
      */
     public static function occur($aggregateId, array $payload)
     {
-        $instance = new static(__CLASS__, $payload, 1, null, null, ['aggregate_id' => $aggregateId]);
+        $instance = new static(get_called_class(), $payload, 1, null, null, ['aggregate_id' => $aggregateId]);
 
         //We reset version here, because the AggregateTranslator will inject the version of the aggregate via method trackVersion
         $instance->version = null;
