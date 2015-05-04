@@ -20,11 +20,6 @@ use Prooph\Common\Messaging\DomainEvent;
 class AggregateChanged extends DomainEvent
 {
     /**
-     * @var string
-     */
-    protected $aggregateId;
-
-    /**
      * @param string $aggregateId
      * @param array $payload
      * @return static
