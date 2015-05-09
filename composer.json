@@ -23,7 +23,8 @@
     "require": {
         "php": ">=5.5",
         "rhumsaa/uuid" : "~2.5",
-        "beberlei/assert": "~2.0"
+        "beberlei/assert": "~2.0",
+        "prooph/common": "~2.0"
     },
     "require-dev": {
         "phpunit/phpunit": "3.7.*",
