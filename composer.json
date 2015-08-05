@@ -12,33 +12,29 @@
         }
     ],
     "keywords": [
-        "php",
         "EventSourcing",
-        "library",
         "DDD",
-        "Domain-Driven Design",
-        "prooph",
-        "zf2"
+        "prooph"
     ],
     "require": {
         "php": ">=5.5",
         "ramsey/uuid" : "~2.8",
         "beberlei/assert": "~2.3",
-        "prooph/common": "~2.0"
+        "prooph/common": "~3.2"
     },
     "require-dev": {
-        "phpunit/phpunit": "3.7.*",
-        "prooph/event-store" : "dev-master",
+        "phpunit/phpunit": "~4.7",
+        "prooph/event-store" : "~5.0-beta",
         "satooshi/php-coveralls": "dev-master"
     },
     "autoload": {
-        "psr-0": { 
+        "psr-4": {
             "Prooph\\EventSourcing\\": "src/"
 
         }
     },
     "autoload-dev": {
-        "psr-0": {
+        "psr-4": {
             "Prooph\\EventSourcingTest\\": "tests/"
         }
     }

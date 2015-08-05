@@ -79,9 +79,7 @@ abstract class AggregateRoot
     {
         $this->version += 1;
 
-        $event->trackVersion($this->version);
-
-        $this->recordedEvents[] = $event;
+        $this->recordedEvents[] = $event->withVersion($this->version);
 
         $this->apply($event);
     }
