@@ -66,27 +66,14 @@ class AggregateChangedTest extends TestCase
     /**
      * @test
      */
-    public function it_can_track_aggregate_version()
+    public function it_can_track_aggregate_version_but_is_immutable()
     {
-        $event = AggregateChanged::occur('1', array('key' => 'value'));
+        $orgEvent = AggregateChanged::occur('1', array('key' => 'value'));
 
-        $event->trackVersion(2);
+        $newEvent = $orgEvent->withVersion(2);
 
-        $this->assertEquals(2, $event->version());
-    }
-
-    /**
-     * @test
-     */
-    public function it_only_tracks_version_once()
-    {
-        $event = AggregateChanged::occur('1', array('key' => 'value'));
-
-        $event->trackVersion(2);
-
-        $this->setExpectedException('\BadMethodCallException');
-
-        $event->trackVersion(3);
+        $this->assertEquals(0, $orgEvent->version());
+        $this->assertEquals(2, $newEvent->version());
     }
 }
  

@@ -242,10 +242,10 @@ namespace {
     //Set up an EventStore with an InMemoryAdapter (Only useful for testing, persistent adapters for ProophEventStore are available)
     use My\Infrastructure\UserRepositoryImpl;
     use My\Model\User;
+    use Prooph\Common\Event\ActionEvent;
     use Prooph\EventStore\Adapter\InMemoryAdapter;
     use Prooph\EventStore\Configuration\Configuration;
     use Prooph\EventStore\EventStore;
-    use Prooph\EventStore\PersistenceEvent\PostCommitEvent;
 
     $esConfig = new Configuration();
 
@@ -265,8 +265,8 @@ namespace {
     $userRepository->add($user);
 
     //Before we commit the transaction let's attach a listener to check that the UserWasCreated event is published after commit
-    $eventStore->getActionEventDispatcher()->attachListener('commit.post', function (PostCommitEvent $event) {
-        foreach ($event->getRecordedEvents() as $streamEvent) {
+    $eventStore->getActionEventEmitter()->attachListener('commit.post', function (ActionEvent $event) {
+        foreach ($event->getParam('recordedEvents', []) as $streamEvent) {
             echo sprintf(
                 "Event with name %s was recorded. It occurred on %s /// ",
                 $streamEvent->messageName(),
