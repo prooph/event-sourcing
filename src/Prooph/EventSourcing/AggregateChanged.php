@@ -13,7 +13,7 @@ use Prooph\Common\Messaging\DomainEvent;
 
 /**
  * AggregateChanged
- * 
+ *
  * @author Alexander Miertsch <contact@prooph.de>
  * @package Prooph\EventSourcing
  */

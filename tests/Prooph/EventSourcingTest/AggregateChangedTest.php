@@ -5,7 +5,7 @@
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
- * 
+ *
  * Date: 17.04.14 - 21:45
  */
 
@@ -26,7 +26,7 @@ class AggregateChangedTest extends TestCase
      */
     public function it_has_a_new_uuid_after_construct()
     {
-        $event = AggregateChanged::occur('1', array());
+        $event = AggregateChanged::occur('1', []);
 
         $this->assertInstanceOf('Rhumsaa\Uuid\Uuid', $event->uuid());
     }
@@ -36,7 +36,7 @@ class AggregateChangedTest extends TestCase
      */
     public function it_references_an_aggregate()
     {
-        $event = AggregateChanged::occur('1', array());
+        $event = AggregateChanged::occur('1', []);
 
         $this->assertEquals(1, $event->aggregateId());
     }
@@ -46,7 +46,7 @@ class AggregateChangedTest extends TestCase
      */
     public function it_has_an_occurred_on_datetime_after_construct()
     {
-        $event = AggregateChanged::occur('1', array());
+        $event = AggregateChanged::occur('1', []);
 
         $this->assertInstanceOf('\DateTimeImmutable', $event->createdAt());
     }
@@ -56,7 +56,7 @@ class AggregateChangedTest extends TestCase
      */
     public function it_has_assigned_payload_after_construct()
     {
-        $payload = array('test payload');
+        $payload = ['test payload'];
 
         $event = AggregateChanged::occur('1', $payload);
 
@@ -68,7 +68,7 @@ class AggregateChangedTest extends TestCase
      */
     public function it_can_track_aggregate_version()
     {
-        $event = AggregateChanged::occur('1', array('key' => 'value'));
+        $event = AggregateChanged::occur('1', ['key' => 'value']);
 
         $event->trackVersion(2);
 
@@ -80,7 +80,7 @@ class AggregateChangedTest extends TestCase
      */
     public function it_only_tracks_version_once()
     {
-        $event = AggregateChanged::occur('1', array('key' => 'value'));
+        $event = AggregateChanged::occur('1', ['key' => 'value']);
 
         $event->trackVersion(2);
 
@@ -89,4 +89,3 @@ class AggregateChangedTest extends TestCase
         $event->trackVersion(3);
     }
 }
- 
