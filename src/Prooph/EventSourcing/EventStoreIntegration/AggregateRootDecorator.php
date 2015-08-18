@@ -5,7 +5,7 @@
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
- * 
+ *
  * Date: 19.04.14 - 20:24
  */
 
@@ -70,4 +70,3 @@ class AggregateRootDecorator extends AggregateRoot
         throw new \BadMethodCallException("The AggregateRootDecorator does not have an id");
     }
 }
- 

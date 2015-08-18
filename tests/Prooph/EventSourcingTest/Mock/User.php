@@ -5,7 +5,7 @@
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
- * 
+ *
  * Date: 18.04.14 - 00:04
  */
 
@@ -38,7 +38,7 @@ class User extends AggregateRoot
         $id = Uuid::uuid4()->toString();
         $instance = new self();
 
-        $instance->recordThat(UserCreated::occur($id, array('id' => $id, 'name' => $name)));
+        $instance->recordThat(UserCreated::occur($id, ['id' => $id, 'name' => $name]));
 
         return $instance;
     }
@@ -64,7 +64,7 @@ class User extends AggregateRoot
      */
     public function changeName($newName)
     {
-        $this->recordThat(UserNameChanged::occur($this->id, array('username' => $newName)));
+        $this->recordThat(UserNameChanged::occur($this->id, ['username' => $newName]));
     }
 
     /**
@@ -108,4 +108,3 @@ class User extends AggregateRoot
         return $this->id();
     }
 }
- 
