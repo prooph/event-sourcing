@@ -11,6 +11,7 @@
 
 namespace Prooph\EventSourcingTest\EventStoreIntegration;
 
+use Prooph\EventSourcing\EventStoreIntegration\AggregateRootDecorator;
 use Prooph\EventSourcing\EventStoreIntegration\AggregateTranslator;
 use Prooph\EventSourcingTest\Mock\User;
 use Prooph\EventSourcingTest\TestCase;
@@ -78,6 +79,32 @@ class AggregateTranslatorTest extends TestCase
         $loadedUser = $this->repository->getAggregateRoot($user->id());
 
         $this->assertEquals('Max Mustermann', $loadedUser->name());
+    }
+
+    /**
+     * @test
+     */
+    public function it_can_use_custom_aggregate_root_decorator()
+    {
+        $mock = $this->getMock(AggregateRootDecorator::class, [], [], '', false);
+
+        $translator = new AggregateTranslator();
+        $translator->setAggregateRootDecorator($mock);
+
+        $this->assertSame($mock, $translator->getAggregateRootDecorator());
+    }
+
+    /**
+     * @test
+     * @expectedException RuntimeException
+     * @expectedExceptionMessage Can not reconstitute Aggregate Prooph\EventSourcingTest\Mock\User from history. No stream events given
+     */
+    public function it_cannot_reconstitute_from_history_without_stream_events()
+    {
+        $aggregateType = AggregateType::fromAggregateRootClass('Prooph\EventSourcingTest\Mock\User');
+
+        $translator = new AggregateTranslator();
+        $translator->reconstituteAggregateFromHistory($aggregateType, []);
     }
 
     protected function resetRepository()
