@@ -21,9 +21,12 @@ use Prooph\EventSourcing\AggregateRoot;
  */
 class AggregateRootDecorator extends AggregateRoot
 {
+    /**
+     * @return static
+     */
     public static function newInstance()
     {
-        return new self();
+        return new static();
     }
 
     /**
