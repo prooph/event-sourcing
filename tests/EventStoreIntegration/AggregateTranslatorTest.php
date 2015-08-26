@@ -6,7 +6,7 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  *
- * Date: 07.09.14 - 19:49
+ * Date: 09/07/14 - 19:49
  */
 
 namespace Prooph\EventSourcingTest\EventStoreIntegration;

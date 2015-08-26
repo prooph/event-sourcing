@@ -6,8 +6,9 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  *
- * Date: 07.09.14 - 20:11
+ * Date: 09/07/14 - 20:11
  */
+
 namespace {
     require_once __DIR__ . '/../vendor/autoload.php';
 }
