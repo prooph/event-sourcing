@@ -213,9 +213,9 @@ namespace My\Infrastructure {
             //We inject a Prooph\EventSourcing\EventStoreIntegration\AggregateTranslator that can handle our AggregateRoots
             parent::__construct(
                 $eventStore,
+                AggregateType::fromAggregateRootClass('My\Model\User'),
                 new AggregateTranslator(),
-                new AggregateStreamStrategy($eventStore),
-                AggregateType::fromAggregateRootClass('My\Model\User')
+                new AggregateStreamStrategy($eventStore)
             );
         }
 
@@ -243,15 +243,11 @@ namespace {
     use My\Infrastructure\UserRepositoryImpl;
     use My\Model\User;
     use Prooph\Common\Event\ActionEvent;
+    use Prooph\Common\Event\ProophActionEventEmitter;
     use Prooph\EventStore\Adapter\InMemoryAdapter;
-    use Prooph\EventStore\Configuration\Configuration;
     use Prooph\EventStore\EventStore;
 
-    $esConfig = new Configuration();
-
-    $esConfig->setAdapter(new InMemoryAdapter());
-
-    $eventStore = new EventStore($esConfig);
+    $eventStore = new EventStore(new InMemoryAdapter(), new ProophActionEventEmitter());
 
     //Now we set up our user repository and inject the EventStore
     //Normally this should be done in an IoC-Container and the receiver of the repository should require My\Model\UserRepository
