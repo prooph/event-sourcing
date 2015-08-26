@@ -5,7 +5,7 @@
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
- * 
+ *
  * Date: 07.09.14 - 19:49
  */
 
@@ -48,7 +48,7 @@ class AggregateTranslatorTest extends TestCase
 
         $this->eventStore->beginTransaction();
 
-        $this->eventStore->create(new Stream(new StreamName('event_stream'), array()));
+        $this->eventStore->create(new Stream(new StreamName('event_stream'), []));
 
         $this->eventStore->commit();
 
@@ -113,4 +113,3 @@ class AggregateTranslatorTest extends TestCase
         );
     }
 }
- 

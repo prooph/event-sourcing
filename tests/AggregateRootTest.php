@@ -5,7 +5,7 @@
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
- * 
+ *
  * Date: 18.04.14 - 00:03
  */
 
@@ -95,4 +95,3 @@ class AggregateRootTest extends TestCase
         $this->assertEquals(0, count($recordedEvens));
     }
 }
- 
