@@ -5,9 +5,10 @@
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
- * 
- * Date: 07.09.14 - 20:11
+ *
+ * Date: 09/07/14 - 20:11
  */
+
 namespace {
     require_once __DIR__ . '/../vendor/autoload.php';
 }
@@ -49,7 +50,7 @@ namespace My\Model {
             $instance = new self();
 
             //Use AggregateRoot::recordThat method to apply a new Event
-            $instance->recordThat(UserWasCreated::occur($uuid->toString(), array('name' => $username)));
+            $instance->recordThat(UserWasCreated::occur($uuid->toString(), ['name' => $username]));
 
             return $instance;
         }
@@ -80,7 +81,7 @@ namespace My\Model {
             if ($newName != $this->name) {
                 $this->recordThat(UserWasRenamed::occur(
                     $this->uuid->toString(),
-                    array('new_name' => $newName, 'old_name' => $this->name)
+                    ['new_name' => $newName, 'old_name' => $this->name]
                 ));
             }
         }
@@ -97,7 +98,6 @@ namespace My\Model {
             //Simply assign the event payload to the appropriate properties
             $this->uuid = Uuid::fromString($event->aggregateId());
             $this->name = $event->username();
-
         }
 
         /**
@@ -213,9 +213,9 @@ namespace My\Infrastructure {
             //We inject a Prooph\EventSourcing\EventStoreIntegration\AggregateTranslator that can handle our AggregateRoots
             parent::__construct(
                 $eventStore,
+                AggregateType::fromAggregateRootClass('My\Model\User'),
                 new AggregateTranslator(),
-                new AggregateStreamStrategy($eventStore),
-                AggregateType::fromAggregateRootClass('My\Model\User')
+                new AggregateStreamStrategy($eventStore)
             );
         }
 
@@ -243,15 +243,11 @@ namespace {
     use My\Infrastructure\UserRepositoryImpl;
     use My\Model\User;
     use Prooph\Common\Event\ActionEvent;
+    use Prooph\Common\Event\ProophActionEventEmitter;
     use Prooph\EventStore\Adapter\InMemoryAdapter;
-    use Prooph\EventStore\Configuration\Configuration;
     use Prooph\EventStore\EventStore;
 
-    $esConfig = new Configuration();
-
-    $esConfig->setAdapter(new InMemoryAdapter());
-
-    $eventStore = new EventStore($esConfig);
+    $eventStore = new EventStore(new InMemoryAdapter(), new ProophActionEventEmitter());
 
     //Now we set up our user repository and inject the EventStore
     //Normally this should be done in an IoC-Container and the receiver of the repository should require My\Model\UserRepository
@@ -268,7 +264,7 @@ namespace {
     $eventStore->getActionEventEmitter()->attachListener('commit.post', function (ActionEvent $event) {
         foreach ($event->getParam('recordedEvents', []) as $streamEvent) {
             echo sprintf(
-                "Event with name %s was recorded. It occurred on %s /// ",
+                "Event with name %s was recorded. It occurred on %s UTC /// ",
                 $streamEvent->messageName(),
                 $streamEvent->createdAt()->format('Y-m-d H:i:s')
             );

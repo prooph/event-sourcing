@@ -25,6 +25,7 @@
     "require-dev": {
         "phpunit/phpunit": "~4.7",
         "prooph/event-store" : "~5.0-beta",
+        "fabpot/php-cs-fixer": "1.7.*",
         "satooshi/php-coveralls": "dev-master"
     },
     "autoload": {

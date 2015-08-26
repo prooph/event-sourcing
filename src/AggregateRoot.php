@@ -5,12 +5,15 @@
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
+ *
+ * Date: 06/06/14 - 20:14
  */
+
 namespace Prooph\EventSourcing;
 
 /**
  * AggregateRoot
- * 
+ *
  * @author Alexander Miertsch <contact@prooph.de>
  *
  * @package Prooph\EventSourcing
@@ -19,17 +22,17 @@ abstract class AggregateRoot
 {
     /**
      * Current version
-     * 
-     * @var float 
+     *
+     * @var float
      */
     protected $version = 0;
-    
+
     /**
      * List of events that are not committed to the EventStore
-     * 
+     *
      * @var AggregateChanged[]
      */
-    protected $recordedEvents = array();
+    protected $recordedEvents = [];
 
     /**
      * @param AggregateChanged[] $historyEvents
@@ -58,15 +61,15 @@ abstract class AggregateRoot
 
     /**
      * Get pending events and reset stack
-     * 
+     *
      * @return AggregateChanged[]
      */
     protected function popRecordedEvents()
     {
         $pendingEvents = $this->recordedEvents;
-        
-        $this->recordedEvents = array();
-        
+
+        $this->recordedEvents = [];
+
         return $pendingEvents;
     }
 
@@ -118,7 +121,7 @@ abstract class AggregateRoot
                 get_class($this)
             ));
         }
-        
+
         $this->{$handler}($e);
     }
 
@@ -131,6 +134,6 @@ abstract class AggregateRoot
      */
     protected function determineEventHandlerMethodFor(AggregateChanged $e)
     {
-        return 'when' . join('', array_slice(explode('\\', get_class($e)), -1));
+        return 'when' . implode('', array_slice(explode('\\', get_class($e)), -1));
     }
 }

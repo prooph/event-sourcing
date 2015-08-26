@@ -5,8 +5,8 @@
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
- * 
- * Date: 17.04.14 - 21:45
+ *
+ * Date: 04/17/14 - 21:45
  */
 
 namespace Prooph\EventSourcingTest;
@@ -26,7 +26,7 @@ class AggregateChangedTest extends TestCase
      */
     public function it_has_a_new_uuid_after_construct()
     {
-        $event = AggregateChanged::occur('1', array());
+        $event = AggregateChanged::occur('1', []);
 
         $this->assertInstanceOf('Rhumsaa\Uuid\Uuid', $event->uuid());
     }
@@ -36,7 +36,7 @@ class AggregateChangedTest extends TestCase
      */
     public function it_references_an_aggregate()
     {
-        $event = AggregateChanged::occur('1', array());
+        $event = AggregateChanged::occur('1', []);
 
         $this->assertEquals(1, $event->aggregateId());
     }
@@ -46,7 +46,7 @@ class AggregateChangedTest extends TestCase
      */
     public function it_has_an_occurred_on_datetime_after_construct()
     {
-        $event = AggregateChanged::occur('1', array());
+        $event = AggregateChanged::occur('1', []);
 
         $this->assertInstanceOf('\DateTimeImmutable', $event->createdAt());
     }
@@ -56,7 +56,7 @@ class AggregateChangedTest extends TestCase
      */
     public function it_has_assigned_payload_after_construct()
     {
-        $payload = array('test payload');
+        $payload = ['test payload'];
 
         $event = AggregateChanged::occur('1', $payload);
 
@@ -68,7 +68,7 @@ class AggregateChangedTest extends TestCase
      */
     public function it_can_track_aggregate_version_but_is_immutable()
     {
-        $orgEvent = AggregateChanged::occur('1', array('key' => 'value'));
+        $orgEvent = AggregateChanged::occur('1', ['key' => 'value']);
 
         $newEvent = $orgEvent->withVersion(2);
 
@@ -76,4 +76,3 @@ class AggregateChangedTest extends TestCase
         $this->assertEquals(2, $newEvent->version());
     }
 }
- 

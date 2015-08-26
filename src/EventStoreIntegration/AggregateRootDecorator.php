@@ -5,8 +5,8 @@
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
- * 
- * Date: 19.04.14 - 20:24
+ *
+ * Date: 04/19/14 - 20:24
  */
 
 namespace Prooph\EventSourcing\EventStoreIntegration;
@@ -21,9 +21,12 @@ use Prooph\EventSourcing\AggregateRoot;
  */
 class AggregateRootDecorator extends AggregateRoot
 {
+    /**
+     * @return static
+     */
     public static function newInstance()
     {
-        return new self();
+        return new static();
     }
 
     /**
@@ -70,4 +73,3 @@ class AggregateRootDecorator extends AggregateRoot
         throw new \BadMethodCallException("The AggregateRootDecorator does not have an id");
     }
 }
- 
