@@ -11,6 +11,7 @@
 
 namespace Prooph\EventSourcingTest\EventStoreIntegration;
 
+use Prooph\Common\Event\ProophActionEventEmitter;
 use Prooph\EventSourcing\EventStoreIntegration\AggregateRootDecorator;
 use Prooph\EventSourcing\EventStoreIntegration\AggregateTranslator;
 use Prooph\EventSourcingTest\Mock\User;
@@ -18,7 +19,6 @@ use Prooph\EventSourcingTest\TestCase;
 use Prooph\EventStore\Adapter\InMemoryAdapter;
 use Prooph\EventStore\Aggregate\AggregateRepository;
 use Prooph\EventStore\Aggregate\AggregateType;
-use Prooph\EventStore\Configuration\Configuration;
 use Prooph\EventStore\EventStore;
 use Prooph\EventStore\Stream\SingleStreamStrategy;
 use Prooph\EventStore\Stream\Stream;
@@ -44,11 +44,7 @@ class AggregateTranslatorTest extends TestCase
 
     protected function setUp()
     {
-        $esConfiguration = new Configuration();
-
-        $esConfiguration->setAdapter(new InMemoryAdapter());
-
-        $this->eventStore = new EventStore($esConfiguration);
+        $this->eventStore = new EventStore(new InMemoryAdapter(), new ProophActionEventEmitter());
 
         $this->eventStore->beginTransaction();
 
@@ -111,9 +107,9 @@ class AggregateTranslatorTest extends TestCase
     {
         $this->repository = new AggregateRepository(
             $this->eventStore,
+            AggregateType::fromAggregateRootClass('Prooph\EventSourcingTest\Mock\User'),
             new AggregateTranslator(),
-            new SingleStreamStrategy($this->eventStore),
-            AggregateType::fromAggregateRootClass('Prooph\EventSourcingTest\Mock\User')
+            new SingleStreamStrategy($this->eventStore)
         );
     }
 }
