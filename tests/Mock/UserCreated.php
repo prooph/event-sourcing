@@ -6,7 +6,7 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  *
- * Date: 18.04.14 - 00:29
+ * Date: 04/18/14 - 00:29
  */
 
 namespace Prooph\EventSourcingTest\Mock;

@@ -6,7 +6,7 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  *
- * Date: 18.04.14 - 00:04
+ * Date: 08/26/15 - 19:58
  */
 
 namespace Prooph\EventSourcingTest\Mock;
@@ -16,12 +16,12 @@ use Prooph\EventSourcing\AggregateRoot;
 use Rhumsaa\Uuid\Uuid;
 
 /**
- * Class User
+ * Class BrokenUser
  *
  * @package Prooph\EventStoreTest\Mock
  * @author Alexander Miertsch <contact@prooph.de>
  */
-class User extends AggregateRoot
+class BrokenUser extends AggregateRoot
 {
     /**
      * @var string
@@ -60,36 +60,11 @@ class User extends AggregateRoot
     }
 
     /**
-     * @param string $newName
-     */
-    public function changeName($newName)
-    {
-        $this->recordThat(UserNameChanged::occur($this->id, ['username' => $newName]));
-    }
-
-    /**
      * @return string
      */
     public function name()
     {
         return $this->name;
-    }
-
-    /**
-     * @param UserCreated $event
-     */
-    protected function whenUserCreated(UserCreated $event)
-    {
-        $this->id = $event->userId();
-        $this->name = $event->name();
-    }
-
-    /**
-     * @param UserNameChanged $event
-     */
-    protected function whenUsernameChanged(UserNameChanged $event)
-    {
-        $this->name = $event->newUsername();
     }
 
     /**

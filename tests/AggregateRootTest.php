@@ -6,11 +6,12 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  *
- * Date: 18.04.14 - 00:03
+ * Date: 04/18/14 - 00:03
  */
 
 namespace Prooph\EventSourcingTest;
 
+use Prooph\EventSourcingTest\Mock\BrokenUser;
 use Prooph\EventSourcingTest\Mock\User;
 
 /**
@@ -47,6 +48,16 @@ class AggregateRootTest extends TestCase
 
         $this->assertEquals('Max', $userNameChangedEvent->newUsername());
         $this->assertEquals(2, $userNameChangedEvent->version());
+    }
+
+    /**
+     * @test
+     * @expectedException RuntimeException
+     * @expectedExceptionMessage Missing event handler method whenUserCreated for aggregate root Prooph\EventSourcingTest\Mock\BrokenUser
+     */
+    public function it_throws_exception_when_no_handler_on_aggregate()
+    {
+        BrokenUser::nameNew('John');
     }
 
     /**

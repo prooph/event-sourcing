@@ -5,7 +5,10 @@
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
+ *
+ * Date: 06/06/14 - 20:14
  */
+
 namespace Prooph\EventSourcing;
 
 /**
@@ -79,9 +82,7 @@ abstract class AggregateRoot
     {
         $this->version += 1;
 
-        $event->trackVersion($this->version);
-
-        $this->recordedEvents[] = $event;
+        $this->recordedEvents[] = $event->withVersion($this->version);
 
         $this->apply($event);
     }

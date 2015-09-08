@@ -6,26 +6,26 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  *
- * Date: 18.04.14 - 00:08
+ * Date: 08/26/15 - 19:58
  */
 
 namespace Prooph\EventSourcingTest\Mock;
 
-use Prooph\EventSourcing\AggregateChanged;
+use Prooph\EventSourcing\EventStoreIntegration\AggregateRootDecorator;
 
 /**
- * Class UserNameChanged
- *
- * @package Prooph\EventStoreTest\Mock
- * @author Alexander Miertsch <contact@prooph.de>
+ * Class ExtendedAggregateRootDecorator
+ * @package Prooph\EventSourcingTest\Mock
  */
-class UserNameChanged extends AggregateChanged
+class ExtendedAggregateRootDecorator extends AggregateRootDecorator
 {
+
+
     /**
      * @return string
      */
-    public function newUsername()
+    public function getAggregateId()
     {
-        return $this->payload['username'];
+        return $this->aggregateId();
     }
 }
