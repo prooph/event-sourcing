@@ -48,7 +48,7 @@ class AggregateTranslatorTest extends TestCase
 
         $this->eventStore->beginTransaction();
 
-        $this->eventStore->create(new Stream(new StreamName('event_stream'), []));
+        $this->eventStore->create(new Stream(new StreamName('event_stream'), new \ArrayIterator([])));
 
         $this->eventStore->commit();
 
@@ -64,9 +64,13 @@ class AggregateTranslatorTest extends TestCase
 
         $user = User::nameNew('John Doe');
 
-        $user->changeName('Max Mustermann');
-
         $this->repository->addAggregateRoot($user);
+
+        $this->eventStore->commit();
+
+        $this->eventStore->beginTransaction();
+
+        $user->changeName('Max Mustermann');
 
         $this->eventStore->commit();
 
@@ -88,19 +92,6 @@ class AggregateTranslatorTest extends TestCase
         $translator->setAggregateRootDecorator($mock);
 
         $this->assertSame($mock, $translator->getAggregateRootDecorator());
-    }
-
-    /**
-     * @test
-     * @expectedException RuntimeException
-     * @expectedExceptionMessage Can not reconstitute Aggregate Prooph\EventSourcingTest\Mock\User from history. No stream events given
-     */
-    public function it_cannot_reconstitute_from_history_without_stream_events()
-    {
-        $aggregateType = AggregateType::fromAggregateRootClass('Prooph\EventSourcingTest\Mock\User');
-
-        $translator = new AggregateTranslator();
-        $translator->reconstituteAggregateFromHistory($aggregateType, []);
     }
 
     protected function resetRepository()
