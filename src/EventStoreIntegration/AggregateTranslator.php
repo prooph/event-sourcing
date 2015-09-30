@@ -39,21 +39,11 @@ class AggregateTranslator implements EventStoreAggregateTranslator
 
     /**
      * @param AggregateType $aggregateType
-     * @param Message[] $historyEvents
-     * @throws \RuntimeException
+     * @param \Iterator $historyEvents
      * @return object reconstructed AggregateRoot
      */
-    public function reconstituteAggregateFromHistory(AggregateType $aggregateType, $historyEvents)
+    public function reconstituteAggregateFromHistory(AggregateType $aggregateType, \Iterator $historyEvents)
     {
-        if (count($historyEvents) === 0) {
-            throw new \RuntimeException(
-                sprintf(
-                    "Can not reconstitute Aggregate %s from history. No stream events given",
-                    $aggregateType->toString()
-                )
-            );
-        }
-
         return $this->getAggregateRootDecorator()
             ->fromHistory($aggregateType->toString(), $historyEvents);
     }
@@ -65,6 +55,15 @@ class AggregateTranslator implements EventStoreAggregateTranslator
     public function extractPendingStreamEvents($anEventSourcedAggregateRoot)
     {
         return $this->getAggregateRootDecorator()->extractRecordedEvents($anEventSourcedAggregateRoot);
+    }
+
+    /**
+     * @param object $anEventSourcedAggregateRoot
+     * @param Message[] $events
+     */
+    public function applyPendingStreamEvents($anEventSourcedAggregateRoot, array $events)
+    {
+        $this->getAggregateRootDecorator()->applyPendingStreamEvents($anEventSourcedAggregateRoot, $events);
     }
 
     /**

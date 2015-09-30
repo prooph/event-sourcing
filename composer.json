@@ -27,8 +27,8 @@
         "prooph/common": "~3.5"
     },
     "require-dev": {
-        "phpunit/phpunit": "~4.7",
-        "prooph/event-store" : "dev-master",
+        "phpunit/phpunit": "~4.8",
+        "prooph/event-store" : "dev-develop",
         "fabpot/php-cs-fixer": "1.7.*",
         "satooshi/php-coveralls": "dev-master"
     },
@@ -37,6 +37,9 @@
             "Prooph\\EventSourcing\\": "src/"
 
         }
+    },
+    "suggest" : {
+        "prooph/event-store" : "^6.0 - Use prooph/event-store to persist recorded events in event streams"
     },
     "autoload-dev": {
         "psr-4": {

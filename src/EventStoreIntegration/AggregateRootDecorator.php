@@ -11,6 +11,7 @@
 
 namespace Prooph\EventSourcing\EventStoreIntegration;
 
+use Prooph\EventSourcing\AggregateChanged;
 use Prooph\EventSourcing\AggregateRoot;
 
 /**
@@ -49,11 +50,11 @@ class AggregateRootDecorator extends AggregateRoot
 
     /**
      * @param string $arClass
-     * @param array $aggregateChangedEvents
+     * @param \Iterator $aggregateChangedEvents
      * @return AggregateRoot
      * @throws \RuntimeException
      */
-    public function fromHistory($arClass, array $aggregateChangedEvents)
+    public function fromHistory($arClass, \Iterator $aggregateChangedEvents)
     {
         if (! class_exists($arClass)) {
             throw new \RuntimeException(
@@ -62,6 +63,17 @@ class AggregateRootDecorator extends AggregateRoot
         }
 
         return $arClass::reconstituteFromHistory($aggregateChangedEvents);
+    }
+
+    /**
+     * @param AggregateRoot $aggregateRoot
+     * @param AggregateChanged[] $events
+     */
+    public function applyPendingStreamEvents(AggregateRoot $aggregateRoot, array $events)
+    {
+        foreach ($events as $event) {
+            $aggregateRoot->apply($event);
+        }
     }
 
     /**

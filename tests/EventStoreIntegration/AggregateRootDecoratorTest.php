@@ -30,7 +30,7 @@ class AggregateRootDecoratorTest extends TestCase
     public function it_throws_exception_when_reconstitute_from_history_with_invalid_class()
     {
         $decorator = AggregateRootDecorator::newInstance();
-        $decorator->fromHistory('UnknownClass', []);
+        $decorator->fromHistory('UnknownClass', new \ArrayIterator([]));
     }
 
     /**
