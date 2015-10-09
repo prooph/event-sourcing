@@ -70,6 +70,9 @@ class AggregateTranslatorTest extends TestCase
 
         $this->eventStore->beginTransaction();
 
+        //Simulate a normal program flow by fetching the AR before modifying it
+        $user = $this->repository->getAggregateRoot($user->id());
+
         $user->changeName('Max Mustermann');
 
         $this->eventStore->commit();
