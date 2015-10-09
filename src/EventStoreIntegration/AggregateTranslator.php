@@ -11,6 +11,7 @@
 
 namespace Prooph\EventSourcing\EventStoreIntegration;
 
+use Iterator;
 use Prooph\Common\Messaging\Message;
 use Prooph\EventStore\Aggregate\AggregateType;
 use Prooph\EventStore\Aggregate\AggregateTranslator as EventStoreAggregateTranslator;
@@ -59,9 +60,9 @@ class AggregateTranslator implements EventStoreAggregateTranslator
 
     /**
      * @param object $anEventSourcedAggregateRoot
-     * @param Message[] $events
+     * @param Iterator $events
      */
-    public function applyPendingStreamEvents($anEventSourcedAggregateRoot, array $events)
+    public function applyPendingStreamEvents($anEventSourcedAggregateRoot, Iterator $events)
     {
         $this->getAggregateRootDecorator()->applyPendingStreamEvents($anEventSourcedAggregateRoot, $events);
     }

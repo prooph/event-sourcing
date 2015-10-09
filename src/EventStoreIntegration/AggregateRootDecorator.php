@@ -11,7 +11,7 @@
 
 namespace Prooph\EventSourcing\EventStoreIntegration;
 
-use Prooph\EventSourcing\AggregateChanged;
+use Iterator;
 use Prooph\EventSourcing\AggregateRoot;
 
 /**
@@ -67,9 +67,9 @@ class AggregateRootDecorator extends AggregateRoot
 
     /**
      * @param AggregateRoot $aggregateRoot
-     * @param AggregateChanged[] $events
+     * @param Iterator $events
      */
-    public function applyPendingStreamEvents(AggregateRoot $aggregateRoot, array $events)
+    public function applyPendingStreamEvents(AggregateRoot $aggregateRoot, Iterator $events)
     {
         foreach ($events as $event) {
             $aggregateRoot->apply($event);
