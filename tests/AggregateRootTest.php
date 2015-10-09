@@ -38,7 +38,7 @@ class AggregateRootTest extends TestCase
         //In between would be the process of persisting recorded events to an event stream
         //Only if this was successful the events can be applied to the aggregate root
         //We skip the persistence process here and apply the events directly
-        $decorator->applyPendingStreamEvents($user, $recordedEvents);
+        $decorator->applyPendingStreamEvents($user, new \ArrayIterator($recordedEvents));
 
         $this->assertEquals('John', $user->name());
 
@@ -46,7 +46,7 @@ class AggregateRootTest extends TestCase
 
         $additionalRecordedEvents = $decorator->extractRecordedEvents($user);
 
-        $decorator->applyPendingStreamEvents($user, $additionalRecordedEvents);
+        $decorator->applyPendingStreamEvents($user, new \ArrayIterator($additionalRecordedEvents));
 
         $this->assertEquals('Max', $user->name());
 
@@ -76,7 +76,7 @@ class AggregateRootTest extends TestCase
 
         AggregateRootDecorator::newInstance()->applyPendingStreamEvents(
             $brokenUser,
-            $brokenUser->accessRecordedEvents()
+            new \ArrayIterator($brokenUser->accessRecordedEvents())
         );
     }
 
@@ -89,13 +89,13 @@ class AggregateRootTest extends TestCase
 
         $recordedEvents = $user->accessRecordedEvents();
 
-        AggregateRootDecorator::newInstance()->applyPendingStreamEvents($user, $recordedEvents);
+        AggregateRootDecorator::newInstance()->applyPendingStreamEvents($user, new \ArrayIterator($recordedEvents));
 
         $user->changeName('Max');
 
         $additionalRecordedEvents = $user->accessRecordedEvents();
 
-        AggregateRootDecorator::newInstance()->applyPendingStreamEvents($user, $additionalRecordedEvents);
+        AggregateRootDecorator::newInstance()->applyPendingStreamEvents($user, new \ArrayIterator($additionalRecordedEvents));
 
         $historyEvents = new \ArrayIterator(array_merge($recordedEvents, $additionalRecordedEvents));
 
