@@ -9,14 +9,14 @@
  * Date: 04/18/14 - 00:29
  */
 
-namespace Prooph\EventSourcingTest\Mock;
+namespace ProophTest\EventSourcing\Mock;
 
 use Prooph\EventSourcing\AggregateChanged;
 
 /**
  * Class UserCreated
  *
- * @package Prooph\EventStoreTest\Mock
+ * @package ProophTest\EventSourcing\Mock
  * @author Alexander Miertsch <contact@prooph.de>
  */
 class UserCreated extends AggregateChanged

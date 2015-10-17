@@ -9,16 +9,16 @@
  * Date: 08/26/15 - 20:32
  */
 
-namespace Prooph\EventSourcingTest\EventStoreIntegration;
+namespace ProophTest\EventSourcing\EventStoreIntegration;
 
 use PHPUnit_Framework_TestCase as TestCase;
 use Prooph\EventSourcing\EventStoreIntegration\AggregateRootDecorator;
-use Prooph\EventSourcingTest\Mock\ExtendedAggregateRootDecorator;
+use ProophTest\EventSourcing\Mock\ExtendedAggregateRootDecorator;
 
 /**
  * Class AggregateRootDecoratorTest
  *
- * @package Prooph\EventSourcingTest\EventStoreIntegration
+ * @package ProophTest\EventSourcing\EventStoreIntegration
  */
 class AggregateRootDecoratorTest extends TestCase
 {

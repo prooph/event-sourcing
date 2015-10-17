@@ -9,14 +9,14 @@
  * Date: 04/17/14 - 21:45
  */
 
-namespace Prooph\EventSourcingTest;
+namespace ProophTest\EventSourcing;
 
 use Prooph\EventSourcing\AggregateChanged;
 
 /**
  * Class AggregateChangedTest
  *
- * @package Prooph\EventSourcingTest\EventSourcing
+ * @package ProophTest\EventSourcing\EventSourcing
  * @author Alexander Miertsch <contact@prooph.de>
  */
 class AggregateChangedTest extends TestCase

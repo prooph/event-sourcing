@@ -9,7 +9,7 @@
  * Date: 08/26/15 - 19:58
  */
 
-namespace Prooph\EventSourcingTest\Mock;
+namespace ProophTest\EventSourcing\Mock;
 
 use Prooph\EventSourcing\AggregateChanged;
 use Prooph\EventSourcing\AggregateRoot;
@@ -18,7 +18,7 @@ use Rhumsaa\Uuid\Uuid;
 /**
  * Class BrokenUser
  *
- * @package Prooph\EventStoreTest\Mock
+ * @package ProophTest\EventSourcing\Mock
  * @author Alexander Miertsch <contact@prooph.de>
  */
 class BrokenUser extends AggregateRoot
