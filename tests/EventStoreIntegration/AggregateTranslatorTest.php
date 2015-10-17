@@ -9,13 +9,13 @@
  * Date: 09/07/14 - 19:49
  */
 
-namespace Prooph\EventSourcingTest\EventStoreIntegration;
+namespace ProophTest\EventSourcing\EventStoreIntegration;
 
 use Prooph\Common\Event\ProophActionEventEmitter;
 use Prooph\EventSourcing\EventStoreIntegration\AggregateRootDecorator;
 use Prooph\EventSourcing\EventStoreIntegration\AggregateTranslator;
-use Prooph\EventSourcingTest\Mock\User;
-use Prooph\EventSourcingTest\TestCase;
+use ProophTest\EventSourcing\Mock\User;
+use ProophTest\EventSourcing\TestCase;
 use Prooph\EventStore\Adapter\InMemoryAdapter;
 use Prooph\EventStore\Aggregate\AggregateRepository;
 use Prooph\EventStore\Aggregate\AggregateType;
@@ -27,7 +27,7 @@ use Prooph\EventStore\Stream\StreamName;
 /**
  * Class AggregateTranslatorTest
  *
- * @package Prooph\EventSourcingTest\EventStoreIntegration
+ * @package ProophTest\EventSourcing\EventStoreIntegration
  * @author Alexander Miertsch <kontakt@codeliner.ws>
  */
 class AggregateTranslatorTest extends TestCase
@@ -101,7 +101,7 @@ class AggregateTranslatorTest extends TestCase
     {
         $this->repository = new AggregateRepository(
             $this->eventStore,
-            AggregateType::fromAggregateRootClass('Prooph\EventSourcingTest\Mock\User'),
+            AggregateType::fromAggregateRootClass('ProophTest\EventSourcing\Mock\User'),
             new AggregateTranslator(),
             new SingleStreamStrategy($this->eventStore)
         );

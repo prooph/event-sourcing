@@ -9,13 +9,13 @@
  * Date: 08/26/15 - 19:58
  */
 
-namespace Prooph\EventSourcingTest\Mock;
+namespace ProophTest\EventSourcing\Mock;
 
 use Prooph\EventSourcing\EventStoreIntegration\AggregateRootDecorator;
 
 /**
  * Class ExtendedAggregateRootDecorator
- * @package Prooph\EventSourcingTest\Mock
+ * @package ProophTest\EventSourcing\Mock
  */
 class ExtendedAggregateRootDecorator extends AggregateRootDecorator
 {

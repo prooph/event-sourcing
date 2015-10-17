@@ -9,7 +9,7 @@
  * Date: 04/18/14 - 00:04
  */
 
-namespace Prooph\EventSourcingTest\Mock;
+namespace ProophTest\EventSourcing\Mock;
 
 use Prooph\EventSourcing\AggregateRoot;
 use Rhumsaa\Uuid\Uuid;
@@ -17,7 +17,7 @@ use Rhumsaa\Uuid\Uuid;
 /**
  * Class User
  *
- * @package Prooph\EventStoreTest\Mock
+ * @package ProophTest\EventSourcing\Mock
  * @author Alexander Miertsch <contact@prooph.de>
  */
 class User extends AggregateRoot

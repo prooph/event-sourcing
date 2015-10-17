@@ -9,16 +9,16 @@
  * Date: 04/18/14 - 00:03
  */
 
-namespace Prooph\EventSourcingTest;
+namespace ProophTest\EventSourcing;
 
 use Prooph\EventSourcing\EventStoreIntegration\AggregateRootDecorator;
-use Prooph\EventSourcingTest\Mock\BrokenUser;
-use Prooph\EventSourcingTest\Mock\User;
+use ProophTest\EventSourcing\Mock\BrokenUser;
+use ProophTest\EventSourcing\Mock\User;
 
 /**
  * Class AggregateRootTest
  *
- * @package Prooph\EventSourcingTest\EventSourcing
+ * @package ProophTest\EventSourcing\EventSourcing
  * @author Alexander Miertsch <contact@prooph.de>
  */
 class AggregateRootTest extends TestCase
@@ -68,7 +68,7 @@ class AggregateRootTest extends TestCase
     /**
      * @test
      * @expectedException RuntimeException
-     * @expectedExceptionMessage Missing event handler method whenUserCreated for aggregate root Prooph\EventSourcingTest\Mock\BrokenUser
+     * @expectedExceptionMessage Missing event handler method whenUserCreated for aggregate root ProophTest\EventSourcing\Mock\BrokenUser
      */
     public function it_throws_exception_when_no_handler_on_aggregate()
     {
