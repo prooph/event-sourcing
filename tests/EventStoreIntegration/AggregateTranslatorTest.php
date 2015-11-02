@@ -82,6 +82,19 @@ class AggregateTranslatorTest extends TestCase
         $loadedUser = $this->repository->getAggregateRoot($user->id());
 
         $this->assertEquals('Max Mustermann', $loadedUser->name());
+
+        return $loadedUser;
+    }
+
+    /**
+     * @test
+     * @depends it_translates_aggregate_back_and_forth
+     * @param User $loadedUser
+     */
+    public function it_extracts_version(User $loadedUser)
+    {
+        $translator = new AggregateTranslator();
+        $this->assertEquals(2, $translator->extractAggregateVersion($loadedUser));
     }
 
     /**

@@ -30,6 +30,15 @@ class AggregateTranslator implements EventStoreAggregateTranslator
     protected $aggregateRootDecorator;
 
     /**
+     * @param object $eventSourcedAggregateRoot
+     * @return int
+     */
+    public function extractAggregateVersion($eventSourcedAggregateRoot)
+    {
+        return (int) $this->getAggregateRootDecorator()->extractAggregateVersion($eventSourcedAggregateRoot);
+    }
+
+    /**
      * @param object $anEventSourcedAggregateRoot
      * @return string
      */

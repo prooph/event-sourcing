@@ -32,6 +32,15 @@ class AggregateRootDecorator extends AggregateRoot
 
     /**
      * @param AggregateRoot $anAggregateRoot
+     * @return int
+     */
+    public function extractAggregateVersion(AggregateRoot $anAggregateRoot)
+    {
+        return $anAggregateRoot->version;
+    }
+
+    /**
+     * @param AggregateRoot $anAggregateRoot
      * @return \Prooph\EventSourcing\AggregateChanged[]
      */
     public function extractRecordedEvents(AggregateRoot $anAggregateRoot)

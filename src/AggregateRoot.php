@@ -23,7 +23,7 @@ abstract class AggregateRoot
     /**
      * Current version
      *
-     * @var float
+     * @var int
      */
     protected $version = 0;
 
