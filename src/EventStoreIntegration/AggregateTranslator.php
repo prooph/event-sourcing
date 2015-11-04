@@ -71,9 +71,9 @@ class AggregateTranslator implements EventStoreAggregateTranslator
      * @param object $anEventSourcedAggregateRoot
      * @param Iterator $events
      */
-    public function applyStreamEvents($anEventSourcedAggregateRoot, Iterator $events)
+    public function replayStreamEvents($anEventSourcedAggregateRoot, Iterator $events)
     {
-        $this->getAggregateRootDecorator()->applyStreamEvents($anEventSourcedAggregateRoot, $events);
+        $this->getAggregateRootDecorator()->replayStreamEvents($anEventSourcedAggregateRoot, $events);
     }
 
     /**
