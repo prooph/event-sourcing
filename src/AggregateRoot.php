@@ -83,7 +83,7 @@ abstract class AggregateRoot
         $this->version += 1;
 
         $this->recordedEvents[] = $event->withVersion($this->version);
-        
+
         $this->apply($event);
     }
 
