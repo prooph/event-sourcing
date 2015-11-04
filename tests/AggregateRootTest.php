@@ -38,7 +38,7 @@ class AggregateRootTest extends TestCase
         //In between would be the process of persisting recorded events to an event stream
         //Only if this was successful the events can be applied to the aggregate root
         //We skip the persistence process here and apply the events directly
-        $decorator->applyPendingStreamEvents($user, new \ArrayIterator($recordedEvents));
+        $decorator->applyStreamEvents($user, new \ArrayIterator($recordedEvents));
 
         $this->assertEquals('John', $user->name());
 
@@ -46,7 +46,7 @@ class AggregateRootTest extends TestCase
 
         $additionalRecordedEvents = $decorator->extractRecordedEvents($user);
 
-        $decorator->applyPendingStreamEvents($user, new \ArrayIterator($additionalRecordedEvents));
+        $decorator->applyStreamEvents($user, new \ArrayIterator($additionalRecordedEvents));
 
         $this->assertEquals('Max', $user->name());
 
@@ -74,7 +74,7 @@ class AggregateRootTest extends TestCase
     {
         $brokenUser = BrokenUser::nameNew('John');
 
-        AggregateRootDecorator::newInstance()->applyPendingStreamEvents(
+        AggregateRootDecorator::newInstance()->applyStreamEvents(
             $brokenUser,
             new \ArrayIterator($brokenUser->accessRecordedEvents())
         );
@@ -89,13 +89,13 @@ class AggregateRootTest extends TestCase
 
         $recordedEvents = $user->accessRecordedEvents();
 
-        AggregateRootDecorator::newInstance()->applyPendingStreamEvents($user, new \ArrayIterator($recordedEvents));
+        AggregateRootDecorator::newInstance()->applyStreamEvents($user, new \ArrayIterator($recordedEvents));
 
         $user->changeName('Max');
 
         $additionalRecordedEvents = $user->accessRecordedEvents();
 
-        AggregateRootDecorator::newInstance()->applyPendingStreamEvents($user, new \ArrayIterator($additionalRecordedEvents));
+        AggregateRootDecorator::newInstance()->applyStreamEvents($user, new \ArrayIterator($additionalRecordedEvents));
 
         $historyEvents = new \ArrayIterator(array_merge($recordedEvents, $additionalRecordedEvents));
 

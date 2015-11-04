@@ -20,7 +20,6 @@ use Prooph\EventStore\Adapter\InMemoryAdapter;
 use Prooph\EventStore\Aggregate\AggregateRepository;
 use Prooph\EventStore\Aggregate\AggregateType;
 use Prooph\EventStore\EventStore;
-use Prooph\EventStore\Stream\SingleStreamStrategy;
 use Prooph\EventStore\Stream\Stream;
 use Prooph\EventStore\Stream\StreamName;
 
@@ -115,8 +114,7 @@ class AggregateTranslatorTest extends TestCase
         $this->repository = new AggregateRepository(
             $this->eventStore,
             AggregateType::fromAggregateRootClass('ProophTest\EventSourcing\Mock\User'),
-            new AggregateTranslator(),
-            new SingleStreamStrategy($this->eventStore)
+            new AggregateTranslator()
         );
     }
 }
