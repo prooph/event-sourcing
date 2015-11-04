@@ -78,7 +78,7 @@ class AggregateRootDecorator extends AggregateRoot
      * @param AggregateRoot $aggregateRoot
      * @param Iterator $events
      */
-    public function applyPendingStreamEvents(AggregateRoot $aggregateRoot, Iterator $events)
+    public function applyStreamEvents(AggregateRoot $aggregateRoot, Iterator $events)
     {
         foreach ($events as $event) {
             $aggregateRoot->apply($event);

@@ -15,12 +15,12 @@ use Prooph\Common\Event\ProophActionEventEmitter;
 use Prooph\EventSourcing\EventStoreIntegration\AggregateRootDecorator;
 use Prooph\EventSourcing\EventStoreIntegration\AggregateTranslator;
 use ProophTest\EventSourcing\Mock\User;
+use ProophTest\EventSourcing\Mock\UserNameChanged;
 use ProophTest\EventSourcing\TestCase;
 use Prooph\EventStore\Adapter\InMemoryAdapter;
 use Prooph\EventStore\Aggregate\AggregateRepository;
 use Prooph\EventStore\Aggregate\AggregateType;
 use Prooph\EventStore\EventStore;
-use Prooph\EventStore\Stream\SingleStreamStrategy;
 use Prooph\EventStore\Stream\Stream;
 use Prooph\EventStore\Stream\StreamName;
 
@@ -99,6 +99,23 @@ class AggregateTranslatorTest extends TestCase
 
     /**
      * @test
+     * @depends it_translates_aggregate_back_and_forth
+     * @param User $loadedUser
+     */
+    public function it_applies_stream_events(User $loadedUser)
+    {
+        $newName = 'Jane Doe';
+
+        $translator = new AggregateTranslator();
+        $translator->applyStreamEvents($loadedUser, new \ArrayIterator([UserNameChanged::occur($loadedUser->id(), [
+            'username' => $newName
+        ])]));
+
+        $this->assertEquals($newName, $loadedUser->name());
+    }
+
+    /**
+     * @test
      */
     public function it_can_use_custom_aggregate_root_decorator()
     {
@@ -115,8 +132,7 @@ class AggregateTranslatorTest extends TestCase
         $this->repository = new AggregateRepository(
             $this->eventStore,
             AggregateType::fromAggregateRootClass('ProophTest\EventSourcing\Mock\User'),
-            new AggregateTranslator(),
-            new SingleStreamStrategy($this->eventStore)
+            new AggregateTranslator()
         );
     }
 }
