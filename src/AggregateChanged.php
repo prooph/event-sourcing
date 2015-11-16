@@ -32,7 +32,7 @@ class AggregateChanged extends DomainEvent
      * @param array $payload
      * @return static
      */
-    public static function occur($aggregateId, array $payload)
+    public static function occur($aggregateId, array $payload = [])
     {
         $instance = new static($aggregateId, $payload);
 
