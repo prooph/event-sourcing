@@ -197,7 +197,6 @@ namespace My\Infrastructure {
     use Prooph\EventStore\Aggregate\AggregateRepository;
     use Prooph\EventStore\Aggregate\AggregateType;
     use Prooph\EventStore\EventStore;
-    use Prooph\EventStore\Stream\AggregateStreamStrategy;
     use Rhumsaa\Uuid\Uuid;
 
     /**
@@ -215,7 +214,9 @@ namespace My\Infrastructure {
                 $eventStore,
                 AggregateType::fromAggregateRootClass('My\Model\User'),
                 new AggregateTranslator(),
-                new AggregateStreamStrategy($eventStore)
+                null, //We don't use a snapshot store in the example
+                null, //Also a custom stream name is not required
+                true //But we enable the "one-stream-per-aggregate" mode
             );
         }
 
