@@ -197,7 +197,6 @@ namespace My\Infrastructure {
     use Prooph\EventStore\Aggregate\AggregateRepository;
     use Prooph\EventStore\Aggregate\AggregateType;
     use Prooph\EventStore\EventStore;
-    use Prooph\EventStore\Stream\AggregateStreamStrategy;
     use Rhumsaa\Uuid\Uuid;
 
     /**
