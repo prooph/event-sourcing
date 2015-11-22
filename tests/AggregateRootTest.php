@@ -9,15 +9,16 @@
  * Date: 04/18/14 - 00:03
  */
 
-namespace Prooph\EventSourcingTest;
+namespace ProophTest\EventSourcing;
 
-use Prooph\EventSourcingTest\Mock\BrokenUser;
-use Prooph\EventSourcingTest\Mock\User;
+use Prooph\EventSourcing\EventStoreIntegration\AggregateRootDecorator;
+use ProophTest\EventSourcing\Mock\BrokenUser;
+use ProophTest\EventSourcing\Mock\User;
 
 /**
  * Class AggregateRootTest
  *
- * @package Prooph\EventSourcingTest\EventSourcing
+ * @package ProophTest\EventSourcing\EventSourcing
  * @author Alexander Miertsch <contact@prooph.de>
  */
 class AggregateRootTest extends TestCase
@@ -27,24 +28,38 @@ class AggregateRootTest extends TestCase
      */
     public function it_applies_event_by_calling_appropriate_event_handler()
     {
+        $decorator = AggregateRootDecorator::newInstance();
+
         $user = User::nameNew('John');
+
+        $recordedEvents = $decorator->extractRecordedEvents($user);
+
+        //Recording and applying events are two different steps
+        //In between would be the process of persisting recorded events to an event stream
+        //Only if this was successful the events can be applied to the aggregate root
+        //We skip the persistence process here and apply the events directly
+        $decorator->replayStreamEvents($user, new \ArrayIterator($recordedEvents));
 
         $this->assertEquals('John', $user->name());
 
         $user->changeName('Max');
 
+        $additionalRecordedEvents = $decorator->extractRecordedEvents($user);
+
+        $decorator->replayStreamEvents($user, new \ArrayIterator($additionalRecordedEvents));
+
         $this->assertEquals('Max', $user->name());
 
-        $pendingEvents = $user->accessRecordedEvents();
+        $recordedEvents = array_merge($recordedEvents, $additionalRecordedEvents);
 
-        $this->assertEquals(2, count($pendingEvents));
+        $this->assertEquals(2, count($recordedEvents));
 
-        $userCreatedEvent = $pendingEvents[0];
+        $userCreatedEvent = $recordedEvents[0];
 
         $this->assertEquals('John', $userCreatedEvent->name());
         $this->assertEquals(1, $userCreatedEvent->version());
 
-        $userNameChangedEvent = $pendingEvents[1];
+        $userNameChangedEvent = $recordedEvents[1];
 
         $this->assertEquals('Max', $userNameChangedEvent->newUsername());
         $this->assertEquals(2, $userNameChangedEvent->version());
@@ -53,11 +68,16 @@ class AggregateRootTest extends TestCase
     /**
      * @test
      * @expectedException RuntimeException
-     * @expectedExceptionMessage Missing event handler method whenUserCreated for aggregate root Prooph\EventSourcingTest\Mock\BrokenUser
+     * @expectedExceptionMessage Missing event handler method whenUserCreated for aggregate root ProophTest\EventSourcing\Mock\BrokenUser
      */
     public function it_throws_exception_when_no_handler_on_aggregate()
     {
-        BrokenUser::nameNew('John');
+        $brokenUser = BrokenUser::nameNew('John');
+
+        AggregateRootDecorator::newInstance()->applyStreamEvents(
+            $brokenUser,
+            new \ArrayIterator($brokenUser->accessRecordedEvents())
+        );
     }
 
     /**
@@ -67,11 +87,17 @@ class AggregateRootTest extends TestCase
     {
         $user = User::nameNew('John');
 
-        $this->assertEquals('John', $user->name());
+        $recordedEvents = $user->accessRecordedEvents();
+
+        AggregateRootDecorator::newInstance()->replayStreamEvents($user, new \ArrayIterator($recordedEvents));
 
         $user->changeName('Max');
 
-        $historyEvents = $user->accessRecordedEvents();
+        $additionalRecordedEvents = $user->accessRecordedEvents();
+
+        AggregateRootDecorator::newInstance()->replayStreamEvents($user, new \ArrayIterator($additionalRecordedEvents));
+
+        $historyEvents = new \ArrayIterator(array_merge($recordedEvents, $additionalRecordedEvents));
 
         $sameUser = User::fromHistory($historyEvents);
 

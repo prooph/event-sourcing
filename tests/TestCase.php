@@ -9,12 +9,12 @@
  * Date: 06/06/14 - 23:05
  */
 
-namespace Prooph\EventSourcingTest;
+namespace ProophTest\EventSourcing;
 
 /**
  * Class TestCase
  *
- * @package Prooph\EventSourcingTest
+ * @package ProophTest\EventSourcing
  * @author Alexander Miertsch <kontakt@codeliner.ws>
  */
 class TestCase extends \PHPUnit_Framework_TestCase

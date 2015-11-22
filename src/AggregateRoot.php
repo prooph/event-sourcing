@@ -23,7 +23,7 @@ abstract class AggregateRoot
     /**
      * Current version
      *
-     * @var float
+     * @var int
      */
     protected $version = 0;
 
@@ -35,10 +35,10 @@ abstract class AggregateRoot
     protected $recordedEvents = [];
 
     /**
-     * @param AggregateChanged[] $historyEvents
+     * @param \Iterator $historyEvents
      * @return static
      */
-    protected static function reconstituteFromHistory(array $historyEvents)
+    protected static function reconstituteFromHistory(\Iterator $historyEvents)
     {
         $instance = new static();
         $instance->replay($historyEvents);
@@ -90,14 +90,15 @@ abstract class AggregateRoot
     /**
      * Replay past events
      *
-     * @param AggregateChanged[] $historyEvents
+     * @param \Iterator $historyEvents
      *
      * @throws \RuntimeException
      * @return void
      */
-    protected function replay(array $historyEvents)
+    protected function replay(\Iterator $historyEvents)
     {
         foreach ($historyEvents as $pastEvent) {
+            /** @var AggregateChanged $pastEvent */
             $this->version = $pastEvent->version();
 
             $this->apply($pastEvent);

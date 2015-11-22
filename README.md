@@ -9,15 +9,12 @@ Simple and lightweight event sourcing library with out of the box support for [P
 
 #Installation
 
-You can install ProophEventSourcing via composer by adding `"prooph/event-sourcing": "~2.0"` as requirement to your composer.json.
+You can install ProophEventSourcing via composer by adding `"prooph/event-sourcing": "~4.0"` as requirement to your composer.json.
 
 #Usage 
 
 Our [quickstart](https://github.com/prooph/event-sourcing/blob/master/examples/quickstart.php) should give you a starting point.
 It's a very small domain but shows you the useage of ProophEventSourcing and the integration with ProophEventStore.
-
-
-Detailed information can also be found in the documentation of [proophessor](http://prooph.github.io/proophessor) which integrates prooph/event-sourcing with Zend Framework 2.
 
 
 #ProophEventStore Integration

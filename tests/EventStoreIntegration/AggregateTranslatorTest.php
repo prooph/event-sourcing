@@ -9,25 +9,25 @@
  * Date: 09/07/14 - 19:49
  */
 
-namespace Prooph\EventSourcingTest\EventStoreIntegration;
+namespace ProophTest\EventSourcing\EventStoreIntegration;
 
 use Prooph\Common\Event\ProophActionEventEmitter;
 use Prooph\EventSourcing\EventStoreIntegration\AggregateRootDecorator;
 use Prooph\EventSourcing\EventStoreIntegration\AggregateTranslator;
-use Prooph\EventSourcingTest\Mock\User;
-use Prooph\EventSourcingTest\TestCase;
+use ProophTest\EventSourcing\Mock\User;
+use ProophTest\EventSourcing\Mock\UserNameChanged;
+use ProophTest\EventSourcing\TestCase;
 use Prooph\EventStore\Adapter\InMemoryAdapter;
 use Prooph\EventStore\Aggregate\AggregateRepository;
 use Prooph\EventStore\Aggregate\AggregateType;
 use Prooph\EventStore\EventStore;
-use Prooph\EventStore\Stream\SingleStreamStrategy;
 use Prooph\EventStore\Stream\Stream;
 use Prooph\EventStore\Stream\StreamName;
 
 /**
  * Class AggregateTranslatorTest
  *
- * @package Prooph\EventSourcingTest\EventStoreIntegration
+ * @package ProophTest\EventSourcing\EventStoreIntegration
  * @author Alexander Miertsch <kontakt@codeliner.ws>
  */
 class AggregateTranslatorTest extends TestCase
@@ -48,7 +48,7 @@ class AggregateTranslatorTest extends TestCase
 
         $this->eventStore->beginTransaction();
 
-        $this->eventStore->create(new Stream(new StreamName('event_stream'), []));
+        $this->eventStore->create(new Stream(new StreamName('event_stream'), new \ArrayIterator([])));
 
         $this->eventStore->commit();
 
@@ -64,9 +64,16 @@ class AggregateTranslatorTest extends TestCase
 
         $user = User::nameNew('John Doe');
 
-        $user->changeName('Max Mustermann');
-
         $this->repository->addAggregateRoot($user);
+
+        $this->eventStore->commit();
+
+        $this->eventStore->beginTransaction();
+
+        //Simulate a normal program flow by fetching the AR before modifying it
+        $user = $this->repository->getAggregateRoot($user->id());
+
+        $user->changeName('Max Mustermann');
 
         $this->eventStore->commit();
 
@@ -75,6 +82,36 @@ class AggregateTranslatorTest extends TestCase
         $loadedUser = $this->repository->getAggregateRoot($user->id());
 
         $this->assertEquals('Max Mustermann', $loadedUser->name());
+
+        return $loadedUser;
+    }
+
+    /**
+     * @test
+     * @depends it_translates_aggregate_back_and_forth
+     * @param User $loadedUser
+     */
+    public function it_extracts_version(User $loadedUser)
+    {
+        $translator = new AggregateTranslator();
+        $this->assertEquals(2, $translator->extractAggregateVersion($loadedUser));
+    }
+
+    /**
+     * @test
+     * @depends it_translates_aggregate_back_and_forth
+     * @param User $loadedUser
+     */
+    public function it_applies_stream_events(User $loadedUser)
+    {
+        $newName = 'Jane Doe';
+
+        $translator = new AggregateTranslator();
+        $translator->replayStreamEvents($loadedUser, new \ArrayIterator([UserNameChanged::occur($loadedUser->id(), [
+            'username' => $newName
+        ])]));
+
+        $this->assertEquals($newName, $loadedUser->name());
     }
 
     /**
@@ -90,26 +127,12 @@ class AggregateTranslatorTest extends TestCase
         $this->assertSame($mock, $translator->getAggregateRootDecorator());
     }
 
-    /**
-     * @test
-     * @expectedException RuntimeException
-     * @expectedExceptionMessage Can not reconstitute Aggregate Prooph\EventSourcingTest\Mock\User from history. No stream events given
-     */
-    public function it_cannot_reconstitute_from_history_without_stream_events()
-    {
-        $aggregateType = AggregateType::fromAggregateRootClass('Prooph\EventSourcingTest\Mock\User');
-
-        $translator = new AggregateTranslator();
-        $translator->reconstituteAggregateFromHistory($aggregateType, []);
-    }
-
     protected function resetRepository()
     {
         $this->repository = new AggregateRepository(
             $this->eventStore,
-            AggregateType::fromAggregateRootClass('Prooph\EventSourcingTest\Mock\User'),
-            new AggregateTranslator(),
-            new SingleStreamStrategy($this->eventStore)
+            AggregateType::fromAggregateRootClass('ProophTest\EventSourcing\Mock\User'),
+            new AggregateTranslator()
         );
     }
 }

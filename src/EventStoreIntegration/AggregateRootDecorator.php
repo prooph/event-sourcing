@@ -11,6 +11,7 @@
 
 namespace Prooph\EventSourcing\EventStoreIntegration;
 
+use Iterator;
 use Prooph\EventSourcing\AggregateRoot;
 
 /**
@@ -27,6 +28,15 @@ class AggregateRootDecorator extends AggregateRoot
     public static function newInstance()
     {
         return new static();
+    }
+
+    /**
+     * @param AggregateRoot $anAggregateRoot
+     * @return int
+     */
+    public function extractAggregateVersion(AggregateRoot $anAggregateRoot)
+    {
+        return $anAggregateRoot->version;
     }
 
     /**
@@ -49,11 +59,11 @@ class AggregateRootDecorator extends AggregateRoot
 
     /**
      * @param string $arClass
-     * @param array $aggregateChangedEvents
+     * @param \Iterator $aggregateChangedEvents
      * @return AggregateRoot
      * @throws \RuntimeException
      */
-    public function fromHistory($arClass, array $aggregateChangedEvents)
+    public function fromHistory($arClass, \Iterator $aggregateChangedEvents)
     {
         if (! class_exists($arClass)) {
             throw new \RuntimeException(
@@ -62,6 +72,15 @@ class AggregateRootDecorator extends AggregateRoot
         }
 
         return $arClass::reconstituteFromHistory($aggregateChangedEvents);
+    }
+
+    /**
+     * @param AggregateRoot $aggregateRoot
+     * @param Iterator $events
+     */
+    public function replayStreamEvents(AggregateRoot $aggregateRoot, Iterator $events)
+    {
+        $aggregateRoot->replay($events);
     }
 
     /**

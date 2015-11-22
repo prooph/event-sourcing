@@ -11,6 +11,7 @@
 
 namespace Prooph\EventSourcing\EventStoreIntegration;
 
+use Iterator;
 use Prooph\Common\Messaging\Message;
 use Prooph\EventStore\Aggregate\AggregateType;
 use Prooph\EventStore\Aggregate\AggregateTranslator as EventStoreAggregateTranslator;
@@ -29,6 +30,15 @@ class AggregateTranslator implements EventStoreAggregateTranslator
     protected $aggregateRootDecorator;
 
     /**
+     * @param object $eventSourcedAggregateRoot
+     * @return int
+     */
+    public function extractAggregateVersion($eventSourcedAggregateRoot)
+    {
+        return (int) $this->getAggregateRootDecorator()->extractAggregateVersion($eventSourcedAggregateRoot);
+    }
+
+    /**
      * @param object $anEventSourcedAggregateRoot
      * @return string
      */
@@ -39,21 +49,11 @@ class AggregateTranslator implements EventStoreAggregateTranslator
 
     /**
      * @param AggregateType $aggregateType
-     * @param Message[] $historyEvents
-     * @throws \RuntimeException
+     * @param \Iterator $historyEvents
      * @return object reconstructed AggregateRoot
      */
-    public function reconstituteAggregateFromHistory(AggregateType $aggregateType, $historyEvents)
+    public function reconstituteAggregateFromHistory(AggregateType $aggregateType, \Iterator $historyEvents)
     {
-        if (count($historyEvents) === 0) {
-            throw new \RuntimeException(
-                sprintf(
-                    "Can not reconstitute Aggregate %s from history. No stream events given",
-                    $aggregateType->toString()
-                )
-            );
-        }
-
         return $this->getAggregateRootDecorator()
             ->fromHistory($aggregateType->toString(), $historyEvents);
     }
@@ -65,6 +65,15 @@ class AggregateTranslator implements EventStoreAggregateTranslator
     public function extractPendingStreamEvents($anEventSourcedAggregateRoot)
     {
         return $this->getAggregateRootDecorator()->extractRecordedEvents($anEventSourcedAggregateRoot);
+    }
+
+    /**
+     * @param object $anEventSourcedAggregateRoot
+     * @param Iterator $events
+     */
+    public function replayStreamEvents($anEventSourcedAggregateRoot, Iterator $events)
+    {
+        $this->getAggregateRootDecorator()->replayStreamEvents($anEventSourcedAggregateRoot, $events);
     }
 
     /**

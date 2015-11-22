@@ -9,16 +9,15 @@
  * Date: 04/18/14 - 00:04
  */
 
-namespace Prooph\EventSourcingTest\Mock;
+namespace ProophTest\EventSourcing\Mock;
 
-use Prooph\EventSourcing\AggregateChanged;
 use Prooph\EventSourcing\AggregateRoot;
 use Rhumsaa\Uuid\Uuid;
 
 /**
  * Class User
  *
- * @package Prooph\EventStoreTest\Mock
+ * @package ProophTest\EventSourcing\Mock
  * @author Alexander Miertsch <contact@prooph.de>
  */
 class User extends AggregateRoot
@@ -44,10 +43,10 @@ class User extends AggregateRoot
     }
 
     /**
-     * @param AggregateChanged[] $historyEvents
+     * @param \Iterator $historyEvents
      * @return User
      */
-    public static function fromHistory(array $historyEvents)
+    public static function fromHistory(\Iterator $historyEvents)
     {
         return self::reconstituteFromHistory($historyEvents);
     }
