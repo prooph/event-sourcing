@@ -67,7 +67,7 @@ class AggregateRootDecorator extends AggregateRoot
     {
         if (! class_exists($arClass)) {
             throw new \RuntimeException(
-                sprintf("Aggregate root class %s cannot be found", $arClass)
+                sprintf('Aggregate root class %s cannot be found', $arClass)
             );
         }
 
@@ -89,6 +89,6 @@ class AggregateRootDecorator extends AggregateRoot
      */
     protected function aggregateId()
     {
-        throw new \BadMethodCallException("The AggregateRootDecorator does not have an id");
+        throw new \BadMethodCallException('The AggregateRootDecorator does not have an id');
     }
 }

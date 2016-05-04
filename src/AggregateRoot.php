@@ -36,6 +36,9 @@ abstract class AggregateRoot
 
     /**
      * @param \Iterator $historyEvents
+     *
+     * @throws \RuntimeException
+     *
      * @return static
      */
     protected static function reconstituteFromHistory(\Iterator $historyEvents)
@@ -117,7 +120,7 @@ abstract class AggregateRoot
 
         if (! method_exists($this, $handler)) {
             throw new \RuntimeException(sprintf(
-                "Missing event handler method %s for aggregate root %s",
+                'Missing event handler method %s for aggregate root %s',
                 $handler,
                 get_class($this)
             ));
@@ -135,6 +138,6 @@ abstract class AggregateRoot
      */
     protected function determineEventHandlerMethodFor(AggregateChanged $e)
     {
-        return 'when' . implode('', array_slice(explode('\\', get_class($e)), -1));
+        return 'when' . implode(array_slice(explode('\\', get_class($e)), -1));
     }
 }
