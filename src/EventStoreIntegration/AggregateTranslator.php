@@ -81,7 +81,7 @@ class AggregateTranslator implements EventStoreAggregateTranslator
      */
     public function getAggregateRootDecorator()
     {
-        if (is_null($this->aggregateRootDecorator)) {
+        if (null === $this->aggregateRootDecorator) {
             $this->aggregateRootDecorator = AggregateRootDecorator::newInstance();
         }
 
