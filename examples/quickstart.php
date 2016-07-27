@@ -263,7 +263,7 @@ namespace {
 
     //Before we commit the transaction let's attach a listener to check that the UserWasCreated event is published after commit
     $eventStore->getActionEventEmitter()->attachListener('commit.post', function (ActionEvent $event) {
-        foreach ($event->getParam('recordedEvents', []) as $streamEvent) {
+        foreach ($event->getParam('recordedEvents', new \ArrayIterator()) as $streamEvent) {
             echo sprintf(
                 "Event with name %s was recorded. It occurred on %s UTC /// ",
                 $streamEvent->messageName(),
