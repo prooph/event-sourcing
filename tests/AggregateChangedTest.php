@@ -28,7 +28,7 @@ class AggregateChangedTest extends TestCase
     {
         $event = AggregateChanged::occur('1', []);
 
-        $this->assertInstanceOf('Rhumsaa\Uuid\Uuid', $event->uuid());
+        $this->assertInstanceOf('Ramsey\Uuid\Uuid', $event->uuid());
     }
 
     /**

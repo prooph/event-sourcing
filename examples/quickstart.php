@@ -18,7 +18,7 @@ namespace My\Model {
 
     use Prooph\EventSourcing\AggregateChanged;
     use Prooph\EventSourcing\AggregateRoot;
-    use Rhumsaa\Uuid\Uuid;
+    use Ramsey\Uuid\Uuid;
 
     class User extends AggregateRoot
     {
@@ -197,7 +197,7 @@ namespace My\Infrastructure {
     use Prooph\EventStore\Aggregate\AggregateRepository;
     use Prooph\EventStore\Aggregate\AggregateType;
     use Prooph\EventStore\EventStore;
-    use Rhumsaa\Uuid\Uuid;
+    use Ramsey\Uuid\Uuid;
 
     /**
      * Class UserRepositoryImpl extends Prooph\EventStore\Aggregate\AggregateRepository and implements My\Model\UserRepository
