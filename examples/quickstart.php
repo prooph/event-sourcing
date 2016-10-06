@@ -15,6 +15,7 @@ namespace {
 
 namespace My\Model {
 
+    use Assert\Assertion;
     use Prooph\EventSourcing\AggregateChanged;
     use Prooph\EventSourcing\AggregateRoot;
     use Ramsey\Uuid\Uuid;
@@ -37,7 +38,7 @@ namespace My\Model {
         public static function nameNew(string $username): User
         {
             //Perform assertions before raising a event
-            \Assert\that($username)->notEmpty()->string();
+            Assertion::notEmpty($username);
 
             $uuid = Uuid::uuid4();
 
@@ -66,7 +67,7 @@ namespace My\Model {
          */
         public function changeName(string $newName): void
         {
-            \Assert\that($newName)->notEmpty()->string();
+            Assertion::notEmpty($newName);
 
             if ($newName != $this->name) {
                 $this->recordThat(UserWasRenamed::occur(

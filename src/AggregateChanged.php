@@ -61,7 +61,6 @@ class AggregateChanged extends DomainEvent
 
     protected function setAggregateId(string $aggregateId): void
     {
-        Assertion::string($aggregateId);
         Assertion::notEmpty($aggregateId);
 
         $this->metadata['aggregate_id'] = $aggregateId;
