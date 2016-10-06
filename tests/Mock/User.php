@@ -8,10 +8,12 @@
  *  file that was distributed with this source code.
  */
 
+declare(strict_types=1);
+
 namespace ProophTest\EventSourcing\Mock;
 
 use Prooph\EventSourcing\AggregateRoot;
-use Rhumsaa\Uuid\Uuid;
+use Ramsey\Uuid\Uuid;
 
 /**
  * Class User
@@ -31,7 +33,7 @@ class User extends AggregateRoot
      */
     protected $name;
 
-    public static function nameNew($name)
+    public static function nameNew(string $name): self
     {
         $id = Uuid::uuid4()->toString();
         $instance = new self();
@@ -41,51 +43,33 @@ class User extends AggregateRoot
         return $instance;
     }
 
-    /**
-     * @param \Iterator $historyEvents
-     * @return User
-     */
-    public static function fromHistory(\Iterator $historyEvents)
+    public static function fromHistory(\Iterator $historyEvents): self
     {
         return self::reconstituteFromHistory($historyEvents);
     }
-    /**
-     * @return string
-     */
-    public function id()
+
+    public function id(): string
     {
         return $this->id;
     }
 
-    /**
-     * @param string $newName
-     */
-    public function changeName($newName)
+    public function changeName(string $newName): void
     {
         $this->recordThat(UserNameChanged::occur($this->id, ['username' => $newName]));
     }
 
-    /**
-     * @return string
-     */
-    public function name()
+    public function name(): string
     {
         return $this->name;
     }
 
-    /**
-     * @param UserCreated $event
-     */
-    protected function whenUserCreated(UserCreated $event)
+    protected function whenUserCreated(UserCreated $event): void
     {
         $this->id = $event->userId();
         $this->name = $event->name();
     }
 
-    /**
-     * @param UserNameChanged $event
-     */
-    protected function whenUsernameChanged(UserNameChanged $event)
+    protected function whenUsernameChanged(UserNameChanged $event): void
     {
         $this->name = $event->newUsername();
     }
@@ -93,7 +77,7 @@ class User extends AggregateRoot
     /**
      * @return \Prooph\EventSourcing\AggregateChanged[]
      */
-    public function accessRecordedEvents()
+    public function accessRecordedEvents(): array
     {
         return $this->popRecordedEvents();
     }
@@ -101,7 +85,7 @@ class User extends AggregateRoot
     /**
      * @return string representation of the unique identifier of the aggregate root
      */
-    protected function aggregateId()
+    protected function aggregateId(): string
     {
         return $this->id();
     }

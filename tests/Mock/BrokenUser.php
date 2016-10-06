@@ -8,11 +8,13 @@
  *  file that was distributed with this source code.
  */
 
+declare(strict_types=1);
+
 namespace ProophTest\EventSourcing\Mock;
 
 use Prooph\EventSourcing\AggregateChanged;
 use Prooph\EventSourcing\AggregateRoot;
-use Rhumsaa\Uuid\Uuid;
+use Ramsey\Uuid\Uuid;
 
 /**
  * Class BrokenUser
@@ -32,7 +34,7 @@ class BrokenUser extends AggregateRoot
      */
     protected $name;
 
-    public static function nameNew($name)
+    public static function nameNew(string $name): self
     {
         $id = Uuid::uuid4()->toString();
         $instance = new self();
@@ -42,26 +44,17 @@ class BrokenUser extends AggregateRoot
         return $instance;
     }
 
-    /**
-     * @param AggregateChanged[] $historyEvents
-     * @return User
-     */
-    public static function fromHistory(array $historyEvents)
+    public static function fromHistory(array $historyEvents): self
     {
         return self::reconstituteFromHistory($historyEvents);
     }
-    /**
-     * @return string
-     */
-    public function id()
+
+    public function id(): string
     {
         return $this->id;
     }
 
-    /**
-     * @return string
-     */
-    public function name()
+    public function name():string
     {
         return $this->name;
     }
@@ -69,7 +62,7 @@ class BrokenUser extends AggregateRoot
     /**
      * @return \Prooph\EventSourcing\AggregateChanged[]
      */
-    public function accessRecordedEvents()
+    public function accessRecordedEvents(): array
     {
         return $this->popRecordedEvents();
     }
@@ -77,7 +70,7 @@ class BrokenUser extends AggregateRoot
     /**
      * @return string representation of the unique identifier of the aggregate root
      */
-    protected function aggregateId()
+    protected function aggregateId(): string
     {
         return $this->id();
     }

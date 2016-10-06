@@ -8,6 +8,8 @@
  *  file that was distributed with this source code.
  */
 
+declare(strict_types=1);
+
 namespace ProophTest\EventSourcing\Mock;
 
 use Prooph\EventSourcing\AggregateChanged;
@@ -20,18 +22,12 @@ use Prooph\EventSourcing\AggregateChanged;
  */
 class UserCreated extends AggregateChanged
 {
-    /**
-     * @return string
-     */
-    public function userId()
+    public function userId(): string
     {
         return $this->payload['id'];
     }
 
-    /**
-     * @return string
-     */
-    public function name()
+    public function name(): string
     {
         return $this->payload['name'];
     }

@@ -8,9 +8,12 @@
  *  file that was distributed with this source code.
  */
 
+declare(strict_types=1);
+
 namespace ProophTest\EventSourcing;
 
 use Prooph\EventSourcing\AggregateChanged;
+use Ramsey\Uuid\Uuid;
 
 /**
  * Class AggregateChangedTest
@@ -27,7 +30,7 @@ class AggregateChangedTest extends TestCase
     {
         $event = AggregateChanged::occur('1', []);
 
-        $this->assertInstanceOf('Rhumsaa\Uuid\Uuid', $event->uuid());
+        $this->assertInstanceOf(Uuid::class, $event->uuid());
     }
 
     /**

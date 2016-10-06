@@ -8,6 +8,8 @@
  *  file that was distributed with this source code.
  */
 
+declare(strict_types=1);
+
 namespace ProophTest\EventSourcing\EventStoreIntegration;
 
 use Prooph\Common\Event\ProophActionEventEmitter;
@@ -118,7 +120,7 @@ class AggregateTranslatorTest extends TestCase
      */
     public function it_can_use_custom_aggregate_root_decorator()
     {
-        $mock = $this->getMock(AggregateRootDecorator::class, [], [], '', false);
+        $mock = $this->createMock(AggregateRootDecorator::class);
 
         $translator = new AggregateTranslator();
         $translator->setAggregateRootDecorator($mock);

@@ -36,13 +36,9 @@ abstract class AggregateRoot
     protected $recordedEvents = [];
 
     /**
-     * @param \Iterator $historyEvents
-     *
      * @throws \RuntimeException
-     *
-     * @return static
      */
-    protected static function reconstituteFromHistory(\Iterator $historyEvents)
+    protected static function reconstituteFromHistory(\Iterator $historyEvents): self
     {
         $instance = new static();
         $instance->replay($historyEvents);
@@ -58,17 +54,14 @@ abstract class AggregateRoot
     {
     }
 
-    /**
-     * @return string representation of the unique identifier of the aggregate root
-     */
-    abstract protected function aggregateId();
+    abstract protected function aggregateId(): string;
 
     /**
      * Get pending events and reset stack
      *
      * @return AggregateChanged[]
      */
-    protected function popRecordedEvents()
+    protected function popRecordedEvents(): array
     {
         $pendingEvents = $this->recordedEvents;
 
@@ -79,10 +72,8 @@ abstract class AggregateRoot
 
     /**
      * Record an aggregate changed event
-     *
-     * @param AggregateChanged $event
      */
-    protected function recordThat(AggregateChanged $event)
+    protected function recordThat(AggregateChanged $event): void
     {
         $this->version += 1;
 
@@ -94,12 +85,9 @@ abstract class AggregateRoot
     /**
      * Replay past events
      *
-     * @param \Iterator $historyEvents
-     *
      * @throws \RuntimeException
-     * @return void
      */
-    protected function replay(\Iterator $historyEvents)
+    protected function replay(\Iterator $historyEvents): void
     {
         foreach ($historyEvents as $pastEvent) {
             /** @var AggregateChanged $pastEvent */
@@ -112,10 +100,9 @@ abstract class AggregateRoot
     /**
      * Apply given event
      *
-     * @param AggregateChanged $e
      * @throws \RuntimeException
      */
-    protected function apply(AggregateChanged $e)
+    protected function apply(AggregateChanged $e): void
     {
         $handler = $this->determineEventHandlerMethodFor($e);
 
@@ -130,14 +117,7 @@ abstract class AggregateRoot
         $this->{$handler}($e);
     }
 
-    /**
-     * Determine event name
-     *
-     * @param AggregateChanged $e
-     *
-     * @return string
-     */
-    protected function determineEventHandlerMethodFor(AggregateChanged $e)
+    protected function determineEventHandlerMethodFor(AggregateChanged $e): string
     {
         return 'when' . implode(array_slice(explode('\\', get_class($e)), -1));
     }

@@ -8,6 +8,8 @@
  *  file that was distributed with this source code.
  */
 
+declare(strict_types=1);
+
 namespace ProophTest\EventSourcing;
 
 use Prooph\EventSourcing\EventStoreIntegration\AggregateRootDecorator;
@@ -66,11 +68,12 @@ class AggregateRootTest extends TestCase
 
     /**
      * @test
-     * @expectedException RuntimeException
-     * @expectedExceptionMessage Missing event handler method whenUserCreated for aggregate root ProophTest\EventSourcing\Mock\BrokenUser
      */
     public function it_throws_exception_when_no_handler_on_aggregate()
     {
+        $this->expectException(\RuntimeException::class);
+        $this->expectExceptionMessage('Missing event handler method whenUserCreated for aggregate root ProophTest\EventSourcing\Mock\BrokenUser');
+
         $brokenUser = BrokenUser::nameNew('John');
 
         AggregateRootDecorator::newInstance()->applyStreamEvents(

@@ -28,22 +28,12 @@ class AggregateChanged extends DomainEvent
      */
     protected $payload = [];
 
-    /**
-     * @param string $aggregateId
-     * @param array $payload
-     * @return static
-     */
-    public static function occur($aggregateId, array $payload = [])
+    public static function occur(string $aggregateId, array $payload = []) : self
     {
         return new static($aggregateId, $payload);
     }
 
-    /**
-     * @param string $aggregateId
-     * @param array $payload
-     * @param array $metadata
-     */
-    protected function __construct($aggregateId, array $payload, array $metadata = [])
+    protected function __construct(string $aggregateId, array $payload, array $metadata = [])
     {
         //Metadata needs to be set before setAggregateId is called
         $this->metadata = $metadata;
@@ -52,10 +42,7 @@ class AggregateChanged extends DomainEvent
         $this->init();
     }
 
-    /**
-     * @return string
-     */
-    public function aggregateId()
+    public function aggregateId(): string
     {
         return $this->metadata['aggregate_id'];
     }
@@ -66,18 +53,13 @@ class AggregateChanged extends DomainEvent
      * The payload should only contain scalar types and sub arrays.
      * The payload is normally passed to json_encode to persist the message or
      * push it into a message queue.
-     *
-     * @return array
      */
-    public function payload()
+    public function payload(): array
     {
         return $this->payload;
     }
 
-    /**
-     * @param string $aggregateId
-     */
-    protected function setAggregateId($aggregateId)
+    protected function setAggregateId(string $aggregateId): void
     {
         Assertion::string($aggregateId);
         Assertion::notEmpty($aggregateId);
@@ -87,11 +69,8 @@ class AggregateChanged extends DomainEvent
 
     /**
      * This method is called when message is instantiated named constructor fromArray
-     *
-     * @param array $payload
-     * @return void
      */
-    protected function setPayload(array $payload)
+    protected function setPayload(array $payload): void
     {
         $this->payload = $payload;
     }

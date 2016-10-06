@@ -32,25 +32,29 @@ class AggregateTranslator implements EventStoreAggregateTranslator
 
     /**
      * @param object $eventSourcedAggregateRoot
+     *
      * @return int
      */
-    public function extractAggregateVersion($eventSourcedAggregateRoot)
+    public function extractAggregateVersion($eventSourcedAggregateRoot): int
     {
         return (int) $this->getAggregateRootDecorator()->extractAggregateVersion($eventSourcedAggregateRoot);
     }
 
     /**
      * @param object $anEventSourcedAggregateRoot
+     *
      * @return string
      */
-    public function extractAggregateId($anEventSourcedAggregateRoot)
+    public function extractAggregateId($anEventSourcedAggregateRoot): string
     {
         return (string)$this->getAggregateRootDecorator()->extractAggregateId($anEventSourcedAggregateRoot);
     }
 
     /**
      * @param AggregateType $aggregateType
+     *
      * @param \Iterator $historyEvents
+     *
      * @return object reconstructed AggregateRoot
      */
     public function reconstituteAggregateFromHistory(AggregateType $aggregateType, \Iterator $historyEvents)
@@ -61,26 +65,27 @@ class AggregateTranslator implements EventStoreAggregateTranslator
 
     /**
      * @param object $anEventSourcedAggregateRoot
+     *
      * @return Message[]
      */
-    public function extractPendingStreamEvents($anEventSourcedAggregateRoot)
+    public function extractPendingStreamEvents($anEventSourcedAggregateRoot): array
     {
         return $this->getAggregateRootDecorator()->extractRecordedEvents($anEventSourcedAggregateRoot);
     }
 
     /**
      * @param object $anEventSourcedAggregateRoot
+     *
      * @param Iterator $events
+     *
+     * @return void
      */
-    public function replayStreamEvents($anEventSourcedAggregateRoot, Iterator $events)
+    public function replayStreamEvents($anEventSourcedAggregateRoot, Iterator $events): void
     {
         $this->getAggregateRootDecorator()->replayStreamEvents($anEventSourcedAggregateRoot, $events);
     }
 
-    /**
-     * @return AggregateRootDecorator
-     */
-    public function getAggregateRootDecorator()
+    public function getAggregateRootDecorator(): AggregateRootDecorator
     {
         if (null === $this->aggregateRootDecorator) {
             $this->aggregateRootDecorator = AggregateRootDecorator::newInstance();
@@ -89,10 +94,7 @@ class AggregateTranslator implements EventStoreAggregateTranslator
         return $this->aggregateRootDecorator;
     }
 
-    /**
-     * @param AggregateRootDecorator $anAggregateRootDecorator
-     */
-    public function setAggregateRootDecorator(AggregateRootDecorator $anAggregateRootDecorator)
+    public function setAggregateRootDecorator(AggregateRootDecorator $anAggregateRootDecorator): void
     {
         $this->aggregateRootDecorator = $anAggregateRootDecorator;
     }

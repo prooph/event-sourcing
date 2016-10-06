@@ -8,6 +8,8 @@
  *  file that was distributed with this source code.
  */
 
+declare(strict_types=1);
+
 namespace ProophTest\EventSourcing\EventStoreIntegration;
 
 use PHPUnit_Framework_TestCase as TestCase;
@@ -23,22 +25,24 @@ class AggregateRootDecoratorTest extends TestCase
 {
     /**
      * @test
-     * @expectedException RuntimeException
-     * @expectedExceptionMessage Aggregate root class UnknownClass cannot be found
      */
     public function it_throws_exception_when_reconstitute_from_history_with_invalid_class()
     {
+        $this->expectException(\RuntimeException::class);
+        $this->expectExceptionMessage('Aggregate root class UnknownClass cannot be found');
+
         $decorator = AggregateRootDecorator::newInstance();
         $decorator->fromHistory('UnknownClass', new \ArrayIterator([]));
     }
 
     /**
      * @test
-     * @expectedException BadMethodCallException
-     * @expectedExceptionMessage The AggregateRootDecorator does not have an id
      */
     public function it_throws_exception_when_accessing_aggregate_id()
     {
+        $this->expectException(\BadMethodCallException::class);
+        $this->expectExceptionMessage('The AggregateRootDecorator does not have an id');
+
         $decorator = ExtendedAggregateRootDecorator::newInstance();
         $decorator->getAggregateId();
     }
