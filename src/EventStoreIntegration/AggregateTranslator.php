@@ -52,7 +52,6 @@ class AggregateTranslator implements EventStoreAggregateTranslator
 
     /**
      * @param AggregateType $aggregateType
-     *
      * @param \Iterator $historyEvents
      *
      * @return object reconstructed AggregateRoot
@@ -75,7 +74,6 @@ class AggregateTranslator implements EventStoreAggregateTranslator
 
     /**
      * @param object $anEventSourcedAggregateRoot
-     *
      * @param Iterator $events
      *
      * @return void
