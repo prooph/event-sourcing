@@ -1,20 +1,27 @@
 language: php
 
-php:
-  - 5.5
-  - 5.6
-  - 7
+matrix:
+  fast_finish: true
+  include:
+    - php: 7.1
+      env:
+        - DEPENDENCIES=""
+        - TEST_COVERAGE=true
+    - php: 7.1
+      env:
+        - DEPENDENCIES="--prefer-lowest --prefer-stable"
 
 before_script:
   - composer self-update
-  - composer --dev install
+  - composer update --prefer-dist $DEPENDENCIES
 
 script:
   - php ./vendor/bin/phpunit --coverage-text --coverage-clover ./build/logs/clover.xml
   - ./vendor/bin/php-cs-fixer fix -v --diff --dry-run
+  - ./vendor/bin/docheader check examples/ src/ tests/
 
 after_success:
-  - php vendor/bin/coveralls -v
+  - if [[ $TEST_COVERAGE == 'true' ]]; then php vendor/bin/coveralls -v; fi
 
 notifications:
   webhooks:
