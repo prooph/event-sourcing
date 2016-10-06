@@ -37,7 +37,7 @@ class AggregateTranslator implements EventStoreAggregateTranslator
      */
     public function extractAggregateVersion($eventSourcedAggregateRoot): int
     {
-        return (int) $this->getAggregateRootDecorator()->extractAggregateVersion($eventSourcedAggregateRoot);
+        return $this->getAggregateRootDecorator()->extractAggregateVersion($eventSourcedAggregateRoot);
     }
 
     /**
@@ -47,7 +47,7 @@ class AggregateTranslator implements EventStoreAggregateTranslator
      */
     public function extractAggregateId($anEventSourcedAggregateRoot): string
     {
-        return (string)$this->getAggregateRootDecorator()->extractAggregateId($anEventSourcedAggregateRoot);
+        return $this->getAggregateRootDecorator()->extractAggregateId($anEventSourcedAggregateRoot);
     }
 
     /**
