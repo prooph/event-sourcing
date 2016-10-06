@@ -17,7 +17,7 @@ namespace My\Model {
 
     use Prooph\EventSourcing\AggregateChanged;
     use Prooph\EventSourcing\AggregateRoot;
-    use Rhumsaa\Uuid\Uuid;
+    use Ramsey\Uuid\Uuid;
 
     class User extends AggregateRoot
     {
@@ -33,11 +33,8 @@ namespace My\Model {
 
         /**
          * ARs should be created via static factory methods
-         *
-         * @param string $username
-         * @return User
          */
-        public static function nameNew($username)
+        public static function nameNew(string $username): User
         {
             //Perform assertions before raising a event
             \Assert\that($username)->notEmpty()->string();
@@ -54,18 +51,12 @@ namespace My\Model {
             return $instance;
         }
 
-        /**
-         * @return Uuid
-         */
-        public function userId()
+        public function userId(): Uuid
         {
             return $this->uuid;
         }
 
-        /**
-         * @return string
-         */
-        public function name()
+        public function name(): string
         {
             return $this->name;
         }
@@ -73,7 +64,7 @@ namespace My\Model {
         /**
          * @param $newName
          */
-        public function changeName($newName)
+        public function changeName(string $newName): void
         {
             \Assert\that($newName)->notEmpty()->string();
 
@@ -89,30 +80,23 @@ namespace My\Model {
          * Each applied event needs a corresponding handler method.
          *
          * The naming convention is: when[:ShortEventName]
-         *
-         * @param UserWasCreated $event
          */
-        protected function whenUserWasCreated(UserWasCreated $event)
+        protected function whenUserWasCreated(UserWasCreated $event): void
         {
             //Simply assign the event payload to the appropriate properties
             $this->uuid = Uuid::fromString($event->aggregateId());
             $this->name = $event->username();
         }
 
-        /**
-         * @param UserWasRenamed $event
-         */
-        protected function whenUserWasRenamed(UserWasRenamed $event)
+        protected function whenUserWasRenamed(UserWasRenamed $event): void
         {
             $this->name = $event->newName();
         }
 
         /**
          * Every AR needs a hidden method that returns the identifier of the AR as a string
-         *
-         * @return string representation of the unique identifier of the aggregate root
          */
-        protected function aggregateId()
+        protected function aggregateId(): string
         {
             return $this->uuid->toString();
         }
@@ -128,10 +112,7 @@ namespace My\Model {
      */
     class UserWasCreated extends AggregateChanged
     {
-        /**
-         * @return string
-         */
-        public function username()
+        public function username(): string
         {
             return $this->payload['name'];
         }
@@ -147,18 +128,12 @@ namespace My\Model {
      */
     class UserWasRenamed extends AggregateChanged
     {
-        /**
-         * @return string
-         */
-        public function newName()
+        public function newName(): string
         {
             return $this->payload['new_name'];
         }
 
-        /**
-         * @return string
-         */
-        public function oldName()
+        public function oldName(): string
         {
             return $this->payload['old_name'];
         }
@@ -174,17 +149,9 @@ namespace My\Model {
      */
     interface UserRepository
     {
-        /**
-         * @param User $user
-         * @return void
-         */
-        public function add(User $user);
+        public function add(User $user): void;
 
-        /**
-         * @param Uuid $uuid
-         * @return User
-         */
-        public function get(Uuid $uuid);
+        public function get(Uuid $uuid): User;
     }
 }
 
@@ -196,7 +163,7 @@ namespace My\Infrastructure {
     use Prooph\EventStore\Aggregate\AggregateRepository;
     use Prooph\EventStore\Aggregate\AggregateType;
     use Prooph\EventStore\EventStore;
-    use Rhumsaa\Uuid\Uuid;
+    use Ramsey\Uuid\Uuid;
 
     /**
      * Class UserRepositoryImpl extends Prooph\EventStore\Aggregate\AggregateRepository and implements My\Model\UserRepository
@@ -222,16 +189,12 @@ namespace My\Infrastructure {
         /**
          * @param User $user
          */
-        public function add(User $user)
+        public function add(User $user): void
         {
             $this->addAggregateRoot($user);
         }
 
-        /**
-         * @param Uuid $uuid
-         * @return User
-         */
-        public function get(Uuid $uuid)
+        public function get(Uuid $uuid): User
         {
             return $this->getAggregateRoot($uuid->toString());
         }
