@@ -12,7 +12,6 @@ declare(strict_types=1);
 
 namespace ProophTest\EventSourcing\Mock;
 
-use Prooph\EventSourcing\AggregateChanged;
 use Prooph\EventSourcing\AggregateRoot;
 use Ramsey\Uuid\Uuid;
 
