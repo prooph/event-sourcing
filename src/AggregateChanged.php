@@ -38,7 +38,7 @@ class AggregateChanged extends DomainEvent
         //Metadata needs to be set before setAggregateId and setVersion is called
         $this->metadata = $metadata;
         $this->setAggregateId($aggregateId);
-        $this->setVersion($metadata['version'] ?? 0);
+        $this->setVersion($metadata['_version'] ?? 0);
         $this->setPayload($payload);
         $this->init();
     }
