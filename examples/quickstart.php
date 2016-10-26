@@ -161,13 +161,13 @@ namespace My\Infrastructure {
     use My\Model\User;
     use My\Model\UserRepository;
     use Prooph\EventSourcing\EventStoreIntegration\AggregateTranslator;
-    use Prooph\EventStore\Aggregate\AggregateRepository;
-    use Prooph\EventStore\Aggregate\AggregateType;
+    use Prooph\EventSourcing\Aggregate\AggregateRepository;
+    use Prooph\EventSourcing\Aggregate\AggregateType;
     use Prooph\EventStore\EventStore;
     use Ramsey\Uuid\Uuid;
 
     /**
-     * Class UserRepositoryImpl extends Prooph\EventStore\Aggregate\AggregateRepository and implements My\Model\UserRepository
+     * Class UserRepositoryImpl extends Prooph\EventSourcing\Aggregate\AggregateRepository and implements My\Model\UserRepository
      *
      * @package My\Infrastructure
      * @author Alexander Miertsch <kontakt@codeliner.ws>

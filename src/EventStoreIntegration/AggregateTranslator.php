@@ -14,8 +14,8 @@ namespace Prooph\EventSourcing\EventStoreIntegration;
 
 use Iterator;
 use Prooph\Common\Messaging\Message;
-use Prooph\EventStore\Aggregate\AggregateType;
-use Prooph\EventStore\Aggregate\AggregateTranslator as EventStoreAggregateTranslator;
+use Prooph\EventSourcing\Aggregate\AggregateType;
+use Prooph\EventSourcing\Aggregate\AggregateTranslator as EventStoreAggregateTranslator;
 
 /**
  * Class AggregateTranslator

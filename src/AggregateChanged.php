@@ -33,7 +33,7 @@ class AggregateChanged extends DomainEvent
         return new static($aggregateId, $payload);
     }
 
-    protected function __construct(string $aggregateId, array $payload, array $metadata = [])
+    protected function __construct(string $aggregateId, array $payload , array $metadata = [])
     {
         //Metadata needs to be set before setAggregateId and setVersion is called
         $this->metadata = $metadata;
