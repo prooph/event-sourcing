@@ -14,8 +14,8 @@ namespace Prooph\EventSourcing\Aggregate;
 
 use ArrayIterator;
 use Prooph\Common\Messaging\Message;
+use Prooph\EventSourcing\Snapshot\SnapshotStore;
 use Prooph\EventStore\EventStore;
-use Prooph\EventStore\Snapshot\SnapshotStore;
 use Prooph\EventStore\Stream\Stream;
 use Prooph\EventStore\Stream\StreamName;
 

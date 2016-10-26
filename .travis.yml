@@ -13,7 +13,7 @@ matrix:
 
 before_script:
   - composer self-update
-  - composer update --prefer-dist $DEPENDENCIES
+  - composer update --prefer-source $DEPENDENCIES
 
 script:
   - php ./vendor/bin/phpunit --coverage-text --coverage-clover ./build/logs/clover.xml

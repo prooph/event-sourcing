@@ -22,9 +22,12 @@
     ],
     "require": {
         "php": "^7.1",
-        "prooph/event-store" : "dev-php_7_1 as 7.0.0"
+        "prooph/common" : "dev-develop as 4.0",
+        "prooph/event-store" : "dev-develop as 7.0.0"
     },
     "require-dev": {
+        "container-interop/container-interop": "^1.1",
+        "sandrokeil/interop-config": "^1.0",
         "phpunit/phpunit": "^5.6",
         "phpunit/phpunit-mock-objects": "^3.3.1",
         "friendsofphp/php-cs-fixer": "^1.12.2",

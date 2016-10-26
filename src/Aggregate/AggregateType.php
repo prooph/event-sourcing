@@ -15,7 +15,7 @@ namespace Prooph\EventSourcing\Aggregate;
 /**
  * Class AggregateType
  *
- * @package Prooph\EventStore\Stream
+ * @package Prooph\EventSourcing\Stream
  * @author Alexander Miertsch <contact@prooph.de>
  */
 class AggregateType
