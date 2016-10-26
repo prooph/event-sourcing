@@ -35,16 +35,17 @@ class AggregateChanged extends DomainEvent
 
     protected function __construct(string $aggregateId, array $payload, array $metadata = [])
     {
-        //Metadata needs to be set before setAggregateId is called
+        //Metadata needs to be set before setAggregateId and setVersion is called
         $this->metadata = $metadata;
         $this->setAggregateId($aggregateId);
+        $this->setVersion($metadata['version'] ?? 0);
         $this->setPayload($payload);
         $this->init();
     }
 
     public function aggregateId(): string
     {
-        return $this->metadata['aggregate_id'];
+        return $this->metadata['_aggregate_id'];
     }
 
     /**
@@ -59,11 +60,29 @@ class AggregateChanged extends DomainEvent
         return $this->payload;
     }
 
+    public function version(): int
+    {
+        return $this->metadata['_version'];
+    }
+
+    public function withVersion(int $version): AggregateChanged
+    {
+        $self = clone $this;
+        $self->setVersion($version);
+
+        return $self;
+    }
+
     protected function setAggregateId(string $aggregateId): void
     {
         Assertion::notEmpty($aggregateId);
 
-        $this->metadata['aggregate_id'] = $aggregateId;
+        $this->metadata['_aggregate_id'] = $aggregateId;
+    }
+
+    protected function setVersion(int $version): void
+    {
+        $this->metadata['_version'] = $version;
     }
 
     /**
