@@ -24,9 +24,7 @@ class AggregateType
      *
      * @param object $eventSourcedAggregateRoot
      *
-     * @return AggregateType
-     *
-     * @throws Exception\InvalidArgumentException
+     * @throws Exception\AggregateTypeException
      */
     public static function fromAggregateRoot($eventSourcedAggregateRoot): AggregateType
     {

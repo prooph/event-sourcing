@@ -101,9 +101,7 @@ class ConfigurableAggregateTranslator implements AggregateTranslator
     /**
      * @param object $eventSourcedAggregateRoot
      *
-     * @return string
-     *
-     * @throws Exception\AggregateTranslationFailedException
+     * @throws AggregateTranslationFailedException
      */
     public function extractAggregateId($eventSourcedAggregateRoot): string
     {
@@ -117,13 +115,13 @@ class ConfigurableAggregateTranslator implements AggregateTranslator
             );
         }
 
-        return (string)$eventSourcedAggregateRoot->{$this->identifierMethodName}();
+        return (string) $eventSourcedAggregateRoot->{$this->identifierMethodName}();
     }
 
     /**
      * @param object $eventSourcedAggregateRoot
      *
-     * @return int
+     * @throws AggregateTranslationFailedException
      */
     public function extractAggregateVersion($eventSourcedAggregateRoot): int
     {
@@ -141,12 +139,9 @@ class ConfigurableAggregateTranslator implements AggregateTranslator
     }
 
     /**
-     * @param AggregateType $aggregateType
-     * @param Iterator $historyEvents
-     *
      * @return object reconstructed EventSourcedAggregateRoot
      *
-     * @throws Exception\AggregateTranslationFailedException
+     * @throws AggregateTranslationFailedException
      */
     public function reconstituteAggregateFromHistory(AggregateType $aggregateType, Iterator $historyEvents)
     {
@@ -197,7 +192,7 @@ class ConfigurableAggregateTranslator implements AggregateTranslator
      *
      * @return Message[]
      *
-     * @throws Exception\AggregateTranslationFailedException
+     * @throws AggregateTranslationFailedException
      */
     public function extractPendingStreamEvents($eventSourcedAggregateRoot): array
     {
@@ -217,7 +212,7 @@ class ConfigurableAggregateTranslator implements AggregateTranslator
 
         $recordedEvents = $eventSourcedAggregateRoot->{$this->popRecordedEventsMethodName}();
 
-        if (! is_array($recordedEvents) && ! $recordedEvents instanceof \Traversable) {
+        if (! is_iterable($recordedEvents)) {
             throw new AggregateTranslationFailedException(
                 sprintf(
                     'Failed to pop recorded events from aggregate root %s. The AR method %s returned a non traversable result!',
@@ -251,9 +246,7 @@ class ConfigurableAggregateTranslator implements AggregateTranslator
      * @param object $eventSourcedAggregateRoot
      * @param Iterator $events
      *
-     * @return void
-     *
-     * @throws Exception\AggregateTranslationFailedException
+     * @throws AggregateTranslationFailedException
      */
     public function replayStreamEvents($eventSourcedAggregateRoot, Iterator $events): void
     {

@@ -19,22 +19,15 @@ interface AggregateTranslator
 {
     /**
      * @param object $eventSourcedAggregateRoot
-     *
-     * @return int
      */
     public function extractAggregateVersion($eventSourcedAggregateRoot): int;
 
     /**
      * @param object $eventSourcedAggregateRoot
-     *
-     * @return string
      */
     public function extractAggregateId($eventSourcedAggregateRoot): string;
 
     /**
-     * @param AggregateType $aggregateType
-     * @param Iterator $historyEvents
-     *
      * @return object reconstructed EventSourcedAggregateRoot
      */
     public function reconstituteAggregateFromHistory(AggregateType $aggregateType, Iterator $historyEvents);
@@ -49,8 +42,6 @@ interface AggregateTranslator
     /**
      * @param object $eventSourcedAggregateRoot
      * @param Iterator $events
-     *
-     * @return void
      */
     public function replayStreamEvents($eventSourcedAggregateRoot, Iterator $events): void;
 }

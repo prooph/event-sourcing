@@ -103,8 +103,6 @@ class AggregateRepository
 
     /**
      * @param object $eventSourcedAggregateRoot
-     *
-     * @throws Exception\AggregateTypeException
      */
     public function addAggregateRoot($eventSourcedAggregateRoot): void
     {
@@ -133,8 +131,6 @@ class AggregateRepository
 
     /**
      * Returns null if no stream events can be found for aggregate root otherwise the reconstituted aggregate root
-     *
-     * @param string $aggregateId
      *
      * @return null|object
      */
@@ -185,8 +181,6 @@ class AggregateRepository
 
     /**
      * @param object $aggregateRoot
-     *
-     * @return int
      */
     public function extractAggregateVersion($aggregateRoot) : int
     {
@@ -202,8 +196,6 @@ class AggregateRepository
     }
 
     /**
-     * @param string $aggregateId
-     *
      * @return null|object
      */
     protected function loadFromSnapshotStore(string $aggregateId)
@@ -259,8 +251,8 @@ class AggregateRepository
      */
     protected function enrichEventMetadata(Message $domainEvent, string $aggregateId): Message
     {
-        $domainEvent = $domainEvent->withAddedMetadata('aggregate_id', $aggregateId);
-        return $domainEvent->withAddedMetadata('aggregate_type', $this->aggregateType->toString());
+        $domainEvent = $domainEvent->withAddedMetadata('_aggregate_id', $aggregateId);
+        return $domainEvent->withAddedMetadata('_aggregate_type', $this->aggregateType->toString());
     }
 
     /**

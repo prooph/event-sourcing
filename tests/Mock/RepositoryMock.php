@@ -36,7 +36,7 @@ final class RepositoryMock extends AggregateRepository
         return $this->aggregateTranslator;
     }
 
-    public function accessDeterminedStreamName(?string $aggregateId = null): StreamName
+    public function accessDeterminedStreamName(string $aggregateId = null): StreamName
     {
         return $this->determineStreamName($aggregateId);
     }
