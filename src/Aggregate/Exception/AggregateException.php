@@ -12,6 +12,6 @@ declare(strict_types=1);
 
 namespace Prooph\EventSourcing\Aggregate\Exception;
 
-class RuntimeException extends \RuntimeException implements AggregateException
+interface AggregateException
 {
 }

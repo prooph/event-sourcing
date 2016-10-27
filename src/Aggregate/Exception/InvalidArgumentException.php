@@ -12,12 +12,6 @@ declare(strict_types=1);
 
 namespace Prooph\EventSourcing\Aggregate\Exception;
 
-use Prooph\EventStore\Exception\EventStoreException;
-
-/**
- * Class InvalidArgumentException
- * @package Prooph\EventSourcing\Aggregate\Exception
- */
-class InvalidArgumentException extends \InvalidArgumentException implements EventStoreException
+class InvalidArgumentException extends \InvalidArgumentException implements AggregateException
 {
 }

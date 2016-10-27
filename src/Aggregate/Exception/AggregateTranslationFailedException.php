@@ -12,12 +12,6 @@ declare(strict_types=1);
 
 namespace Prooph\EventSourcing\Aggregate\Exception;
 
-use Prooph\EventStore\Exception\EventStoreException;
-
-/**
- * Class AggregateTranslationFailedException
- * @package Prooph\EventSourcing\Aggregate\Exception
- */
-class AggregateTranslationFailedException extends \RuntimeException implements EventStoreException
+class AggregateTranslationFailedException extends RuntimeException
 {
 }
