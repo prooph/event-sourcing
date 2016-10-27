@@ -1,22 +1,17 @@
 <?php
-/*
+/**
  * This file is part of the prooph/event-sourcing.
- * (c) Alexander Miertsch <contact@prooph.de>
+ * (c) 2014-2016 prooph software GmbH <contact@prooph.de>
+ * (c) 2015-2016 Sascha-Oliver Prolic <saschaprolic@googlemail.com>
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
- *
- * Date: 06/06/14 - 23:05
  */
+
+declare(strict_types=1);
 
 namespace ProophTest\EventSourcing;
 
-/**
- * Class TestCase
- *
- * @package ProophTest\EventSourcing
- * @author Alexander Miertsch <kontakt@codeliner.ws>
- */
 class TestCase extends \PHPUnit_Framework_TestCase
 {
 }

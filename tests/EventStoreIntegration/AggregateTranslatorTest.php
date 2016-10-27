@@ -1,13 +1,14 @@
 <?php
-/*
+/**
  * This file is part of the prooph/event-sourcing.
- * (c) Alexander Miertsch <contact@prooph.de>
+ * (c) 2014-2016 prooph software GmbH <contact@prooph.de>
+ * (c) 2015-2016 Sascha-Oliver Prolic <saschaprolic@googlemail.com>
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
- *
- * Date: 09/07/14 - 19:49
  */
+
+declare(strict_types=1);
 
 namespace ProophTest\EventSourcing\EventStoreIntegration;
 
@@ -18,18 +19,12 @@ use ProophTest\EventSourcing\Mock\User;
 use ProophTest\EventSourcing\Mock\UserNameChanged;
 use ProophTest\EventSourcing\TestCase;
 use Prooph\EventStore\Adapter\InMemoryAdapter;
-use Prooph\EventStore\Aggregate\AggregateRepository;
-use Prooph\EventStore\Aggregate\AggregateType;
+use Prooph\EventSourcing\Aggregate\AggregateRepository;
+use Prooph\EventSourcing\Aggregate\AggregateType;
 use Prooph\EventStore\EventStore;
 use Prooph\EventStore\Stream\Stream;
 use Prooph\EventStore\Stream\StreamName;
 
-/**
- * Class AggregateTranslatorTest
- *
- * @package ProophTest\EventSourcing\EventStoreIntegration
- * @author Alexander Miertsch <kontakt@codeliner.ws>
- */
 class AggregateTranslatorTest extends TestCase
 {
     /**
@@ -119,7 +114,7 @@ class AggregateTranslatorTest extends TestCase
      */
     public function it_can_use_custom_aggregate_root_decorator()
     {
-        $mock = $this->getMock(AggregateRootDecorator::class, [], [], '', false);
+        $mock = $this->createMock(AggregateRootDecorator::class);
 
         $translator = new AggregateTranslator();
         $translator->setAggregateRootDecorator($mock);

@@ -1,12 +1,11 @@
 <?php
-/*
+/**
  * This file is part of the prooph/event-sourcing.
- * (c) Alexander Miertsch <kontakt@codeliner.ws>
+ * (c) 2014-2016 prooph software GmbH <contact@prooph.de>
+ * (c) 2015-2016 Sascha-Oliver Prolic <saschaprolic@googlemail.com>
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
- *
- * Date: 09/07/14 - 20:11
  */
 
 namespace {
@@ -16,9 +15,10 @@ namespace {
 
 namespace My\Model {
 
+    use Assert\Assertion;
     use Prooph\EventSourcing\AggregateChanged;
     use Prooph\EventSourcing\AggregateRoot;
-    use Rhumsaa\Uuid\Uuid;
+    use Ramsey\Uuid\Uuid;
 
     class User extends AggregateRoot
     {
@@ -34,14 +34,11 @@ namespace My\Model {
 
         /**
          * ARs should be created via static factory methods
-         *
-         * @param string $username
-         * @return User
          */
-        public static function nameNew($username)
+        public static function nameNew(string $username): User
         {
             //Perform assertions before raising a event
-            \Assert\that($username)->notEmpty()->string();
+            Assertion::notEmpty($username);
 
             $uuid = Uuid::uuid4();
 
@@ -55,18 +52,12 @@ namespace My\Model {
             return $instance;
         }
 
-        /**
-         * @return Uuid
-         */
-        public function userId()
+        public function userId(): Uuid
         {
             return $this->uuid;
         }
 
-        /**
-         * @return string
-         */
-        public function name()
+        public function name(): string
         {
             return $this->name;
         }
@@ -74,9 +65,9 @@ namespace My\Model {
         /**
          * @param $newName
          */
-        public function changeName($newName)
+        public function changeName(string $newName): void
         {
-            \Assert\that($newName)->notEmpty()->string();
+            Assertion::notEmpty($newName);
 
             if ($newName != $this->name) {
                 $this->recordThat(UserWasRenamed::occur(
@@ -90,30 +81,23 @@ namespace My\Model {
          * Each applied event needs a corresponding handler method.
          *
          * The naming convention is: when[:ShortEventName]
-         *
-         * @param UserWasCreated $event
          */
-        protected function whenUserWasCreated(UserWasCreated $event)
+        protected function whenUserWasCreated(UserWasCreated $event): void
         {
             //Simply assign the event payload to the appropriate properties
             $this->uuid = Uuid::fromString($event->aggregateId());
             $this->name = $event->username();
         }
 
-        /**
-         * @param UserWasRenamed $event
-         */
-        protected function whenUserWasRenamed(UserWasRenamed $event)
+        protected function whenUserWasRenamed(UserWasRenamed $event): void
         {
             $this->name = $event->newName();
         }
 
         /**
          * Every AR needs a hidden method that returns the identifier of the AR as a string
-         *
-         * @return string representation of the unique identifier of the aggregate root
          */
-        protected function aggregateId()
+        protected function aggregateId(): string
         {
             return $this->uuid->toString();
         }
@@ -129,10 +113,7 @@ namespace My\Model {
      */
     class UserWasCreated extends AggregateChanged
     {
-        /**
-         * @return string
-         */
-        public function username()
+        public function username(): string
         {
             return $this->payload['name'];
         }
@@ -148,18 +129,12 @@ namespace My\Model {
      */
     class UserWasRenamed extends AggregateChanged
     {
-        /**
-         * @return string
-         */
-        public function newName()
+        public function newName(): string
         {
             return $this->payload['new_name'];
         }
 
-        /**
-         * @return string
-         */
-        public function oldName()
+        public function oldName(): string
         {
             return $this->payload['old_name'];
         }
@@ -175,17 +150,9 @@ namespace My\Model {
      */
     interface UserRepository
     {
-        /**
-         * @param User $user
-         * @return void
-         */
-        public function add(User $user);
+        public function add(User $user): void;
 
-        /**
-         * @param Uuid $uuid
-         * @return User
-         */
-        public function get(Uuid $uuid);
+        public function get(Uuid $uuid): User;
     }
 }
 
@@ -194,13 +161,13 @@ namespace My\Infrastructure {
     use My\Model\User;
     use My\Model\UserRepository;
     use Prooph\EventSourcing\EventStoreIntegration\AggregateTranslator;
-    use Prooph\EventStore\Aggregate\AggregateRepository;
-    use Prooph\EventStore\Aggregate\AggregateType;
+    use Prooph\EventSourcing\Aggregate\AggregateRepository;
+    use Prooph\EventSourcing\Aggregate\AggregateType;
     use Prooph\EventStore\EventStore;
-    use Rhumsaa\Uuid\Uuid;
+    use Ramsey\Uuid\Uuid;
 
     /**
-     * Class UserRepositoryImpl extends Prooph\EventStore\Aggregate\AggregateRepository and implements My\Model\UserRepository
+     * Class UserRepositoryImpl extends Prooph\EventSourcing\Aggregate\AggregateRepository and implements My\Model\UserRepository
      *
      * @package My\Infrastructure
      * @author Alexander Miertsch <kontakt@codeliner.ws>
@@ -223,16 +190,12 @@ namespace My\Infrastructure {
         /**
          * @param User $user
          */
-        public function add(User $user)
+        public function add(User $user): void
         {
             $this->addAggregateRoot($user);
         }
 
-        /**
-         * @param Uuid $uuid
-         * @return User
-         */
-        public function get(Uuid $uuid)
+        public function get(Uuid $uuid): User
         {
             return $this->getAggregateRoot($uuid->toString());
         }
@@ -262,7 +225,7 @@ namespace {
     $userRepository->add($user);
 
     //Before we commit the transaction let's attach a listener to check that the UserWasCreated event is published after commit
-    $eventStore->getActionEventEmitter()->attachListener('commit.post', function (ActionEvent $event) {
+    $eventStore->getActionEventEmitter()->attachListener('commit.post', function (ActionEvent $event): void {
         foreach ($event->getParam('recordedEvents', new \ArrayIterator()) as $streamEvent) {
             echo sprintf(
                 "Event with name %s was recorded. It occurred on %s UTC /// ",

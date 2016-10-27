@@ -1,69 +1,51 @@
 <?php
-/*
- * This file is part of the prooph/event-store.
- * (c) Alexander Miertsch <contact@prooph.de>
+/**
+ * This file is part of the prooph/event-sourcing.
+ * (c) 2014-2016 prooph software GmbH <contact@prooph.de>
+ * (c) 2015-2016 Sascha-Oliver Prolic <saschaprolic@googlemail.com>
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
- *
- * Date: 04/19/14 - 20:24
  */
+
+declare(strict_types=1);
 
 namespace Prooph\EventSourcing\EventStoreIntegration;
 
 use Iterator;
 use Prooph\EventSourcing\AggregateRoot;
 
-/**
- * Class AggregateRootDecorator
- *
- * @package Prooph\EventSourcing\Mapping
- * @author Alexander Miertsch <kontakt@codeliner.ws>
- */
 class AggregateRootDecorator extends AggregateRoot
 {
-    /**
-     * @return static
-     */
-    public static function newInstance()
+    public static function newInstance(): self
     {
         return new static();
     }
 
-    /**
-     * @param AggregateRoot $anAggregateRoot
-     * @return int
-     */
-    public function extractAggregateVersion(AggregateRoot $anAggregateRoot)
+    public function extractAggregateVersion(AggregateRoot $anAggregateRoot): int
     {
         return $anAggregateRoot->version;
     }
 
     /**
      * @param AggregateRoot $anAggregateRoot
+     *
      * @return \Prooph\EventSourcing\AggregateChanged[]
      */
-    public function extractRecordedEvents(AggregateRoot $anAggregateRoot)
+    public function extractRecordedEvents(AggregateRoot $anAggregateRoot): array
     {
         return $anAggregateRoot->popRecordedEvents();
     }
 
-    /**
-     * @param AggregateRoot $anAggregateRoot
-     * @return string
-     */
-    public function extractAggregateId(AggregateRoot $anAggregateRoot)
+    public function extractAggregateId(AggregateRoot $anAggregateRoot): string
     {
         return $anAggregateRoot->aggregateId();
     }
 
     /**
-     * @param string $arClass
-     * @param \Iterator $aggregateChangedEvents
-     * @return AggregateRoot
      * @throws \RuntimeException
      */
-    public function fromHistory($arClass, \Iterator $aggregateChangedEvents)
+    public function fromHistory($arClass, \Iterator $aggregateChangedEvents): AggregateRoot
     {
         if (! class_exists($arClass)) {
             throw new \RuntimeException(
@@ -74,20 +56,15 @@ class AggregateRootDecorator extends AggregateRoot
         return $arClass::reconstituteFromHistory($aggregateChangedEvents);
     }
 
-    /**
-     * @param AggregateRoot $aggregateRoot
-     * @param Iterator $events
-     */
-    public function replayStreamEvents(AggregateRoot $aggregateRoot, Iterator $events)
+    public function replayStreamEvents(AggregateRoot $aggregateRoot, Iterator $events): void
     {
         $aggregateRoot->replay($events);
     }
 
     /**
      * @throws \BadMethodCallException
-     * @return string representation of the unique identifier of the aggregate root
      */
-    protected function aggregateId()
+    protected function aggregateId(): string
     {
         throw new \BadMethodCallException('The AggregateRootDecorator does not have an id');
     }

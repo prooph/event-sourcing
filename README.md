@@ -9,7 +9,7 @@ Simple and lightweight event sourcing library with out of the box support for [P
 
 #Installation
 
-You can install ProophEventSourcing via composer by adding `"prooph/event-sourcing": "~4.0"` as requirement to your composer.json.
+You can install ProophEventSourcing via composer by adding `"prooph/event-sourcing": "^5.0"` as requirement to your composer.json.
 
 #Usage 
 
