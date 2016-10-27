@@ -7,6 +7,7 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
+
 declare(strict_types=1);
 
 namespace ProophTest\EventSourcing\Container\Aggregate;
@@ -20,9 +21,6 @@ use ProophTest\EventSourcing\Mock\RepositoryMock;
 use ProophTest\EventStore\Mock\User;
 use ProophTest\EventStore\TestCase;
 
-/**
- * Main tests can be found in AbstractAggregateRepositoryFactoryTest
- */
 class AggregateRepositoryFactoryTest extends TestCase
 {
     /**

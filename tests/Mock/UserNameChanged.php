@@ -14,12 +14,6 @@ namespace ProophTest\EventSourcing\Mock;
 
 use Prooph\EventSourcing\AggregateChanged;
 
-/**
- * Class UserNameChanged
- *
- * @package ProophTest\EventSourcing\Mock
- * @author Alexander Miertsch <contact@prooph.de>
- */
 class UserNameChanged extends AggregateChanged
 {
     public function newUsername(): string

@@ -14,10 +14,6 @@ namespace ProophTest\EventSourcing\Mock;
 
 use Prooph\EventSourcing\EventStoreIntegration\AggregateRootDecorator;
 
-/**
- * Class ExtendedAggregateRootDecorator
- * @package ProophTest\EventSourcing\Mock
- */
 class ExtendedAggregateRootDecorator extends AggregateRootDecorator
 {
     public function getAggregateId(): string

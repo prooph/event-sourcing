@@ -16,11 +16,6 @@ use PHPUnit_Framework_TestCase as TestCase;
 use Prooph\EventSourcing\EventStoreIntegration\AggregateRootDecorator;
 use ProophTest\EventSourcing\Mock\ExtendedAggregateRootDecorator;
 
-/**
- * Class AggregateRootDecoratorTest
- *
- * @package ProophTest\EventSourcing\EventStoreIntegration
- */
 class AggregateRootDecoratorTest extends TestCase
 {
     /**

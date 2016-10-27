@@ -12,12 +12,6 @@ declare(strict_types=1);
 
 namespace ProophTest\EventSourcing;
 
-/**
- * Class TestCase
- *
- * @package ProophTest\EventSourcing
- * @author Alexander Miertsch <kontakt@codeliner.ws>
- */
 class TestCase extends \PHPUnit_Framework_TestCase
 {
 }

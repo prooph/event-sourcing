@@ -23,12 +23,6 @@ use ProophTest\EventStore\Mock\DefaultAggregateRootContract;
 use ProophTest\EventStore\Mock\FaultyAggregateRoot;
 use ProophTest\EventStore\TestCase;
 
-/**
- * Class ConfigurableAggregateTranslatorTest
- *
- * @package ProophTest\EventStore\Aggregate
- * @author Alexander Miertsch <contact@prooph.de>
- */
 final class ConfigurableAggregateTranslatorTest extends TestCase
 {
     /**

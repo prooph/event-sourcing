@@ -20,11 +20,6 @@ use Prooph\EventSourcing\Aggregate\Exception\InvalidArgumentException;
 use ProophTest\EventStore\Mock\Post;
 use ProophTest\EventStore\Mock\User;
 
-/**
- * Class AggregateTypeTest
- *
- * @package ProophTest\EventStore\Aggregate
- */
 class AggregateTypeTest extends TestCase
 {
     /**

@@ -15,12 +15,6 @@ namespace ProophTest\EventSourcing\Mock;
 use Prooph\EventSourcing\AggregateRoot;
 use Ramsey\Uuid\Uuid;
 
-/**
- * Class BrokenUser
- *
- * @package ProophTest\EventSourcing\Mock
- * @author Alexander Miertsch <contact@prooph.de>
- */
 class BrokenUser extends AggregateRoot
 {
     /**

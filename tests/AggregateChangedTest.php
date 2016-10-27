@@ -15,12 +15,6 @@ namespace ProophTest\EventSourcing;
 use Prooph\EventSourcing\AggregateChanged;
 use Ramsey\Uuid\Uuid;
 
-/**
- * Class AggregateChangedTest
- *
- * @package ProophTest\EventSourcing\EventSourcing
- * @author Alexander Miertsch <contact@prooph.de>
- */
 class AggregateChangedTest extends TestCase
 {
     /**

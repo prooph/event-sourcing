@@ -31,12 +31,6 @@ use ProophTest\EventStore\Mock\UsernameChanged;
 use ProophTest\EventStore\TestCase;
 use Prophecy\Argument;
 
-/**
- * Class AggregateRepositoryTest
- *
- * @package ProophTest\EventStore\Aggregate
- * @author Alexander Miertsch <contact@prooph.de>
- */
 class AggregateRepositoryTest extends TestCase
 {
     /**

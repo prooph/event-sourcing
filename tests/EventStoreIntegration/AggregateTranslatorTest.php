@@ -25,12 +25,6 @@ use Prooph\EventStore\EventStore;
 use Prooph\EventStore\Stream\Stream;
 use Prooph\EventStore\Stream\StreamName;
 
-/**
- * Class AggregateTranslatorTest
- *
- * @package ProophTest\EventSourcing\EventStoreIntegration
- * @author Alexander Miertsch <kontakt@codeliner.ws>
- */
 class AggregateTranslatorTest extends TestCase
 {
     /**

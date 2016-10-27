@@ -16,12 +16,6 @@ use Prooph\EventSourcing\EventStoreIntegration\AggregateRootDecorator;
 use ProophTest\EventSourcing\Mock\BrokenUser;
 use ProophTest\EventSourcing\Mock\User;
 
-/**
- * Class AggregateRootTest
- *
- * @package ProophTest\EventSourcing\EventSourcing
- * @author Alexander Miertsch <contact@prooph.de>
- */
 class AggregateRootTest extends TestCase
 {
     /**

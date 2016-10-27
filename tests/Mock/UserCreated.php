@@ -14,12 +14,6 @@ namespace ProophTest\EventSourcing\Mock;
 
 use Prooph\EventSourcing\AggregateChanged;
 
-/**
- * Class UserCreated
- *
- * @package ProophTest\EventSourcing\Mock
- * @author Alexander Miertsch <contact@prooph.de>
- */
 class UserCreated extends AggregateChanged
 {
     public function userId(): string
