@@ -159,8 +159,8 @@ class AggregateRepository
             $streamEvents = $this->eventStore->load($streamName)->streamEvents();
         } else {
             $streamEvents = $this->eventStore->loadEventsByMetadataFrom($streamName, [
-                'aggregate_type' => $this->aggregateType->toString(),
-                'aggregate_id' => $aggregateId
+                '_aggregate_type' => $this->aggregateType->toString(),
+                '_aggregate_id' => $aggregateId
             ]);
         }
 
@@ -213,8 +213,8 @@ class AggregateRepository
         $streamEvents = $this->eventStore->loadEventsByMetadataFrom(
             $streamName,
             [
-                'aggregate_type' => $this->aggregateType->toString(),
-                'aggregate_id' => $aggregateId
+                '_aggregate_type' => $this->aggregateType->toString(),
+                '_aggregate_id' => $aggregateId
             ],
             $snapshot->lastVersion() + 1
         );
