@@ -18,12 +18,6 @@ use Prooph\Common\Messaging\Message;
 use Prooph\EventSourcing\Aggregate\Exception\AggregateTranslationFailedException;
 use Prooph\EventStore\Util\MapIterator;
 
-/**
- * Class ConfigurableAggregateTranslator
- *
- * @package Prooph\EventSourcing\Aggregate
- * @author Alexander Miertsch <contact@prooph.de>
- */
 class ConfigurableAggregateTranslator implements AggregateTranslator
 {
     /**

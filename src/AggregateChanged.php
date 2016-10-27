@@ -15,12 +15,6 @@ namespace Prooph\EventSourcing;
 use Assert\Assertion;
 use Prooph\Common\Messaging\DomainEvent;
 
-/**
- * AggregateChanged
- *
- * @author Alexander Miertsch <contact@prooph.de>
- * @package Prooph\EventSourcing
- */
 class AggregateChanged extends DomainEvent
 {
     /**

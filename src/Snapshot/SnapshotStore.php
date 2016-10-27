@@ -15,10 +15,6 @@ namespace Prooph\EventSourcing\Snapshot;
 use Prooph\EventSourcing\Aggregate\AggregateType;
 use Prooph\EventSourcing\Snapshot\Adapter\Adapter;
 
-/**
- * Class SnapshotStore
- * @package Prooph\EventSourcing\Snapshot
- */
 class SnapshotStore
 {
     /**

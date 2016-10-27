@@ -22,9 +22,6 @@ use Prooph\EventStore\EventStore;
 use Prooph\EventStore\Exception\ConfigurationException;
 use Prooph\EventStore\Stream\StreamName;
 
-/**
- * Creates aggregate repository classes
- */
 final class AggregateRepositoryFactory implements RequiresConfigId, RequiresMandatoryOptions
 {
     use ConfigurationTrait;

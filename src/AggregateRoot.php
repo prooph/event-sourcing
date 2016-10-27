@@ -12,13 +12,6 @@ declare(strict_types=1);
 
 namespace Prooph\EventSourcing;
 
-/**
- * AggregateRoot
- *
- * @author Alexander Miertsch <contact@prooph.de>
- *
- * @package Prooph\EventSourcing
- */
 abstract class AggregateRoot
 {
     /**

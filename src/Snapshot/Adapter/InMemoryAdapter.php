@@ -15,10 +15,6 @@ namespace Prooph\EventSourcing\Snapshot\Adapter;
 use Prooph\EventSourcing\Aggregate\AggregateType;
 use Prooph\EventSourcing\Snapshot\Snapshot;
 
-/**
- * Class InMemoryAdapter
- * @package Prooph\EventSourcing\Snapshot\Adapter
- */
 final class InMemoryAdapter implements Adapter
 {
     /**

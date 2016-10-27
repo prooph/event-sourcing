@@ -15,12 +15,6 @@ namespace Prooph\EventSourcing\EventStoreIntegration;
 use Iterator;
 use Prooph\EventSourcing\AggregateRoot;
 
-/**
- * Class AggregateRootDecorator
- *
- * @package Prooph\EventSourcing\Mapping
- * @author Alexander Miertsch <kontakt@codeliner.ws>
- */
 class AggregateRootDecorator extends AggregateRoot
 {
     public static function newInstance(): self

@@ -16,10 +16,6 @@ use Assert\Assertion;
 use DateTimeImmutable;
 use Prooph\EventSourcing\Aggregate\AggregateType;
 
-/**
- * Class Snapshot
- * @package Prooph\EventSourcing\Snapshot
- */
 final class Snapshot
 {
     /**

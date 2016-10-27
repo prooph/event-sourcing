@@ -15,12 +15,6 @@ namespace Prooph\EventSourcing\Aggregate;
 use Iterator;
 use Prooph\Common\Messaging\Message;
 
-/**
- * Interface AggregateTranslator
- *
- * @package Prooph\EventSourcing\Aggregate
- * @author Alexander Miertsch <contact@prooph.de>
- */
 interface AggregateTranslator
 {
     /**

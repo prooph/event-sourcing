@@ -17,13 +17,7 @@ use Prooph\Common\Messaging\Message;
 use Prooph\EventSourcing\Aggregate\AggregateType;
 use Prooph\EventSourcing\Aggregate\AggregateTranslator as EventStoreAggregateTranslator;
 
-/**
- * Class AggregateTranslator
- *
- * @package Prooph\EventSourcing\EventStoreIntegration
- * @author Alexander Miertsch <kontakt@codeliner.ws>
- */
-class AggregateTranslator implements EventStoreAggregateTranslator
+final class AggregateTranslator implements EventStoreAggregateTranslator
 {
     /**
      * @var AggregateRootDecorator

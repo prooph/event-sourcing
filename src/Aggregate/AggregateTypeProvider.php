@@ -12,12 +12,6 @@ declare(strict_types=1);
 
 namespace Prooph\EventSourcing\Aggregate;
 
-/**
- * Interface AggregateTypeProvider
- *
- * @package Prooph\EventSourcing\Aggregate
- * @author Alexander Miertsch <contact@prooph.de>
- */
 interface AggregateTypeProvider
 {
     public function aggregateType(): AggregateType;

@@ -20,11 +20,6 @@ use Interop\Container\ContainerInterface;
 use Prooph\EventStore\Exception\InvalidArgumentException;
 use Prooph\EventSourcing\Snapshot\SnapshotStore;
 
-/**
- * Class SnapshotStoreFactory
- *
- * @package Prooph\EventSourcing\Container\Snapshot
- */
 final class SnapshotStoreFactory implements RequiresConfig, RequiresConfigId, RequiresMandatoryOptions
 {
     use ConfigurationTrait;

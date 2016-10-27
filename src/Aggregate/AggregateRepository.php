@@ -19,12 +19,6 @@ use Prooph\EventStore\EventStore;
 use Prooph\EventStore\Stream\Stream;
 use Prooph\EventStore\Stream\StreamName;
 
-/**
- * Class AggregateRepository
- *
- * @package Prooph\EventSourcing\Aggregate
- * @author Alexander Miertsch <contact@prooph.de>
- */
 class AggregateRepository
 {
     /**

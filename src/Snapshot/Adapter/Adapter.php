@@ -15,10 +15,6 @@ namespace Prooph\EventSourcing\Snapshot\Adapter;
 use Prooph\EventSourcing\Aggregate\AggregateType;
 use Prooph\EventSourcing\Snapshot\Snapshot;
 
-/**
- * Interface Adapter
- * @package Prooph\EventSourcing\Snapshot\Adapter
- */
 interface Adapter
 {
     public function get(AggregateType $aggregateType, string $aggregateId): ?Snapshot;
