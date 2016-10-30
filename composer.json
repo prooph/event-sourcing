@@ -33,7 +33,8 @@
         "friendsofphp/php-cs-fixer": "^1.12.2",
         "phpspec/prophecy": "dev-patch-1 as 1.6.1",
         "satooshi/php-coveralls": "^1.0",
-        "malukenho/docheader": "^0.1.4"
+        "malukenho/docheader": "^0.1.4",
+        "phpbench/phpbench": "^0.12.2"
     },
     "autoload": {
         "psr-4": {
