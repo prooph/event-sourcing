@@ -1,5 +1,6 @@
 <?php
 $finder = Symfony\CS\Finder\DefaultFinder::create()
+    ->in('benchmarks')
     ->in('examples')
     ->in('src')
     ->in('tests');
