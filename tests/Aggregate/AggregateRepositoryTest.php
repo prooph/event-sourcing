@@ -193,7 +193,7 @@ class AggregateRepositoryTest extends TestCase
                 Argument::that(function (StreamName $streamName) {
                     return $streamName->toString() === User::class . '-123';
                 }),
-                0,
+                1,
                 null
             )->willReturn(new Stream(new StreamName(User::class . '-123'), new \ArrayIterator([])));
 

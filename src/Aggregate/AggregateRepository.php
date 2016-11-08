@@ -16,6 +16,8 @@ use ArrayIterator;
 use Prooph\Common\Messaging\Message;
 use Prooph\EventSourcing\Snapshot\SnapshotStore;
 use Prooph\EventStore\EventStore;
+use Prooph\EventStore\Metadata\MetadataMatcher;
+use Prooph\EventStore\Metadata\Operator;
 use Prooph\EventStore\Stream\Stream;
 use Prooph\EventStore\Stream\StreamName;
 
@@ -158,10 +160,19 @@ class AggregateRepository
         if ($this->oneStreamPerAggregate) {
             $streamEvents = $this->eventStore->load($streamName)->streamEvents();
         } else {
-            $streamEvents = $this->eventStore->loadEventsByMetadataFrom($streamName, [
-                '_aggregate_type' => $this->aggregateType->toString(),
-                '_aggregate_id' => $aggregateId
-            ]);
+            $metadataMatcher = new MetadataMatcher();
+            $metadataMatcher = $metadataMatcher->withMetadataMatch(
+                '_aggregate_type',
+                Operator::EQUALS(),
+                $this->aggregateType->toString()
+            );
+            $metadataMatcher = $metadataMatcher->withMetadataMatch(
+                '_aggregate_id',
+                Operator::EQUALS(),
+                $aggregateId
+            );
+
+            $streamEvents = $this->eventStore->loadEventsByMetadataFrom($streamName, 1, null, $metadataMatcher);
         }
 
         if (! $streamEvents->valid()) {
@@ -210,14 +221,38 @@ class AggregateRepository
 
         $streamName = $this->determineStreamName($aggregateId);
 
-        $streamEvents = $this->eventStore->loadEventsByMetadataFrom(
-            $streamName,
-            [
-                '_aggregate_type' => $this->aggregateType->toString(),
-                '_aggregate_id' => $aggregateId
-            ],
-            $snapshot->lastVersion() + 1
-        );
+        if ($this->oneStreamPerAggregate) {
+            $streamEvents = $this->eventStore->loadEventsByMetadataFrom(
+                $streamName,
+                $snapshot->lastVersion() + 1
+            );
+        } else {
+            $metadataMatcher = new MetadataMatcher();
+            $metadataMatcher = $metadataMatcher->withMetadataMatch(
+                '_aggregate_type',
+                Operator::EQUALS(),
+                $this->aggregateType->toString()
+            );
+            $metadataMatcher = $metadataMatcher->withMetadataMatch(
+                '_aggregate_id',
+                Operator::EQUALS(),
+                $aggregateId
+            );
+            $metadataMatcher = $metadataMatcher->withMetadataMatch(
+                '_aggregate_version',
+                Operator::GREATER_THAN(),
+                $snapshot->lastVersion()
+            );
+
+            $streamEvents = $this->eventStore->loadEventsByMetadataFrom(
+                $streamName,
+                1,
+                null,
+                $metadataMatcher
+            );
+        }
+
+
 
         if (! $streamEvents->valid()) {
             return $aggregateRoot;
@@ -252,7 +287,9 @@ class AggregateRepository
     protected function enrichEventMetadata(Message $domainEvent, string $aggregateId): Message
     {
         $domainEvent = $domainEvent->withAddedMetadata('_aggregate_id', $aggregateId);
-        return $domainEvent->withAddedMetadata('_aggregate_type', $this->aggregateType->toString());
+        $domainEvent = $domainEvent->withAddedMetadata('_aggregate_type', $this->aggregateType->toString());
+
+        return $domainEvent;
     }
 
     /**
