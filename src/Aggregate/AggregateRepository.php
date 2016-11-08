@@ -239,14 +239,14 @@ class AggregateRepository
                 $aggregateId
             );
             $metadataMatcher = $metadataMatcher->withMetadataMatch(
-                '_version',
-                Operator::EQUALS(),
-                $snapshot->lastVersion() + 1
+                '_aggregate_version',
+                Operator::GREATER_THAN(),
+                $snapshot->lastVersion()
             );
 
             $streamEvents = $this->eventStore->loadEventsByMetadataFrom(
                 $streamName,
-                $snapshot->lastVersion() + 1,
+                1,
                 null,
                 $metadataMatcher
             );

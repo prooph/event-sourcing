@@ -68,7 +68,7 @@ class AggregateChangedTest extends TestCase
 
         $newEvent = $orgEvent->withVersion(2);
 
-        $this->assertEquals(0, $orgEvent->version());
+        $this->assertEquals(1, $orgEvent->version());
         $this->assertEquals(2, $newEvent->version());
     }
 }
