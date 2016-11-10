@@ -16,7 +16,7 @@ use Assert\Assertion;
 use Iterator;
 use Prooph\Common\Messaging\Message;
 use Prooph\EventSourcing\Aggregate\Exception\AggregateTranslationFailedException;
-use Prooph\EventStore\Util\MapIterator;
+use Prooph\EventSourcing\Util\MapIterator;
 
 class ConfigurableAggregateTranslator implements AggregateTranslator
 {
