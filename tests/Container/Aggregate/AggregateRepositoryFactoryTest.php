@@ -14,7 +14,6 @@ namespace ProophTest\EventSourcing\Container\Aggregate;
 
 use Interop\Container\ContainerInterface;
 use Prooph\EventSourcing\Aggregate\AggregateTranslator;
-use Prooph\EventSourcing\Aggregate\Exception\InvalidArgumentException;
 use Prooph\EventSourcing\Container\Aggregate\AggregateRepositoryFactory;
 use Prooph\EventStore\EventStore;
 use ProophTest\EventSourcing\Mock\RepositoryMock;
@@ -56,7 +55,7 @@ class AggregateRepositoryFactoryTest extends TestCase
      */
     public function it_throws_invalid_argument_exception_without_container_on_static_call(): void
     {
-        $this->expectException(InvalidArgumentException::class);
+        $this->expectException(\InvalidArgumentException::class);
         $this->expectExceptionMessage('The first argument must be of type Interop\Container\ContainerInterface');
 
         AggregateRepositoryFactory::other_config_id();

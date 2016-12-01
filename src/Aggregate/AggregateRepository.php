@@ -15,11 +15,13 @@ namespace Prooph\EventSourcing\Aggregate;
 use ArrayIterator;
 use Prooph\Common\Messaging\Message;
 use Prooph\EventSourcing\Snapshot\SnapshotStore;
+use Prooph\EventStore\ActionEventEmitterEventStore;
 use Prooph\EventStore\EventStore;
 use Prooph\EventStore\Metadata\MetadataMatcher;
 use Prooph\EventStore\Metadata\Operator;
-use Prooph\EventStore\Stream\Stream;
-use Prooph\EventStore\Stream\StreamName;
+use Prooph\EventStore\Stream;
+use Prooph\EventStore\StreamName;
+use Prooph\EventStore\TransactionalActionEventEmitterEventStore;
 
 class AggregateRepository
 {
@@ -66,41 +68,49 @@ class AggregateRepository
         StreamName $streamName = null,
         bool $oneStreamPerAggregate = false
     ) {
+        if (! $eventStore instanceof ActionEventEmitterEventStore) {
+            throw new Exception\InvalidArgumentException(
+                sprintf(
+                    'EventStore must implement %s',
+                    ActionEventEmitterEventStore::class
+                )
+            );
+        }
+
         $this->eventStore = $eventStore;
-        $this->eventStore->getActionEventEmitter()->attachListener('commit.pre', [$this, 'addPendingEventsToStream']);
+
+        if ($eventStore instanceof TransactionalActionEventEmitterEventStore) {
+            $this->eventStore->getActionEventEmitter()->attachListener(
+                TransactionalActionEventEmitterEventStore::EVENT_COMMIT,
+                function (): void {
+                    foreach ($this->identityMap as $aggregateId => $aggregateRoot) {
+                        $pendingStreamEvents = $this->aggregateTranslator->extractPendingStreamEvents($aggregateRoot);
+
+                        if (count($pendingStreamEvents)) {
+                            $enrichedEvents = [];
+
+                            foreach ($pendingStreamEvents as $event) {
+                                $enrichedEvents[] = $this->enrichEventMetadata($event, $aggregateId);
+                            }
+
+                            $streamName = $this->determineStreamName($aggregateId);
+
+                            $this->eventStore->appendTo($streamName, new ArrayIterator($enrichedEvents));
+                        }
+                    }
+
+                    //Clear identity map
+                    $this->identityMap = [];
+                },
+                1000
+            );
+        }
 
         $this->aggregateType = $aggregateType;
         $this->aggregateTranslator = $aggregateTranslator;
         $this->snapshotStore = $snapshotStore;
         $this->streamName = $streamName;
         $this->oneStreamPerAggregate = $oneStreamPerAggregate;
-    }
-
-    /**
-     * Repository acts as listener on EventStore.commit.pre events
-     * In the listener method the repository checks its identity map for pending events
-     * and appends the events to the event stream.
-     */
-    public function addPendingEventsToStream(): void
-    {
-        foreach ($this->identityMap as $aggregateId => $aggregateRoot) {
-            $pendingStreamEvents = $this->aggregateTranslator->extractPendingStreamEvents($aggregateRoot);
-
-            if (count($pendingStreamEvents)) {
-                $enrichedEvents = [];
-
-                foreach ($pendingStreamEvents as $event) {
-                    $enrichedEvents[] = $this->enrichEventMetadata($event, $aggregateId);
-                }
-
-                $streamName = $this->determineStreamName($aggregateId);
-
-                $this->eventStore->appendTo($streamName, new ArrayIterator($enrichedEvents));
-            }
-        }
-
-        //Clear identity map
-        $this->identityMap = [];
     }
 
     /**
@@ -155,10 +165,8 @@ class AggregateRepository
 
         $streamName = $this->determineStreamName($aggregateId);
 
-        $streamEvents = null;
-
         if ($this->oneStreamPerAggregate) {
-            $streamEvents = $this->eventStore->load($streamName)->streamEvents();
+            $stream = $this->eventStore->load($streamName, 1);
         } else {
             $metadataMatcher = new MetadataMatcher();
             $metadataMatcher = $metadataMatcher->withMetadataMatch(
@@ -172,8 +180,10 @@ class AggregateRepository
                 $aggregateId
             );
 
-            $streamEvents = $this->eventStore->loadEventsByMetadataFrom($streamName, 1, null, $metadataMatcher);
+            $stream = $this->eventStore->load($streamName, 1, null, $metadataMatcher);
         }
+
+        $streamEvents = $stream->streamEvents();
 
         if (! $streamEvents->valid()) {
             return;
@@ -222,7 +232,7 @@ class AggregateRepository
         $streamName = $this->determineStreamName($aggregateId);
 
         if ($this->oneStreamPerAggregate) {
-            $streamEvents = $this->eventStore->loadEventsByMetadataFrom(
+            $stream = $this->eventStore->load(
                 $streamName,
                 $snapshot->lastVersion() + 1
             );
@@ -244,7 +254,7 @@ class AggregateRepository
                 $snapshot->lastVersion()
             );
 
-            $streamEvents = $this->eventStore->loadEventsByMetadataFrom(
+            $stream = $this->eventStore->load(
                 $streamName,
                 1,
                 null,
@@ -252,7 +262,7 @@ class AggregateRepository
             );
         }
 
-
+        $streamEvents = $stream->streamEvents();
 
         if (! $streamEvents->valid()) {
             return $aggregateRoot;

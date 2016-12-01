@@ -13,7 +13,6 @@ declare(strict_types=1);
 namespace ProophTest\EventSourcing\Aggregate;
 
 use Prooph\Common\Event\ActionEvent;
-use Prooph\Common\Event\ProophActionEventEmitter;
 use Prooph\EventSourcing\Aggregate\AggregateRepository;
 use Prooph\EventSourcing\Aggregate\AggregateType;
 use Prooph\EventSourcing\Aggregate\ConfigurableAggregateTranslator;
@@ -21,10 +20,10 @@ use Prooph\EventSourcing\Aggregate\Exception\AggregateTypeException;
 use Prooph\EventSourcing\Snapshot\Adapter\InMemoryAdapter;
 use Prooph\EventSourcing\Snapshot\Snapshot;
 use Prooph\EventSourcing\Snapshot\SnapshotStore;
-use Prooph\EventStore\Adapter\Adapter;
+use Prooph\EventStore\ActionEventEmitterEventStore;
 use Prooph\EventStore\EventStore;
-use Prooph\EventStore\Stream\Stream;
-use Prooph\EventStore\Stream\StreamName;
+use Prooph\EventStore\Stream;
+use Prooph\EventStore\StreamName;
 use ProophTest\EventStore\Mock\User;
 use ProophTest\EventStore\Mock\UserCreated;
 use ProophTest\EventStore\Mock\UsernameChanged;
@@ -186,19 +185,20 @@ class AggregateRepositoryTest extends TestCase
      */
     public function it_loads_the_entire_stream_if_one_stream_per_aggregate_is_enabled(): void
     {
-        $adapter = $this->prophesize(Adapter::class);
-
-        $adapter
+        $eventStore = $this->prophesize(ActionEventEmitterEventStore::class);
+        $eventStore
             ->load(
                 Argument::that(function (StreamName $streamName) {
                     return $streamName->toString() === User::class . '-123';
                 }),
                 1,
+                null,
                 null
-            )->willReturn(new Stream(new StreamName(User::class . '-123'), new \ArrayIterator([])));
+            )->willReturn(new Stream(new StreamName(User::class . '-123'), new \ArrayIterator()));
+
 
         $repository = new AggregateRepository(
-            new EventStore($adapter->reveal(), new ProophActionEventEmitter()),
+            $eventStore->reveal(),
             AggregateType::fromAggregateRootClass(User::class),
             new ConfigurableAggregateTranslator(),
             null,
@@ -241,12 +241,13 @@ class AggregateRepositoryTest extends TestCase
         $loadedEvents = [];
 
         $this->eventStore->getActionEventEmitter()->attachListener(
-            'loadEventsByMetadataFrom.post',
+            'load',
             function (ActionEvent $event) use (&$loadedEvents) {
                 foreach ($event->getParam('streamEvents', []) as $streamEvent) {
                     $loadedEvents[] = $streamEvent;
                 }
-            }
+            },
+            -1000
         );
 
         $this->repository->getAggregateRoot(
@@ -274,12 +275,17 @@ class AggregateRepositoryTest extends TestCase
         $loadedEvents = [];
 
         $this->eventStore->getActionEventEmitter()->attachListener(
-            'loadEventsByMetadataFrom.post',
+            'load',
             function (ActionEvent $event) use (&$loadedEvents) {
-                foreach ($event->getParam('streamEvents', []) as $streamEvent) {
+                $stream = $event->getParam('stream');
+                if (! $stream) {
+                    return;
+                }
+                foreach ($stream->streamEvents() as $streamEvent) {
                     $loadedEvents[] = $streamEvent;
                 }
-            }
+            },
+            -1000
         );
 
         $this->repository->getAggregateRoot(
@@ -328,13 +334,18 @@ class AggregateRepositoryTest extends TestCase
         $loadedEvents = [];
 
         $this->eventStore->getActionEventEmitter()->attachListener(
-            'loadEventsByMetadataFrom.post',
+            'load',
             function (ActionEvent $event) use (&$loadedEvents) {
-                foreach ($event->getParam('streamEvents', []) as $streamEvent) {
+                $stream = $event->getParam('stream');
+                if (! $stream) {
+                    return;
+                }
+                foreach ($stream->streamEvents() as $streamEvent) {
                     $loadedEvents[] = $streamEvent;
                 }
-                $event->getParam('streamEvents')->rewind();
-            }
+                $event->getParam('stream')->streamEvents()->rewind();
+            },
+            -1000
         );
 
         $this->repository->getAggregateRoot(

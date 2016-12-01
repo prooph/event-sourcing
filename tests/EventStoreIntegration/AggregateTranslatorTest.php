@@ -18,12 +18,12 @@ use Prooph\EventSourcing\EventStoreIntegration\AggregateTranslator;
 use ProophTest\EventSourcing\Mock\User;
 use ProophTest\EventSourcing\Mock\UserNameChanged;
 use ProophTest\EventSourcing\TestCase;
-use Prooph\EventStore\Adapter\InMemoryAdapter;
+use Prooph\EventStore\InMemoryEventStore;
 use Prooph\EventSourcing\Aggregate\AggregateRepository;
 use Prooph\EventSourcing\Aggregate\AggregateType;
 use Prooph\EventStore\EventStore;
-use Prooph\EventStore\Stream\Stream;
-use Prooph\EventStore\Stream\StreamName;
+use Prooph\EventStore\Stream;
+use Prooph\EventStore\StreamName;
 
 class AggregateTranslatorTest extends TestCase
 {
@@ -39,7 +39,7 @@ class AggregateTranslatorTest extends TestCase
 
     protected function setUp()
     {
-        $this->eventStore = new EventStore(new InMemoryAdapter(), new ProophActionEventEmitter());
+        $this->eventStore = new InMemoryEventStore(new ProophActionEventEmitter());
 
         $this->eventStore->beginTransaction();
 
