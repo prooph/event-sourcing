@@ -34,11 +34,11 @@ final class SnapshotStoreFactoryTest extends TestCase
                 'snapshot_store' => [
                     'default' => [
                         'adapter' => [
-                            'type' => 'mock_adapter'
-                        ]
-                    ]
-                ]
-            ]
+                            'type' => 'mock_adapter',
+                        ],
+                    ],
+                ],
+            ],
         ]);
 
         $container->get('mock_adapter')->willReturn($snapshotAdapter->reveal());
@@ -64,11 +64,11 @@ final class SnapshotStoreFactoryTest extends TestCase
                 'snapshot_store' => [
                     'another' => [
                         'adapter' => [
-                            'type' => 'mock_adapter'
-                        ]
-                    ]
-                ]
-            ]
+                            'type' => 'mock_adapter',
+                        ],
+                    ],
+                ],
+            ],
         ]);
 
         $container->get('mock_adapter')->willReturn($snapshotAdapter->reveal());

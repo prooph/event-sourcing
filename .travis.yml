@@ -12,6 +12,7 @@ matrix:
         - DEPENDENCIES="--prefer-lowest --prefer-stable"
 
 before_script:
+  - mkdir -p "$HOME/.php-cs-fixer"
   - composer self-update
   - composer update --prefer-source $DEPENDENCIES
 

@@ -103,7 +103,7 @@ class AggregateTranslatorTest extends TestCase
 
         $translator = new AggregateTranslator();
         $translator->replayStreamEvents($loadedUser, new \ArrayIterator([UserNameChanged::occur($loadedUser->id(), [
-            'username' => $newName
+            'username' => $newName,
         ])]));
 
         $this->assertEquals($newName, $loadedUser->name());

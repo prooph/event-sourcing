@@ -203,7 +203,7 @@ class AggregateRepository
     /**
      * @param object $aggregateRoot
      */
-    public function extractAggregateVersion($aggregateRoot) : int
+    public function extractAggregateVersion($aggregateRoot): int
     {
         return $this->aggregateTranslator->extractAggregateVersion($aggregateRoot);
     }
@@ -211,7 +211,7 @@ class AggregateRepository
     /**
      * Empties the identity map. Use this if you load thousands of aggregates to free memory e.g. modulo 500.
      */
-    public function clearIdentityMap() : void
+    public function clearIdentityMap(): void
     {
         $this->identityMap = [];
     }

@@ -85,7 +85,7 @@ final class SnapshotStoreFactory implements RequiresConfig, RequiresConfigId, Re
     {
         return [
             'adapter' => [
-                'type'
+                'type',
             ],
         ];
     }

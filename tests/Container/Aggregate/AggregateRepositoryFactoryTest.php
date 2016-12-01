@@ -36,9 +36,9 @@ class AggregateRepositoryFactoryTest extends TestCase
                         'repository_class' => RepositoryMock::class,
                         'aggregate_type' => User::class,
                         'aggregate_translator' => 'user_translator',
-                    ]
-                ]
-            ]
+                    ],
+                ],
+            ],
         ]);
         $container->get(EventStore::class)->willReturn($this->eventStore);
 

@@ -411,7 +411,7 @@ class AggregateRepositoryTest extends TestCase
     /**
      * @test
      */
-    public function it_clears_identity_map_manually() : void
+    public function it_clears_identity_map_manually(): void
     {
         $this->eventStore->beginTransaction();
 

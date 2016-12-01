@@ -226,7 +226,7 @@ namespace {
     $eventStore->getActionEventEmitter()->attachListener('commit.post', function (ActionEvent $event): void {
         foreach ($event->getParam('recordedEvents', new \ArrayIterator()) as $streamEvent) {
             echo sprintf(
-                "Event with name %s was recorded. It occurred on %s UTC /// ",
+                'Event with name %s was recorded. It occurred on %s UTC /// ',
                 $streamEvent->messageName(),
                 $streamEvent->createdAt()->format('Y-m-d H:i:s')
             );

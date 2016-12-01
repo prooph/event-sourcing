@@ -47,7 +47,7 @@ class BrokenUser extends AggregateRoot
         return $this->id;
     }
 
-    public function name():string
+    public function name(): string
     {
         return $this->name;
     }
