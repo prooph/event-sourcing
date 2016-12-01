@@ -34,6 +34,7 @@ final class MapIterator extends IteratorIterator
     public function current()
     {
         $callback = $this->callback;
+
         return $callback(parent::current());
     }
 }

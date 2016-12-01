@@ -67,7 +67,6 @@ final class ConfigurableAggregateTranslatorTest extends TestCase
         $translator->extractAggregateVersion($ar->reveal());
     }
 
-
     /**
      * @test
      */

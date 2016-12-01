@@ -52,6 +52,7 @@ final class AggregateRepositoryFactory implements RequiresConfigId, RequiresMand
                 sprintf('The first argument must be of type %s', ContainerInterface::class)
             );
         }
+
         return (new static($name))->__invoke($arguments[0]);
     }
 

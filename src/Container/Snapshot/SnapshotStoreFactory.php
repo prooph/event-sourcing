@@ -17,8 +17,8 @@ use Interop\Config\RequiresConfig;
 use Interop\Config\RequiresConfigId;
 use Interop\Config\RequiresMandatoryOptions;
 use Interop\Container\ContainerInterface;
-use Prooph\EventStore\Exception\InvalidArgumentException;
 use Prooph\EventSourcing\Snapshot\SnapshotStore;
+use Prooph\EventStore\Exception\InvalidArgumentException;
 
 final class SnapshotStoreFactory implements RequiresConfig, RequiresConfigId, RequiresMandatoryOptions
 {
@@ -51,6 +51,7 @@ final class SnapshotStoreFactory implements RequiresConfig, RequiresConfigId, Re
                 sprintf('The first argument must be of type %s', ContainerInterface::class)
             );
         }
+
         return (new static($name))->__invoke($arguments[0]);
     }
 

@@ -59,7 +59,6 @@ class AggregateRepositoryTest extends TestCase
         $this->eventStore->commit();
     }
 
-
     /**
      * @test
      */
@@ -195,7 +194,6 @@ class AggregateRepositoryTest extends TestCase
                 null,
                 null
             )->willReturn(new Stream(new StreamName(User::class . '-123'), new \ArrayIterator()));
-
 
         $repository = new AggregateRepository(
             $eventStore->reveal(),

@@ -8,13 +8,13 @@
  * file that was distributed with this source code.
  */
 
+declare(strict_types=1);
+
 namespace {
     require_once __DIR__ . '/../vendor/autoload.php';
 }
 
-
 namespace My\Model {
-
     use Assert\Assertion;
     use Prooph\EventSourcing\AggregateChanged;
     use Prooph\EventSourcing\AggregateRoot;
@@ -69,7 +69,7 @@ namespace My\Model {
         {
             Assertion::notEmpty($newName);
 
-            if ($newName != $this->name) {
+            if ($newName !== $this->name) {
                 $this->recordThat(UserWasRenamed::occur(
                     $this->uuid->toString(),
                     ['new_name' => $newName, 'old_name' => $this->name]
@@ -157,12 +157,11 @@ namespace My\Model {
 }
 
 namespace My\Infrastructure {
-
     use My\Model\User;
     use My\Model\UserRepository;
-    use Prooph\EventSourcing\EventStoreIntegration\AggregateTranslator;
     use Prooph\EventSourcing\Aggregate\AggregateRepository;
     use Prooph\EventSourcing\Aggregate\AggregateType;
+    use Prooph\EventSourcing\EventStoreIntegration\AggregateTranslator;
     use Prooph\EventStore\EventStore;
     use Ramsey\Uuid\Uuid;
 
@@ -208,10 +207,9 @@ namespace {
     use My\Model\User;
     use Prooph\Common\Event\ActionEvent;
     use Prooph\Common\Event\ProophActionEventEmitter;
-    use Prooph\EventStore\Adapter\InMemoryAdapter;
-    use Prooph\EventStore\EventStore;
+    use Prooph\EventStore\InMemoryEventStore;
 
-    $eventStore = new EventStore(new InMemoryAdapter(), new ProophActionEventEmitter());
+    $eventStore = new InMemoryEventStore(new ProophActionEventEmitter());
 
     //Now we set up our user repository and inject the EventStore
     //Normally this should be done in an IoC-Container and the receiver of the repository should require My\Model\UserRepository
