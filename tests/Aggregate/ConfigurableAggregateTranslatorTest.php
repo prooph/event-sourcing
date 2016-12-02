@@ -21,6 +21,7 @@ use ProophTest\EventSourcing\Mock\CustomAggregateRootContract;
 use ProophTest\EventSourcing\Mock\DefaultAggregateRoot;
 use ProophTest\EventSourcing\Mock\DefaultAggregateRootContract;
 use ProophTest\EventSourcing\Mock\FaultyAggregateRoot;
+use ProophTest\EventSourcing\Mock\FaultyAggregateRoot2;
 use ProophTest\EventStore\TestCase;
 
 final class ConfigurableAggregateTranslatorTest extends TestCase
@@ -64,7 +65,7 @@ final class ConfigurableAggregateTranslatorTest extends TestCase
 
         $translator = new ConfigurableAggregateTranslator('unknownMethodName');
 
-        $translator->extractPendingStreamEvents($ar->reveal());
+        $translator->extractAggregateVersion($ar->reveal());
     }
 
     /**
@@ -161,6 +162,18 @@ final class ConfigurableAggregateTranslatorTest extends TestCase
         $translator = new ConfigurableAggregateTranslator(null, null, 'unknownMethod');
 
         $translator->extractPendingStreamEvents($ar->reveal());
+    }
+
+    /**
+     * @test
+     */
+    public function it_throws_exception_if_pop_recorded_events_method_returns_no_iterable(): void
+    {
+        $this->expectException(AggregateTranslationFailedException::class);
+
+        $translator = new ConfigurableAggregateTranslator(null, null, 'popRecordedEvents');
+
+        $translator->extractPendingStreamEvents(new FaultyAggregateRoot2());
     }
 
     /**
