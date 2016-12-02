@@ -18,7 +18,6 @@ use Prooph\EventSourcing\Aggregate\AggregateType;
 use Prooph\EventSourcing\Aggregate\ConfigurableAggregateTranslator;
 use Prooph\EventSourcing\Aggregate\Exception\AggregateTypeException;
 use Prooph\EventSourcing\Aggregate\Exception\InvalidArgumentException;
-use Prooph\EventSourcing\Container\Aggregate\AggregateRepositoryFactory;
 use Prooph\EventSourcing\Snapshot\InMemorySnapshotStore;
 use Prooph\EventSourcing\Snapshot\Snapshot;
 use Prooph\EventSourcing\Snapshot\SnapshotStore;
