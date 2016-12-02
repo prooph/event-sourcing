@@ -16,6 +16,7 @@ use Interop\Container\ContainerInterface;
 use Prooph\EventSourcing\Aggregate\AggregateTranslator;
 use Prooph\EventSourcing\Container\Aggregate\AggregateRepositoryFactory;
 use Prooph\EventStore\EventStore;
+use Prooph\EventStore\Exception\ConfigurationException;
 use ProophTest\EventSourcing\Mock\RepositoryMock;
 use ProophTest\EventStore\Mock\User;
 use ProophTest\EventStore\TestCase;
@@ -31,11 +32,13 @@ class AggregateRepositoryFactoryTest extends TestCase
         $container->has('config')->willReturn(true);
         $container->get('config')->willReturn([
             'prooph' => [
-                'event_store' => [
-                    'repository_mock' => [
-                        'repository_class' => RepositoryMock::class,
-                        'aggregate_type' => User::class,
-                        'aggregate_translator' => 'user_translator',
+                'event_sourcing' => [
+                    'aggregate_repository' => [
+                        'repository_mock' => [
+                            'repository_class' => RepositoryMock::class,
+                            'aggregate_type' => User::class,
+                            'aggregate_translator' => 'user_translator',
+                        ],
                     ],
                 ],
             ],
@@ -59,5 +62,59 @@ class AggregateRepositoryFactoryTest extends TestCase
         $this->expectExceptionMessage('The first argument must be of type Interop\Container\ContainerInterface');
 
         AggregateRepositoryFactory::other_config_id();
+    }
+
+    /**
+     * @test
+     */
+    public function it_throws_exception_when_unknown_repository_class_given(): void
+    {
+        $this->expectException(ConfigurationException::class);
+
+        $container = $this->prophesize(ContainerInterface::class);
+        $container->has('config')->willReturn(true);
+        $container->get('config')->willReturn([
+            'prooph' => [
+                'event_sourcing' => [
+                    'aggregate_repository' => [
+                        'repository_mock' => [
+                            'repository_class' => 'invalid',
+                            'aggregate_type' => User::class,
+                            'aggregate_translator' => 'user_translator',
+                        ],
+                    ],
+                ],
+            ],
+        ]);
+
+        $factory = new AggregateRepositoryFactory('repository_mock');
+        $factory->__invoke($container->reveal());
+    }
+
+    /**
+     * @test
+     */
+    public function it_throws_exception_when_invalid_repository_class_given(): void
+    {
+        $this->expectException(ConfigurationException::class);
+
+        $container = $this->prophesize(ContainerInterface::class);
+        $container->has('config')->willReturn(true);
+        $container->get('config')->willReturn([
+            'prooph' => [
+                'event_sourcing' => [
+                    'aggregate_repository' => [
+                        'repository_mock' => [
+                            'repository_class' => 'stdClass',
+                            'aggregate_type' => User::class,
+                            'aggregate_translator' => 'user_translator',
+                        ],
+                    ],
+                ],
+            ],
+        ]);
+
+        $factory = new AggregateRepositoryFactory('repository_mock');
+        $factory->__invoke($container->reveal());
     }
 }

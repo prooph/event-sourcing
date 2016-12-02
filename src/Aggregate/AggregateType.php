@@ -49,9 +49,6 @@ class AggregateType
      */
     public static function fromAggregateRootClass(string $aggregateRootClass): AggregateType
     {
-        if (! is_string($aggregateRootClass)) {
-            throw new Exception\InvalidArgumentException('Aggregate root class must be a string');
-        }
         if (! class_exists($aggregateRootClass)) {
             throw new Exception\InvalidArgumentException(sprintf('Aggregate root class %s can not be found', $aggregateRootClass));
         }

@@ -10,14 +10,8 @@
 
 declare(strict_types=1);
 
-namespace Prooph\EventSourcing\Snapshot\Adapter;
+namespace ProophTest\EventSourcing\Mock;
 
-use Prooph\EventSourcing\Aggregate\AggregateType;
-use Prooph\EventSourcing\Snapshot\Snapshot;
-
-interface Adapter
+final class FaultyRepositoryMock
 {
-    public function get(AggregateType $aggregateType, string $aggregateId): ?Snapshot;
-
-    public function save(Snapshot $snapshot): void;
 }

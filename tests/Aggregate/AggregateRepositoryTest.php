@@ -17,7 +17,8 @@ use Prooph\EventSourcing\Aggregate\AggregateRepository;
 use Prooph\EventSourcing\Aggregate\AggregateType;
 use Prooph\EventSourcing\Aggregate\ConfigurableAggregateTranslator;
 use Prooph\EventSourcing\Aggregate\Exception\AggregateTypeException;
-use Prooph\EventSourcing\Snapshot\Adapter\InMemoryAdapter;
+use Prooph\EventSourcing\Aggregate\Exception\InvalidArgumentException;
+use Prooph\EventSourcing\Snapshot\InMemorySnapshotStore;
 use Prooph\EventSourcing\Snapshot\Snapshot;
 use Prooph\EventSourcing\Snapshot\SnapshotStore;
 use Prooph\EventStore\ActionEventEmitterEventStore;
@@ -68,7 +69,7 @@ class AggregateRepositoryTest extends TestCase
 
         $user = User::create('John Doe', 'contact@prooph.de');
 
-        $this->repository->addAggregateRoot($user);
+        $this->repository->saveAggregateRoot($user);
 
         $this->eventStore->commit();
 
@@ -94,7 +95,7 @@ class AggregateRepositoryTest extends TestCase
 
         $user = User::create('John Doe', 'contact@prooph.de');
 
-        $this->repository->addAggregateRoot($user);
+        $this->repository->saveAggregateRoot($user);
 
         $this->eventStore->commit();
 
@@ -129,11 +130,11 @@ class AggregateRepositoryTest extends TestCase
 
         $user = User::create('John Doe', 'contact@prooph.de');
 
-        $this->repository->addAggregateRoot($user);
+        $this->repository->saveAggregateRoot($user);
 
         $user2 = User::create('Max Mustermann', 'some@mail.com');
 
-        $this->repository->addAggregateRoot($user2);
+        $this->repository->saveAggregateRoot($user2);
 
         $this->eventStore->commit();
 
@@ -168,7 +169,7 @@ class AggregateRepositoryTest extends TestCase
         $this->expectException(AggregateTypeException::class);
         $this->expectExceptionMessage('Aggregate root must be an object but type of string given');
 
-        $this->repository->addAggregateRoot('invalid');
+        $this->repository->saveAggregateRoot('invalid');
     }
 
     /**
@@ -218,7 +219,64 @@ class AggregateRepositoryTest extends TestCase
 
         $user = User::create('John Doe', 'contact@prooph.de');
 
-        $this->repository->addAggregateRoot($user);
+        $this->repository->saveAggregateRoot($user);
+
+        $this->eventStore->commit();
+
+        $now = new \DateTimeImmutable('now', new \DateTimeZone('UTC'));
+        $snapshot = new Snapshot(
+            AggregateType::fromAggregateRootClass(User::class),
+            $user->getId()->toString(),
+            $user,
+            1,
+            $now
+        );
+
+        // short getter assertion
+        $this->assertSame($now, $snapshot->createdAt());
+
+        $this->snapshotStore->save($snapshot);
+
+        $loadedEvents = [];
+
+        $this->eventStore->getActionEventEmitter()->attachListener(
+            'load',
+            function (ActionEvent $event) use (&$loadedEvents) {
+                foreach ($event->getParam('streamEvents', []) as $streamEvent) {
+                    $loadedEvents[] = $streamEvent;
+                }
+            },
+            -1000
+        );
+
+        $this->repository->getAggregateRoot(
+            $user->getId()->toString()
+        );
+
+        $this->assertEmpty($loadedEvents);
+    }
+
+    /**
+     * @test
+     */
+    public function it_uses_snapshot_store_with_one_stream_per_aggregate(): void
+    {
+        $this->snapshotStore = new InMemorySnapshotStore();
+
+        $this->repository = new AggregateRepository(
+            $this->eventStore,
+            AggregateType::fromAggregateRootClass(User::class),
+            new ConfigurableAggregateTranslator(),
+            $this->snapshotStore,
+            null,
+            true
+        );
+
+        $this->eventStore->beginTransaction();
+
+        $user = User::create('John Doe', 'contact@prooph.de');
+
+        $this->repository->saveAggregateRoot($user);
 
         $this->eventStore->commit();
 
@@ -266,7 +324,7 @@ class AggregateRepositoryTest extends TestCase
 
         $user = User::create('John Doe', 'contact@prooph.de');
 
-        $this->repository->addAggregateRoot($user);
+        $this->repository->saveAggregateRoot($user);
 
         $this->eventStore->commit();
 
@@ -305,7 +363,7 @@ class AggregateRepositoryTest extends TestCase
 
         $user = User::create('John Doe', 'contact@prooph.de');
 
-        $this->repository->addAggregateRoot($user);
+        $this->repository->saveAggregateRoot($user);
 
         $this->eventStore->commit();
 
@@ -359,7 +417,7 @@ class AggregateRepositoryTest extends TestCase
     {
         parent::setUp();
 
-        $this->snapshotStore = new SnapshotStore(new InMemoryAdapter());
+        $this->snapshotStore = new InMemorySnapshotStore();
 
         $this->repository = new AggregateRepository(
             $this->eventStore,
@@ -385,7 +443,7 @@ class AggregateRepositoryTest extends TestCase
 
         $user = User::create('John Doe', 'contact@prooph.de');
 
-        $this->repository->addAggregateRoot($user);
+        $this->repository->saveAggregateRoot($user);
 
         $this->eventStore->commit();
 
@@ -417,12 +475,12 @@ class AggregateRepositoryTest extends TestCase
 
         $user = User::create('John Doe', 'contact@prooph.de');
 
-        $this->repository->addAggregateRoot($user);
+        $this->repository->saveAggregateRoot($user);
 
         $this->eventStore->commit();
 
         // fill identity map
-        $fetchedUser = $this->repository->getAggregateRoot(
+        $this->repository->getAggregateRoot(
             $user->getId()->toString()
         );
 
@@ -434,5 +492,45 @@ class AggregateRepositoryTest extends TestCase
         self::assertCount(1, $reflectionProperty->getValue($this->repository));
         $this->repository->clearIdentityMap();
         self::assertCount(0, $reflectionProperty->getValue($this->repository));
+    }
+
+    /**
+     * @test
+     */
+    public function it_used_provided_stream_name(): void
+    {
+        $this->repository = new AggregateRepository(
+            $this->eventStore,
+            AggregateType::fromAggregateRootClass(User::class),
+            new ConfigurableAggregateTranslator(),
+            null,
+            new StreamName('foo')
+        );
+
+        $this->eventStore->create(new Stream(new StreamName('foo'), new \ArrayIterator()));
+
+        $this->eventStore->beginTransaction();
+
+        $user = User::create('John Doe', 'contact@prooph.de');
+
+        $this->repository->saveAggregateRoot($user);
+
+        $this->eventStore->commit();
+    }
+
+    /**
+     * @test
+     */
+    public function it_throws_exception_when_non_action_event_emitter_event_store_given(): void
+    {
+        $this->expectException(InvalidArgumentException::class);
+
+        $eventStore = $this->prophesize(EventStore::class);
+
+        new AggregateRepository(
+            $eventStore->reveal(),
+            AggregateType::fromAggregateRootClass(User::class),
+            new ConfigurableAggregateTranslator()
+        );
     }
 }

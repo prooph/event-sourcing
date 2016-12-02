@@ -1,0 +1,12 @@
+{
+  "title": "Prooph EventSourcing",
+  "content": [
+    {"intro": "../README.md"},
+    {"repositories": "repositories.md"},
+    {"snapshots": "snapshots.md"},
+    {"inheritance": "inheritance.md"},
+    {"interop_factories": "interop_factories.md"}
+  ],
+  "target": "./html",
+  "template": "../vendor/tobiju/bookdown-bootswatch-templates/templates/main.php"
+}

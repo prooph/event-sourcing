@@ -13,27 +13,10 @@ declare(strict_types=1);
 namespace Prooph\EventSourcing\Snapshot;
 
 use Prooph\EventSourcing\Aggregate\AggregateType;
-use Prooph\EventSourcing\Snapshot\Adapter\Adapter;
 
-class SnapshotStore
+interface SnapshotStore
 {
-    /**
-     * @var Adapter
-     */
-    protected $adapter;
+    public function get(AggregateType $aggregateType, string $aggregateId): ?Snapshot;
 
-    public function __construct(Adapter $adapter)
-    {
-        $this->adapter = $adapter;
-    }
-
-    public function get(AggregateType $aggregateType, string $aggregateId): ?Snapshot
-    {
-        return $this->adapter->get($aggregateType, $aggregateId);
-    }
-
-    public function save(Snapshot $snapshot): void
-    {
-        $this->adapter->save($snapshot);
-    }
+    public function save(Snapshot $snapshot): void;
 }
