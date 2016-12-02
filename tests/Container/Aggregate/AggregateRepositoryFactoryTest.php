@@ -31,11 +31,13 @@ class AggregateRepositoryFactoryTest extends TestCase
         $container->has('config')->willReturn(true);
         $container->get('config')->willReturn([
             'prooph' => [
-                'event_store' => [
-                    'repository_mock' => [
-                        'repository_class' => RepositoryMock::class,
-                        'aggregate_type' => User::class,
-                        'aggregate_translator' => 'user_translator',
+                'event_sourcing' => [
+                    'aggregate_repository' => [
+                        'repository_mock' => [
+                            'repository_class' => RepositoryMock::class,
+                            'aggregate_type' => User::class,
+                            'aggregate_translator' => 'user_translator',
+                        ],
                     ],
                 ],
             ],

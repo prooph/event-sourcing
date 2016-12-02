@@ -1,6 +1,6 @@
 <?php
 /**
- * This file is part of the prooph/event-store.
+ * This file is part of the prooph/event-sourcing.
  * (c) 2014-2016 prooph software GmbH <contact@prooph.de>
  * (c) 2015-2016 Sascha-Oliver Prolic <saschaprolic@googlemail.com>
  *
@@ -10,7 +10,7 @@
 
 declare(strict_types=1);
 
-namespace ProophTest\EventStore\Mock;
+namespace ProophTest\EventSourcing\Mock;
 
 use Prooph\Common\Messaging\Message;
 

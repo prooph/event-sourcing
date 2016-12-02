@@ -10,12 +10,11 @@
 
 declare(strict_types=1);
 
-namespace Prooph\EventSourcing\Snapshot\Adapter;
+namespace Prooph\EventSourcing\Snapshot;
 
 use Prooph\EventSourcing\Aggregate\AggregateType;
-use Prooph\EventSourcing\Snapshot\Snapshot;
 
-final class InMemoryAdapter implements Adapter
+final class InMemorySnapshotStore implements SnapshotStore
 {
     /**
      * @var array

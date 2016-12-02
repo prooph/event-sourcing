@@ -116,7 +116,7 @@ class AggregateRepository
     /**
      * @param object $eventSourcedAggregateRoot
      */
-    public function addAggregateRoot($eventSourcedAggregateRoot): void
+    public function saveAggregateRoot($eventSourcedAggregateRoot): void
     {
         $this->assertAggregateType($eventSourcedAggregateRoot);
 
@@ -128,11 +128,19 @@ class AggregateRepository
 
         $enrichedEvents = [];
 
+        $createStream = false;
+
+        $firstEvent = $domainEvents[0];
+
+        if (1 === $firstEvent->metadata()['_aggregate_version'] && $this->oneStreamPerAggregate) {
+            $createStream = true;
+        }
+
         foreach ($domainEvents as $event) {
             $enrichedEvents[] = $this->enrichEventMetadata($event, $aggregateId);
         }
 
-        if ($this->oneStreamPerAggregate) {
+        if ($createStream) {
             $stream = new Stream($streamName, new ArrayIterator($enrichedEvents));
 
             $this->eventStore->create($stream);

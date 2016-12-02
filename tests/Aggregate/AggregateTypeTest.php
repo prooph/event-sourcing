@@ -93,4 +93,14 @@ class AggregateTypeTest extends TestCase
         $type = AggregateType::fromAggregateRootClass('stdClass');
         $this->assertEquals('stdClass', (string) $type);
     }
+
+    /**
+     * @test
+     */
+    public function it_throws_exception_when_empty_aggregate_type_given(): void
+    {
+        $this->expectException(InvalidArgumentException::class);
+
+        AggregateType::fromString('');
+    }
 }

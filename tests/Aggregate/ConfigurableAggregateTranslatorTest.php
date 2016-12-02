@@ -16,11 +16,11 @@ use Prooph\Common\Messaging\Message;
 use Prooph\EventSourcing\Aggregate\AggregateType;
 use Prooph\EventSourcing\Aggregate\ConfigurableAggregateTranslator;
 use Prooph\EventSourcing\Aggregate\Exception\AggregateTranslationFailedException;
-use ProophTest\EventStore\Mock\CustomAggregateRoot;
-use ProophTest\EventStore\Mock\CustomAggregateRootContract;
-use ProophTest\EventStore\Mock\DefaultAggregateRoot;
-use ProophTest\EventStore\Mock\DefaultAggregateRootContract;
-use ProophTest\EventStore\Mock\FaultyAggregateRoot;
+use ProophTest\EventSourcing\Mock\CustomAggregateRoot;
+use ProophTest\EventSourcing\Mock\CustomAggregateRootContract;
+use ProophTest\EventSourcing\Mock\DefaultAggregateRoot;
+use ProophTest\EventSourcing\Mock\DefaultAggregateRootContract;
+use ProophTest\EventSourcing\Mock\FaultyAggregateRoot;
 use ProophTest\EventStore\TestCase;
 
 final class ConfigurableAggregateTranslatorTest extends TestCase
@@ -64,7 +64,7 @@ final class ConfigurableAggregateTranslatorTest extends TestCase
 
         $translator = new ConfigurableAggregateTranslator('unknownMethodName');
 
-        $translator->extractAggregateVersion($ar->reveal());
+        $translator->extractPendingStreamEvents($ar->reveal());
     }
 
     /**
@@ -112,7 +112,7 @@ final class ConfigurableAggregateTranslatorTest extends TestCase
     /**
      * @test
      */
-    public function it_uses_default_method_name_to_extract_pending_events(): void
+    public function it_uses_default_method_name_to_pop_pending_events(): void
     {
         $ar = $this->prophesize(DefaultAggregateRootContract::class);
 
@@ -132,7 +132,7 @@ final class ConfigurableAggregateTranslatorTest extends TestCase
     /**
      * @test
      */
-    public function it_uses_configured_method_name_to_extract_pending_events(): void
+    public function it_uses_configured_method_name_to_pop_pending_events(): void
     {
         $ar = $this->prophesize(CustomAggregateRootContract::class);
 
@@ -210,7 +210,7 @@ final class ConfigurableAggregateTranslatorTest extends TestCase
     /**
      * @test
      */
-    public function it_invokes_event_to_message_callback_for_each_event_when_extracting(): void
+    public function it_invokes_event_to_message_callback_for_each_event_when_poping(): void
     {
         $message = $this->prophesize(Message::class);
 
@@ -336,7 +336,7 @@ final class ConfigurableAggregateTranslatorTest extends TestCase
     /**
      * @test
      */
-    public function it_fails_on_extracting_pending_stream_events_when_event_sourced_aggregate_root_is_not_an_object(): void
+    public function it_fails_on_poping_pending_stream_events_when_event_sourced_aggregate_root_is_not_an_object(): void
     {
         $this->expectException(AggregateTranslationFailedException::class);
 

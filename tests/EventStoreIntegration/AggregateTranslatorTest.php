@@ -28,7 +28,7 @@ use ProophTest\EventSourcing\TestCase;
 class AggregateTranslatorTest extends TestCase
 {
     /**
-     * @var EventStore
+     * @var InMemoryEventStore
      */
     protected $eventStore;
 
@@ -59,7 +59,7 @@ class AggregateTranslatorTest extends TestCase
 
         $user = User::nameNew('John Doe');
 
-        $this->repository->addAggregateRoot($user);
+        $this->repository->saveAggregateRoot($user);
 
         $this->eventStore->commit();
 

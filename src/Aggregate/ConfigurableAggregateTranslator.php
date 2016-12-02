@@ -33,7 +33,7 @@ class ConfigurableAggregateTranslator implements AggregateTranslator
     /**
      * @var string
      */
-    private $popRecordedEventsMethodName = 'popRecordedEvents';
+    private $extractRecordedEventsMethodName = 'popRecordedEvents';
 
     /**
      * @var string
@@ -58,7 +58,7 @@ class ConfigurableAggregateTranslator implements AggregateTranslator
     public function __construct(
         string $identifierMethodName = null,
         string $versionMethodName = null,
-        string $popRecordedEventsMethodName = null,
+        string $extractRecordedEventsMethodName = null,
         string $replayEventsMethodsName = null,
         string $staticReconstituteFromHistoryMethodName = null,
         callable $eventToMessageCallback = null,
@@ -74,9 +74,9 @@ class ConfigurableAggregateTranslator implements AggregateTranslator
             $this->versionMethodName = $versionMethodName;
         }
 
-        if (null !== $popRecordedEventsMethodName) {
-            Assertion::minLength($popRecordedEventsMethodName, 1, 'Pop recorded events method name needs to be a non empty string');
-            $this->popRecordedEventsMethodName = $popRecordedEventsMethodName;
+        if (null !== $extractRecordedEventsMethodName) {
+            Assertion::minLength($extractRecordedEventsMethodName, 1, 'Pop recorded events method name needs to be a non empty string');
+            $this->extractRecordedEventsMethodName = $extractRecordedEventsMethodName;
         }
 
         if (null !== $replayEventsMethodsName) {
@@ -200,24 +200,24 @@ class ConfigurableAggregateTranslator implements AggregateTranslator
             throw new AggregateTranslationFailedException('Event sourced Aggregate Root needs to be an object. Got ' . gettype($eventSourcedAggregateRoot));
         }
 
-        if (! method_exists($eventSourcedAggregateRoot, $this->popRecordedEventsMethodName)) {
+        if (! method_exists($eventSourcedAggregateRoot, $this->extractRecordedEventsMethodName)) {
             throw new AggregateTranslationFailedException(
                 sprintf(
                     'Can not pop recorded events from aggregate root %s. The AR is missing a method with name %s!',
                     get_class($eventSourcedAggregateRoot),
-                    $this->popRecordedEventsMethodName
+                    $this->extractRecordedEventsMethodName
                 )
             );
         }
 
-        $recordedEvents = $eventSourcedAggregateRoot->{$this->popRecordedEventsMethodName}();
+        $recordedEvents = $eventSourcedAggregateRoot->{$this->extractRecordedEventsMethodName}();
 
         if (! is_iterable($recordedEvents)) {
             throw new AggregateTranslationFailedException(
                 sprintf(
                     'Failed to pop recorded events from aggregate root %s. The AR method %s returned a non traversable result!',
                     get_class($eventSourcedAggregateRoot),
-                    $this->popRecordedEventsMethodName
+                    $this->extractRecordedEventsMethodName
                 )
             );
         }
