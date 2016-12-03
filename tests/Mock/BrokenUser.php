@@ -81,6 +81,4 @@ class BrokenUser extends AggregateRoot
                 );
         }
     }
-
-
 }
