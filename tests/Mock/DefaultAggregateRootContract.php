@@ -27,8 +27,5 @@ interface DefaultAggregateRootContract
      */
     public function popRecordedEvents(): array;
 
-    /**
-     * @param $event
-     */
     public function replay($event): void;
 }

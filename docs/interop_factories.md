@@ -21,7 +21,7 @@ always bootstrap the components by hand. Just look at the factories for inspirat
 To ease set up of repositories for your aggregate roots prooph/event-store also ships with a `Prooph\EventStore\Container\Aggregate\AbstractAggregateRepositoryFactory`.
 It is an abstract class implementing the `container-interop RequiresContainerId` interface. The `containerId` method
 itself is not implemented in the abstract class. You have to extend it and provide the container id because each
-aggregate repository needs a slightly different configuration and therefor needs its own config key.
+aggregate repository needs a slightly different configuration and therefore needs its own config key.
 
 *Note: You can have a look at the `ProophTest\EventStore\Mock\RepositoryMockFactory`. It sounds more complex than it is.*
 

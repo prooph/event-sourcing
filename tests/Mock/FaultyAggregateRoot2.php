@@ -20,10 +20,6 @@ final class FaultyAggregateRoot2
         return 1;
     }
 
-    /**
-     * @param \Iterator $historyEvents
-     * @return \stdClass
-     */
     public static function reconstituteFromHistory(\Iterator $historyEvents): DefaultAggregateRootContract
     {
         //faulty method
@@ -47,18 +43,12 @@ final class FaultyAggregateRoot2
             {
             }
 
-            /**
-             * @param $event
-             */
             public function replay($event): void
             {
             }
         };
     }
 
-    /**
-     * @return string
-     */
     public function getId(): string
     {
         //faulty method
@@ -69,9 +59,6 @@ final class FaultyAggregateRoot2
     {
     }
 
-    /**
-     * @param $event
-     */
     public function replay($event): void
     {
     }
