@@ -13,6 +13,7 @@ declare(strict_types=1);
 namespace Prooph\EventSourcing\EventStoreIntegration;
 
 use Iterator;
+use Prooph\EventSourcing\AggregateChanged;
 use Prooph\EventSourcing\AggregateRoot;
 
 class AggregateRootDecorator extends AggregateRoot
@@ -67,5 +68,9 @@ class AggregateRootDecorator extends AggregateRoot
     protected function aggregateId(): string
     {
         throw new \BadMethodCallException('The AggregateRootDecorator does not have an id');
+    }
+
+    protected function apply(AggregateChanged $e): void
+    {
     }
 }

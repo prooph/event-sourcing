@@ -15,6 +15,7 @@ namespace ProophTest\EventSourcing;
 use Prooph\EventSourcing\EventStoreIntegration\AggregateRootDecorator;
 use ProophTest\EventSourcing\Mock\BrokenUser;
 use ProophTest\EventSourcing\Mock\User;
+use ProophTest\EventSourcing\Mock\UserCreated;
 
 class AggregateRootTest extends TestCase
 {
@@ -66,7 +67,7 @@ class AggregateRootTest extends TestCase
     public function it_throws_exception_when_no_handler_on_aggregate()
     {
         $this->expectException(\RuntimeException::class);
-        $this->expectExceptionMessage('Missing event handler method whenUserCreated for aggregate root ProophTest\EventSourcing\Mock\BrokenUser');
+        $this->expectExceptionMessage('Unknown event "' . UserCreated::class . '" applied to user aggregate');
 
         $brokenUser = BrokenUser::nameNew('John');
 
