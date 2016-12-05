@@ -12,6 +12,7 @@ declare(strict_types=1);
 
 namespace ProophTest\EventSourcing\Mock;
 
+use Prooph\EventSourcing\AggregateChanged;
 use Prooph\EventSourcing\AggregateRoot;
 use Ramsey\Uuid\Uuid;
 
@@ -57,17 +58,6 @@ class User extends AggregateRoot
         return $this->name;
     }
 
-    protected function whenUserCreated(UserCreated $event): void
-    {
-        $this->id = $event->userId();
-        $this->name = $event->name();
-    }
-
-    protected function whenUsernameChanged(UserNameChanged $event): void
-    {
-        $this->name = $event->newUsername();
-    }
-
     /**
      * @return \Prooph\EventSourcing\AggregateChanged[]
      */
@@ -82,5 +72,25 @@ class User extends AggregateRoot
     protected function aggregateId(): string
     {
         return $this->id();
+    }
+
+    protected function apply(AggregateChanged $e): void
+    {
+        switch (get_class($e)) {
+            case UserCreated::class:
+                $this->id = $e->userId();
+                $this->name = $e->name();
+                break;
+            case UserNameChanged::class:
+                $this->name = $e->newUsername();
+                break;
+            default:
+                throw new \RuntimeException(
+                    sprintf(
+                        'Unknown event "%s" applied to user aggregate',
+                        $e->messageName()
+                    )
+                );
+        }
     }
 }

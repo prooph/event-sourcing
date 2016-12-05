@@ -12,6 +12,7 @@ declare(strict_types=1);
 
 namespace ProophTest\EventSourcing\Mock;
 
+use Prooph\EventSourcing\AggregateChanged;
 use Prooph\EventSourcing\AggregateRoot;
 use Ramsey\Uuid\Uuid;
 
@@ -66,5 +67,18 @@ class BrokenUser extends AggregateRoot
     protected function aggregateId(): string
     {
         return $this->id();
+    }
+
+    protected function apply(AggregateChanged $e): void
+    {
+        switch (get_class($e)) {
+            default:
+                throw new \RuntimeException(
+                    sprintf(
+                        'Unknown event "%s" applied to user aggregate',
+                        $e->messageName()
+                    )
+                );
+        }
     }
 }
