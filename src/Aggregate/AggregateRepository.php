@@ -288,7 +288,13 @@ class AggregateRepository
     protected function determineStreamName(string $aggregateId): StreamName
     {
         if ($this->oneStreamPerAggregate) {
-            return new StreamName($this->aggregateType->toString() . '-' . $aggregateId);
+            if (null === $this->streamName) {
+                $prefix = $this->aggregateType->toString();
+            } else {
+                $prefix = $this->streamName->toString();
+            }
+
+            return new StreamName($prefix . '-' . $aggregateId);
         }
 
         if (null === $this->streamName) {
