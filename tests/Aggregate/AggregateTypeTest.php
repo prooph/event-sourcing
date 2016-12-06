@@ -12,7 +12,7 @@ declare(strict_types=1);
 
 namespace ProophTest\EventSourcing\Aggregate;
 
-use PHPUnit_Framework_TestCase as TestCase;
+use PHPUnit\Framework\TestCase;
 use Prooph\EventSourcing\Aggregate\AggregateType;
 use Prooph\EventSourcing\Aggregate\AggregateTypeProvider;
 use Prooph\EventSourcing\Aggregate\Exception\AggregateTypeException;

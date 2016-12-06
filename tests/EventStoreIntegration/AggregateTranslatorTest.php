@@ -12,6 +12,7 @@ declare(strict_types=1);
 
 namespace ProophTest\EventSourcing\EventStoreIntegration;
 
+use PHPUnit\Framework\TestCase;
 use Prooph\Common\Event\ProophActionEventEmitter;
 use Prooph\EventSourcing\Aggregate\AggregateRepository;
 use Prooph\EventSourcing\Aggregate\AggregateType;
@@ -23,7 +24,6 @@ use Prooph\EventStore\Stream;
 use Prooph\EventStore\StreamName;
 use ProophTest\EventSourcing\Mock\User;
 use ProophTest\EventSourcing\Mock\UserNameChanged;
-use ProophTest\EventSourcing\TestCase;
 
 class AggregateTranslatorTest extends TestCase
 {

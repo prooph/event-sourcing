@@ -12,7 +12,7 @@ declare(strict_types=1);
 
 namespace ProophTest\EventSourcing\EventStoreIntegration;
 
-use PHPUnit_Framework_TestCase as TestCase;
+use PHPUnit\Framework\TestCase;
 use Prooph\EventSourcing\EventStoreIntegration\AggregateRootDecorator;
 use ProophTest\EventSourcing\Mock\ExtendedAggregateRootDecorator;
 

@@ -12,6 +12,7 @@ declare(strict_types=1);
 
 namespace ProophTest\EventSourcing\Aggregate;
 
+use PHPUnit\Framework\TestCase;
 use Prooph\Common\Messaging\Message;
 use Prooph\EventSourcing\Aggregate\AggregateType;
 use Prooph\EventSourcing\Aggregate\ConfigurableAggregateTranslator;
@@ -22,7 +23,6 @@ use ProophTest\EventSourcing\Mock\DefaultAggregateRoot;
 use ProophTest\EventSourcing\Mock\DefaultAggregateRootContract;
 use ProophTest\EventSourcing\Mock\FaultyAggregateRoot;
 use ProophTest\EventSourcing\Mock\FaultyAggregateRoot2;
-use ProophTest\EventStore\TestCase;
 
 final class ConfigurableAggregateTranslatorTest extends TestCase
 {
