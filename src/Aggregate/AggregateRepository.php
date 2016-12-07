@@ -15,7 +15,6 @@ namespace Prooph\EventSourcing\Aggregate;
 use ArrayIterator;
 use Prooph\Common\Messaging\Message;
 use Prooph\EventSourcing\Snapshot\SnapshotStore;
-use Prooph\EventStore\ActionEventEmitterEventStore;
 use Prooph\EventStore\EventStore;
 use Prooph\EventStore\Metadata\MetadataMatcher;
 use Prooph\EventStore\Metadata\Operator;
