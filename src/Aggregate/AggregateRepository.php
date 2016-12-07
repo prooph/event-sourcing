@@ -20,7 +20,6 @@ use Prooph\EventStore\Metadata\MetadataMatcher;
 use Prooph\EventStore\Metadata\Operator;
 use Prooph\EventStore\Stream;
 use Prooph\EventStore\StreamName;
-use Prooph\EventStore\TransactionalActionEventEmitterEventStore;
 
 class AggregateRepository
 {
@@ -68,34 +67,6 @@ class AggregateRepository
         bool $oneStreamPerAggregate = false
     ) {
         $this->eventStore = $eventStore;
-
-        if ($eventStore instanceof TransactionalActionEventEmitterEventStore) {
-            $this->eventStore->getActionEventEmitter()->attachListener(
-                TransactionalActionEventEmitterEventStore::EVENT_COMMIT,
-                function (): void {
-                    foreach ($this->identityMap as $aggregateId => $aggregateRoot) {
-                        $pendingStreamEvents = $this->aggregateTranslator->extractPendingStreamEvents($aggregateRoot);
-
-                        if (count($pendingStreamEvents)) {
-                            $enrichedEvents = [];
-
-                            foreach ($pendingStreamEvents as $event) {
-                                $enrichedEvents[] = $this->enrichEventMetadata($event, $aggregateId);
-                            }
-
-                            $streamName = $this->determineStreamName($aggregateId);
-
-                            $this->eventStore->appendTo($streamName, new ArrayIterator($enrichedEvents));
-                        }
-                    }
-
-                    //Clear identity map
-                    $this->identityMap = [];
-                },
-                1000
-            );
-        }
-
         $this->aggregateType = $aggregateType;
         $this->aggregateTranslator = $aggregateTranslator;
         $this->snapshotStore = $snapshotStore;
@@ -136,6 +107,10 @@ class AggregateRepository
             $this->eventStore->create($stream);
         } else {
             $this->eventStore->appendTo($streamName, new ArrayIterator($enrichedEvents));
+        }
+
+        if (isset($this->identityMap[$aggregateId])) {
+            unset($this->identityMap[$aggregateId]);
         }
     }
 

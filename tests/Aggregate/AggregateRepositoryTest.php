@@ -87,7 +87,7 @@ class AggregateRepositoryTest extends TestCase
     /**
      * @test
      */
-    public function it_tracks_changes_of_aggregate_but_always_returns_a_fresh_instance_on_load(): void
+    public function it_removes_aggregate_from_identity_map_when_save_is_called(): void
     {
         $this->eventStore->beginTransaction();
 
@@ -105,7 +105,15 @@ class AggregateRepositoryTest extends TestCase
 
         $this->assertNotSame($user, $fetchedUser);
 
+        $fetchedUser2 = $this->repository->getAggregateRoot(
+            $user->getId()->toString()
+        );
+
+        $this->assertSame($fetchedUser, $fetchedUser2);
+
         $fetchedUser->changeName('Max Mustermann');
+
+        $this->repository->saveAggregateRoot($fetchedUser);
 
         $this->eventStore->commit();
 
@@ -382,6 +390,8 @@ class AggregateRepositoryTest extends TestCase
         );
 
         $fetchedUser->changeName('Max Mustermann');
+
+        $this->repository->saveAggregateRoot($fetchedUser);
 
         $this->eventStore->commit();
 
