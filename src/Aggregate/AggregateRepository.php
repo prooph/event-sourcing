@@ -68,15 +68,6 @@ class AggregateRepository
         StreamName $streamName = null,
         bool $oneStreamPerAggregate = false
     ) {
-        if (! $eventStore instanceof ActionEventEmitterEventStore) {
-            throw new Exception\InvalidArgumentException(
-                sprintf(
-                    'EventStore must implement %s',
-                    ActionEventEmitterEventStore::class
-                )
-            );
-        }
-
         $this->eventStore = $eventStore;
 
         if ($eventStore instanceof TransactionalActionEventEmitterEventStore) {

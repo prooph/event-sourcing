@@ -517,20 +517,4 @@ class AggregateRepositoryTest extends TestCase
 
         $this->eventStore->commit();
     }
-
-    /**
-     * @test
-     */
-    public function it_throws_exception_when_non_action_event_emitter_event_store_given(): void
-    {
-        $this->expectException(InvalidArgumentException::class);
-
-        $eventStore = $this->prophesize(EventStore::class);
-
-        new AggregateRepository(
-            $eventStore->reveal(),
-            AggregateType::fromAggregateRootClass(User::class),
-            new ConfigurableAggregateTranslator()
-        );
-    }
 }
