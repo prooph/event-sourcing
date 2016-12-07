@@ -1,23 +1,17 @@
 <?php
-/*
- * This file is part of the prooph/event-sourcing package.
- * (c) Alexander Miertsch <contact@prooph.de>
+/**
+ * This file is part of the prooph/event-sourcing.
+ * (c) 2014-2016 prooph software GmbH <contact@prooph.de>
+ * (c) 2015-2016 Sascha-Oliver Prolic <saschaprolic@googlemail.com>
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
- *
- * Date: 06/06/14 - 20:14
  */
+
+declare(strict_types=1);
 
 namespace Prooph\EventSourcing;
 
-/**
- * AggregateRoot
- *
- * @author Alexander Miertsch <contact@prooph.de>
- *
- * @package Prooph\EventSourcing
- */
 abstract class AggregateRoot
 {
     /**
@@ -35,13 +29,9 @@ abstract class AggregateRoot
     protected $recordedEvents = [];
 
     /**
-     * @param \Iterator $historyEvents
-     *
      * @throws \RuntimeException
-     *
-     * @return static
      */
-    protected static function reconstituteFromHistory(\Iterator $historyEvents)
+    protected static function reconstituteFromHistory(\Iterator $historyEvents): self
     {
         $instance = new static();
         $instance->replay($historyEvents);
@@ -57,17 +47,14 @@ abstract class AggregateRoot
     {
     }
 
-    /**
-     * @return string representation of the unique identifier of the aggregate root
-     */
-    abstract protected function aggregateId();
+    abstract protected function aggregateId(): string;
 
     /**
      * Get pending events and reset stack
      *
      * @return AggregateChanged[]
      */
-    protected function popRecordedEvents()
+    protected function popRecordedEvents(): array
     {
         $pendingEvents = $this->recordedEvents;
 
@@ -78,10 +65,8 @@ abstract class AggregateRoot
 
     /**
      * Record an aggregate changed event
-     *
-     * @param AggregateChanged $event
      */
-    protected function recordThat(AggregateChanged $event)
+    protected function recordThat(AggregateChanged $event): void
     {
         $this->version += 1;
 
@@ -93,12 +78,9 @@ abstract class AggregateRoot
     /**
      * Replay past events
      *
-     * @param \Iterator $historyEvents
-     *
      * @throws \RuntimeException
-     * @return void
      */
-    protected function replay(\Iterator $historyEvents)
+    protected function replay(\Iterator $historyEvents): void
     {
         foreach ($historyEvents as $pastEvent) {
             /** @var AggregateChanged $pastEvent */
@@ -110,34 +92,6 @@ abstract class AggregateRoot
 
     /**
      * Apply given event
-     *
-     * @param AggregateChanged $e
-     * @throws \RuntimeException
      */
-    protected function apply(AggregateChanged $e)
-    {
-        $handler = $this->determineEventHandlerMethodFor($e);
-
-        if (! method_exists($this, $handler)) {
-            throw new \RuntimeException(sprintf(
-                'Missing event handler method %s for aggregate root %s',
-                $handler,
-                get_class($this)
-            ));
-        }
-
-        $this->{$handler}($e);
-    }
-
-    /**
-     * Determine event name
-     *
-     * @param AggregateChanged $e
-     *
-     * @return string
-     */
-    protected function determineEventHandlerMethodFor(AggregateChanged $e)
-    {
-        return 'when' . implode(array_slice(explode('\\', get_class($e)), -1));
-    }
+    abstract protected function apply(AggregateChanged $e): void;
 }

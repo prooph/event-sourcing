@@ -12,17 +12,6 @@ declare(strict_types=1);
 
 namespace ProophTest\EventSourcing\Mock;
 
-use Prooph\EventSourcing\AggregateChanged;
-
-class UserCreated extends AggregateChanged
+final class FaultyRepositoryMock
 {
-    public function userId(): string
-    {
-        return $this->payload['id'];
-    }
-
-    public function name(): string
-    {
-        return $this->payload['name'];
-    }
 }

@@ -12,17 +12,18 @@ declare(strict_types=1);
 
 namespace ProophTest\EventSourcing\Mock;
 
-use Prooph\EventSourcing\AggregateChanged;
+use Prooph\Common\Messaging\Message;
 
-class UserCreated extends AggregateChanged
+interface CustomAggregateRootContract
 {
-    public function userId(): string
-    {
-        return $this->payload['id'];
-    }
+    public function version(): int;
 
-    public function name(): string
-    {
-        return $this->payload['name'];
-    }
+    public static function buildFromHistoryEvents(\Iterator $historyEvents): CustomAggregateRootContract;
+
+    public function identifier(): string;
+
+    /**
+     * @return Message[]
+     */
+    public function getPendingEvents(): array;
 }

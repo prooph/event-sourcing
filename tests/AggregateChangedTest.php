@@ -1,24 +1,21 @@
 <?php
-/*
- * This file is part of the prooph/event-store.
- * (c) Alexander Miertsch <contact@prooph.de>
+/**
+ * This file is part of the prooph/event-sourcing.
+ * (c) 2014-2016 prooph software GmbH <contact@prooph.de>
+ * (c) 2015-2016 Sascha-Oliver Prolic <saschaprolic@googlemail.com>
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
- *
- * Date: 04/17/14 - 21:45
  */
+
+declare(strict_types=1);
 
 namespace ProophTest\EventSourcing;
 
+use PHPUnit\Framework\TestCase;
 use Prooph\EventSourcing\AggregateChanged;
+use Ramsey\Uuid\Uuid;
 
-/**
- * Class AggregateChangedTest
- *
- * @package ProophTest\EventSourcing\EventSourcing
- * @author Alexander Miertsch <contact@prooph.de>
- */
 class AggregateChangedTest extends TestCase
 {
     /**
@@ -28,7 +25,7 @@ class AggregateChangedTest extends TestCase
     {
         $event = AggregateChanged::occur('1', []);
 
-        $this->assertInstanceOf('Rhumsaa\Uuid\Uuid', $event->uuid());
+        $this->assertInstanceOf(Uuid::class, $event->uuid());
     }
 
     /**
@@ -72,7 +69,7 @@ class AggregateChangedTest extends TestCase
 
         $newEvent = $orgEvent->withVersion(2);
 
-        $this->assertEquals(0, $orgEvent->version());
+        $this->assertEquals(1, $orgEvent->version());
         $this->assertEquals(2, $newEvent->version());
     }
 }

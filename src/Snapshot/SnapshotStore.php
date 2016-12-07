@@ -10,19 +10,13 @@
 
 declare(strict_types=1);
 
-namespace ProophTest\EventSourcing\Mock;
+namespace Prooph\EventSourcing\Snapshot;
 
-use Prooph\EventSourcing\AggregateChanged;
+use Prooph\EventSourcing\Aggregate\AggregateType;
 
-class UserCreated extends AggregateChanged
+interface SnapshotStore
 {
-    public function userId(): string
-    {
-        return $this->payload['id'];
-    }
+    public function get(AggregateType $aggregateType, string $aggregateId): ?Snapshot;
 
-    public function name(): string
-    {
-        return $this->payload['name'];
-    }
+    public function save(Snapshot $snapshot): void;
 }

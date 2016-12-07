@@ -10,19 +10,9 @@
 
 declare(strict_types=1);
 
-namespace ProophTest\EventSourcing\Mock;
+namespace Prooph\EventSourcing\Aggregate;
 
-use Prooph\EventSourcing\AggregateChanged;
-
-class UserCreated extends AggregateChanged
+interface AggregateTypeProvider
 {
-    public function userId(): string
-    {
-        return $this->payload['id'];
-    }
-
-    public function name(): string
-    {
-        return $this->payload['name'];
-    }
+    public function aggregateType(): AggregateType;
 }

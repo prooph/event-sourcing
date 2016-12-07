@@ -1,26 +1,23 @@
 <?php
-/*
- * This file is part of the prooph/event-store.
- * (c) Alexander Miertsch <contact@prooph.de>
+/**
+ * This file is part of the prooph/event-sourcing.
+ * (c) 2014-2016 prooph software GmbH <contact@prooph.de>
+ * (c) 2015-2016 Sascha-Oliver Prolic <saschaprolic@googlemail.com>
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
- *
- * Date: 04/18/14 - 00:03
  */
+
+declare(strict_types=1);
 
 namespace ProophTest\EventSourcing;
 
+use PHPUnit\Framework\TestCase;
 use Prooph\EventSourcing\EventStoreIntegration\AggregateRootDecorator;
 use ProophTest\EventSourcing\Mock\BrokenUser;
 use ProophTest\EventSourcing\Mock\User;
+use ProophTest\EventSourcing\Mock\UserCreated;
 
-/**
- * Class AggregateRootTest
- *
- * @package ProophTest\EventSourcing\EventSourcing
- * @author Alexander Miertsch <contact@prooph.de>
- */
 class AggregateRootTest extends TestCase
 {
     /**
@@ -67,11 +64,12 @@ class AggregateRootTest extends TestCase
 
     /**
      * @test
-     * @expectedException RuntimeException
-     * @expectedExceptionMessage Missing event handler method whenUserCreated for aggregate root ProophTest\EventSourcing\Mock\BrokenUser
      */
     public function it_throws_exception_when_no_handler_on_aggregate()
     {
+        $this->expectException(\RuntimeException::class);
+        $this->expectExceptionMessage('Unknown event "' . UserCreated::class . '" applied to user aggregate');
+
         $brokenUser = BrokenUser::nameNew('John');
 
         AggregateRootDecorator::newInstance()->applyStreamEvents(

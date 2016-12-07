@@ -1,30 +1,22 @@
 <?php
-/*
- * This file is part of the prooph/event-store.
- * (c) Alexander Miertsch <contact@prooph.de>
+/**
+ * This file is part of the prooph/event-sourcing.
+ * (c) 2014-2016 prooph software GmbH <contact@prooph.de>
+ * (c) 2015-2016 Sascha-Oliver Prolic <saschaprolic@googlemail.com>
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
- *
- * Date: 04/18/14 - 00:08
  */
+
+declare(strict_types=1);
 
 namespace ProophTest\EventSourcing\Mock;
 
 use Prooph\EventSourcing\AggregateChanged;
 
-/**
- * Class UserNameChanged
- *
- * @package ProophTest\EventSourcing\Mock
- * @author Alexander Miertsch <contact@prooph.de>
- */
 class UserNameChanged extends AggregateChanged
 {
-    /**
-     * @return string
-     */
-    public function newUsername()
+    public function newUsername(): string
     {
         return $this->payload['username'];
     }
