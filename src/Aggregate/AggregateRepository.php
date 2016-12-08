@@ -15,13 +15,11 @@ namespace Prooph\EventSourcing\Aggregate;
 use ArrayIterator;
 use Prooph\Common\Messaging\Message;
 use Prooph\EventSourcing\Snapshot\SnapshotStore;
-use Prooph\EventStore\ActionEventEmitterEventStore;
 use Prooph\EventStore\EventStore;
 use Prooph\EventStore\Metadata\MetadataMatcher;
 use Prooph\EventStore\Metadata\Operator;
 use Prooph\EventStore\Stream;
 use Prooph\EventStore\StreamName;
-use Prooph\EventStore\TransactionalActionEventEmitterEventStore;
 
 class AggregateRepository
 {
@@ -68,44 +66,7 @@ class AggregateRepository
         StreamName $streamName = null,
         bool $oneStreamPerAggregate = false
     ) {
-        if (! $eventStore instanceof ActionEventEmitterEventStore) {
-            throw new Exception\InvalidArgumentException(
-                sprintf(
-                    'EventStore must implement %s',
-                    ActionEventEmitterEventStore::class
-                )
-            );
-        }
-
         $this->eventStore = $eventStore;
-
-        if ($eventStore instanceof TransactionalActionEventEmitterEventStore) {
-            $this->eventStore->getActionEventEmitter()->attachListener(
-                TransactionalActionEventEmitterEventStore::EVENT_COMMIT,
-                function (): void {
-                    foreach ($this->identityMap as $aggregateId => $aggregateRoot) {
-                        $pendingStreamEvents = $this->aggregateTranslator->extractPendingStreamEvents($aggregateRoot);
-
-                        if (count($pendingStreamEvents)) {
-                            $enrichedEvents = [];
-
-                            foreach ($pendingStreamEvents as $event) {
-                                $enrichedEvents[] = $this->enrichEventMetadata($event, $aggregateId);
-                            }
-
-                            $streamName = $this->determineStreamName($aggregateId);
-
-                            $this->eventStore->appendTo($streamName, new ArrayIterator($enrichedEvents));
-                        }
-                    }
-
-                    //Clear identity map
-                    $this->identityMap = [];
-                },
-                1000
-            );
-        }
-
         $this->aggregateType = $aggregateType;
         $this->aggregateTranslator = $aggregateTranslator;
         $this->snapshotStore = $snapshotStore;
@@ -146,6 +107,10 @@ class AggregateRepository
             $this->eventStore->create($stream);
         } else {
             $this->eventStore->appendTo($streamName, new ArrayIterator($enrichedEvents));
+        }
+
+        if (isset($this->identityMap[$aggregateId])) {
+            unset($this->identityMap[$aggregateId]);
         }
     }
 

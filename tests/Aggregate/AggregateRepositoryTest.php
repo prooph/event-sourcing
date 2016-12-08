@@ -17,12 +17,10 @@ use Prooph\EventSourcing\Aggregate\AggregateRepository;
 use Prooph\EventSourcing\Aggregate\AggregateType;
 use Prooph\EventSourcing\Aggregate\ConfigurableAggregateTranslator;
 use Prooph\EventSourcing\Aggregate\Exception\AggregateTypeException;
-use Prooph\EventSourcing\Aggregate\Exception\InvalidArgumentException;
 use Prooph\EventSourcing\Snapshot\InMemorySnapshotStore;
 use Prooph\EventSourcing\Snapshot\Snapshot;
 use Prooph\EventSourcing\Snapshot\SnapshotStore;
 use Prooph\EventStore\ActionEventEmitterEventStore;
-use Prooph\EventStore\EventStore;
 use Prooph\EventStore\Stream;
 use Prooph\EventStore\StreamName;
 use ProophTest\EventStore\Mock\User;
@@ -89,7 +87,7 @@ class AggregateRepositoryTest extends TestCase
     /**
      * @test
      */
-    public function it_tracks_changes_of_aggregate_but_always_returns_a_fresh_instance_on_load(): void
+    public function it_removes_aggregate_from_identity_map_when_save_is_called(): void
     {
         $this->eventStore->beginTransaction();
 
@@ -107,7 +105,15 @@ class AggregateRepositoryTest extends TestCase
 
         $this->assertNotSame($user, $fetchedUser);
 
+        $fetchedUser2 = $this->repository->getAggregateRoot(
+            $user->getId()->toString()
+        );
+
+        $this->assertSame($fetchedUser, $fetchedUser2);
+
         $fetchedUser->changeName('Max Mustermann');
+
+        $this->repository->saveAggregateRoot($fetchedUser);
 
         $this->eventStore->commit();
 
@@ -385,6 +391,8 @@ class AggregateRepositoryTest extends TestCase
 
         $fetchedUser->changeName('Max Mustermann');
 
+        $this->repository->saveAggregateRoot($fetchedUser);
+
         $this->eventStore->commit();
 
         $loadedEvents = [];
@@ -516,21 +524,5 @@ class AggregateRepositoryTest extends TestCase
         $this->repository->saveAggregateRoot($user);
 
         $this->eventStore->commit();
-    }
-
-    /**
-     * @test
-     */
-    public function it_throws_exception_when_non_action_event_emitter_event_store_given(): void
-    {
-        $this->expectException(InvalidArgumentException::class);
-
-        $eventStore = $this->prophesize(EventStore::class);
-
-        new AggregateRepository(
-            $eventStore->reveal(),
-            AggregateType::fromAggregateRootClass(User::class),
-            new ConfigurableAggregateTranslator()
-        );
     }
 }

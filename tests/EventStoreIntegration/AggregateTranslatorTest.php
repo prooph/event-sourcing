@@ -70,6 +70,8 @@ class AggregateTranslatorTest extends TestCase
 
         $user->changeName('Max Mustermann');
 
+        $this->repository->saveAggregateRoot($user);
+
         $this->eventStore->commit();
 
         $this->resetRepository();
