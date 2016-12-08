@@ -16,6 +16,7 @@ use ArrayIterator;
 use Prooph\Common\Messaging\Message;
 use Prooph\EventSourcing\Snapshot\SnapshotStore;
 use Prooph\EventStore\EventStore;
+use Prooph\EventStore\Exception\StreamNotFound;
 use Prooph\EventStore\Metadata\MetadataMatcher;
 use Prooph\EventStore\Metadata\Operator;
 use Prooph\EventStore\Stream;
@@ -139,7 +140,11 @@ class AggregateRepository
         $streamName = $this->determineStreamName($aggregateId);
 
         if ($this->oneStreamPerAggregate) {
-            $stream = $this->eventStore->load($streamName, 1);
+            try {
+                $stream = $this->eventStore->load($streamName, 1);
+            } catch (StreamNotFound $e) {
+                return null;
+            }
         } else {
             $metadataMatcher = new MetadataMatcher();
             $metadataMatcher = $metadataMatcher->withMetadataMatch(
@@ -153,13 +158,17 @@ class AggregateRepository
                 $aggregateId
             );
 
-            $stream = $this->eventStore->load($streamName, 1, null, $metadataMatcher);
+            try {
+                $stream = $this->eventStore->load($streamName, 1, null, $metadataMatcher);
+            } catch (StreamNotFound $e) {
+                return null;
+            }
         }
 
         $streamEvents = $stream->streamEvents();
 
         if (! $streamEvents->valid()) {
-            return;
+            return null;
         }
 
         $eventSourcedAggregateRoot = $this->aggregateTranslator->reconstituteAggregateFromHistory(
