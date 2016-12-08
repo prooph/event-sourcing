@@ -93,7 +93,7 @@ class AggregateRepository
 
         $firstEvent = $domainEvents[0];
 
-        if (1 === $firstEvent->metadata()['_aggregate_version'] && $this->oneStreamPerAggregate) {
+        if ($this->isFirstEvent($firstEvent) && $this->oneStreamPerAggregate) {
             $createStream = true;
         }
 
@@ -187,6 +187,11 @@ class AggregateRepository
     public function clearIdentityMap(): void
     {
         $this->identityMap = [];
+    }
+
+    protected function isFirstEvent(Message $message): bool
+    {
+        return 1 === $message->metadata()['_aggregate_version'];
     }
 
     /**
