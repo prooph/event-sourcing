@@ -132,9 +132,9 @@ class AggregateRepository
             if ($eventSourcedAggregateRoot) {
                 //Cache aggregate root in the identity map
                 $this->identityMap[$aggregateId] = $eventSourcedAggregateRoot;
-
-                return $eventSourcedAggregateRoot;
             }
+
+            return $eventSourcedAggregateRoot;
         }
 
         $streamName = $this->determineStreamName($aggregateId);
@@ -210,19 +210,25 @@ class AggregateRepository
     {
         $snapshot = $this->snapshotStore->get($this->aggregateType, $aggregateId);
 
-        if (! $snapshot) {
-            return;
+        if ($snapshot) {
+            $lastVersion = $snapshot->lastVersion();
+            $aggregateRoot = $snapshot->aggregateRoot();
+        } else {
+            $lastVersion = 0;
+            $aggregateRoot = null;
         }
-
-        $aggregateRoot = $snapshot->aggregateRoot();
 
         $streamName = $this->determineStreamName($aggregateId);
 
         if ($this->oneStreamPerAggregate) {
-            $stream = $this->eventStore->load(
-                $streamName,
-                $snapshot->lastVersion() + 1
-            );
+            try {
+                $stream = $this->eventStore->load(
+                    $streamName,
+                    $lastVersion + 1
+                );
+            } catch (StreamNotFound $e) {
+                return $aggregateRoot;
+            }
         } else {
             $metadataMatcher = new MetadataMatcher();
             $metadataMatcher = $metadataMatcher->withMetadataMatch(
@@ -238,15 +244,19 @@ class AggregateRepository
             $metadataMatcher = $metadataMatcher->withMetadataMatch(
                 '_aggregate_version',
                 Operator::GREATER_THAN(),
-                $snapshot->lastVersion()
+                $lastVersion
             );
 
-            $stream = $this->eventStore->load(
-                $streamName,
-                1,
-                null,
-                $metadataMatcher
-            );
+            try {
+                $stream = $this->eventStore->load(
+                    $streamName,
+                    $lastVersion + 1,
+                    null,
+                    $metadataMatcher
+                );
+            } catch (StreamNotFound $e) {
+                return $aggregateRoot;
+            }
         }
 
         $streamEvents = $stream->streamEvents();
@@ -255,7 +265,14 @@ class AggregateRepository
             return $aggregateRoot;
         }
 
-        $this->aggregateTranslator->replayStreamEvents($aggregateRoot, $streamEvents);
+        if ($aggregateRoot) {
+            $this->aggregateTranslator->replayStreamEvents($aggregateRoot, $streamEvents);
+        } else {
+            $aggregateRoot = $this->aggregateTranslator->reconstituteAggregateFromHistory(
+                $this->aggregateType,
+                $streamEvents
+            );
+        }
 
         return $aggregateRoot;
     }
