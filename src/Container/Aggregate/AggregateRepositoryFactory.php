@@ -92,12 +92,12 @@ final class AggregateRepositoryFactory implements RequiresConfigId, RequiresMand
         return new $repositoryClass($eventStore, $aggregateType, $aggregateTranslator, $snapshotStore, $streamName, $oneStreamPerAggregate);
     }
 
-    public function dimensions(): array
+    public function dimensions(): iterable
     {
         return ['prooph', 'event_sourcing', 'aggregate_repository'];
     }
 
-    public function mandatoryOptions(): array
+    public function mandatoryOptions(): iterable
     {
         return [
             'repository_class',
