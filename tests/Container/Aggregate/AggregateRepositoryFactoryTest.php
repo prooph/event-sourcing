@@ -19,9 +19,9 @@ use Prooph\EventStore\EventStore;
 use Prooph\EventStore\Exception\ConfigurationException;
 use ProophTest\EventSourcing\Mock\RepositoryMock;
 use ProophTest\EventStore\Mock\User;
-use ProophTest\EventStore\TestCase;
+use ProophTest\EventStore\ActionEventEmitterEventStoreTestCase;
 
-class AggregateRepositoryFactoryTest extends TestCase
+class AggregateRepositoryFactoryTest extends ActionEventEmitterEventStoreTestCase
 {
     /**
      * @test

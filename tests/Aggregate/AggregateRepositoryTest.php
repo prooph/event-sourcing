@@ -26,10 +26,10 @@ use Prooph\EventStore\StreamName;
 use ProophTest\EventStore\Mock\User;
 use ProophTest\EventStore\Mock\UserCreated;
 use ProophTest\EventStore\Mock\UsernameChanged;
-use ProophTest\EventStore\TestCase;
+use ProophTest\EventStore\ActionEventEmitterEventStoreTestCase;
 use Prophecy\Argument;
 
-class AggregateRepositoryTest extends TestCase
+class AggregateRepositoryTest extends ActionEventEmitterEventStoreTestCase
 {
     /**
      * @var AggregateRepository
@@ -51,11 +51,7 @@ class AggregateRepositoryTest extends TestCase
             new ConfigurableAggregateTranslator()
         );
 
-        $this->eventStore->beginTransaction();
-
         $this->eventStore->create(new Stream(new StreamName('event_stream'), new \ArrayIterator()));
-
-        $this->eventStore->commit();
     }
 
     /**
@@ -63,13 +59,9 @@ class AggregateRepositoryTest extends TestCase
      */
     public function it_adds_a_new_aggregate(): void
     {
-        $this->eventStore->beginTransaction();
-
         $user = User::create('John Doe', 'contact@prooph.de');
 
         $this->repository->saveAggregateRoot($user);
-
-        $this->eventStore->commit();
 
         $fetchedUser = $this->repository->getAggregateRoot(
             $user->getId()->toString()
@@ -89,15 +81,9 @@ class AggregateRepositoryTest extends TestCase
      */
     public function it_removes_aggregate_from_identity_map_when_save_is_called(): void
     {
-        $this->eventStore->beginTransaction();
-
         $user = User::create('John Doe', 'contact@prooph.de');
 
         $this->repository->saveAggregateRoot($user);
-
-        $this->eventStore->commit();
-
-        $this->eventStore->beginTransaction();
 
         $fetchedUser = $this->repository->getAggregateRoot(
             $user->getId()->toString()
@@ -115,8 +101,6 @@ class AggregateRepositoryTest extends TestCase
 
         $this->repository->saveAggregateRoot($fetchedUser);
 
-        $this->eventStore->commit();
-
         $fetchedUser2 = $this->repository->getAggregateRoot(
             $user->getId()->toString()
         );
@@ -132,8 +116,6 @@ class AggregateRepositoryTest extends TestCase
      */
     public function it_does_not_interfere_with_other_aggregate_roots_in_pending_events_index(): void
     {
-        $this->eventStore->beginTransaction();
-
         $user = User::create('John Doe', 'contact@prooph.de');
 
         $this->repository->saveAggregateRoot($user);
@@ -142,18 +124,12 @@ class AggregateRepositoryTest extends TestCase
 
         $this->repository->saveAggregateRoot($user2);
 
-        $this->eventStore->commit();
-
-        $this->eventStore->beginTransaction();
-
         //Fetch users from repository to simulate a normal program flow
         $user = $this->repository->getAggregateRoot($user->getId()->toString());
         $user2 = $this->repository->getAggregateRoot($user2->getId()->toString());
 
         $user->changeName('Daniel Doe');
         $user2->changeName('Jens Mustermann');
-
-        $this->eventStore->commit();
 
         $fetchedUser1 = $this->repository->getAggregateRoot(
             $user->getId()->toString()
@@ -221,13 +197,9 @@ class AggregateRepositoryTest extends TestCase
     {
         $this->prepareSnapshotStoreAggregateRepository();
 
-        $this->eventStore->beginTransaction();
-
         $user = User::create('John Doe', 'contact@prooph.de');
 
         $this->repository->saveAggregateRoot($user);
-
-        $this->eventStore->commit();
 
         $now = new \DateTimeImmutable('now', new \DateTimeZone('UTC'));
         $snapshot = new Snapshot(
@@ -278,13 +250,9 @@ class AggregateRepositoryTest extends TestCase
             true
         );
 
-        $this->eventStore->beginTransaction();
-
         $user = User::create('John Doe', 'contact@prooph.de');
 
         $this->repository->saveAggregateRoot($user);
-
-        $this->eventStore->commit();
 
         $now = new \DateTimeImmutable('now', new \DateTimeZone('UTC'));
         $snapshot = new Snapshot(
@@ -326,13 +294,9 @@ class AggregateRepositoryTest extends TestCase
     {
         $this->prepareSnapshotStoreAggregateRepository();
 
-        $this->eventStore->beginTransaction();
-
         $user = User::create('John Doe', 'contact@prooph.de');
 
         $this->repository->saveAggregateRoot($user);
-
-        $this->eventStore->commit();
 
         $loadedEvents = [];
 
@@ -365,13 +329,9 @@ class AggregateRepositoryTest extends TestCase
     {
         $this->prepareSnapshotStoreAggregateRepository();
 
-        $this->eventStore->beginTransaction();
-
         $user = User::create('John Doe', 'contact@prooph.de');
 
         $this->repository->saveAggregateRoot($user);
-
-        $this->eventStore->commit();
 
         $snapshot = new Snapshot(
             AggregateType::fromAggregateRootClass(User::class),
@@ -383,8 +343,6 @@ class AggregateRepositoryTest extends TestCase
 
         $this->snapshotStore->save($snapshot);
 
-        $this->eventStore->beginTransaction();
-
         $fetchedUser = $this->repository->getAggregateRoot(
             $user->getId()->toString()
         );
@@ -392,8 +350,6 @@ class AggregateRepositoryTest extends TestCase
         $fetchedUser->changeName('Max Mustermann');
 
         $this->repository->saveAggregateRoot($fetchedUser);
-
-        $this->eventStore->commit();
 
         $loadedEvents = [];
 
@@ -434,11 +390,7 @@ class AggregateRepositoryTest extends TestCase
             $this->snapshotStore
         );
 
-        $this->eventStore->beginTransaction();
-
         $this->eventStore->create(new Stream(new StreamName('event_stream'), new \ArrayIterator()));
-
-        $this->eventStore->commit();
     }
 
     /**
@@ -447,15 +399,9 @@ class AggregateRepositoryTest extends TestCase
      */
     public function it_tracks_changes_of_aggregate_but_returns_a_same_instance_within_transaction(): void
     {
-        $this->eventStore->beginTransaction();
-
         $user = User::create('John Doe', 'contact@prooph.de');
 
         $this->repository->saveAggregateRoot($user);
-
-        $this->eventStore->commit();
-
-        $this->eventStore->beginTransaction();
 
         $fetchedUser1 = $this->repository->getAggregateRoot(
             $user->getId()->toString()
@@ -470,8 +416,6 @@ class AggregateRepositoryTest extends TestCase
         $fetchedUser1->changeName('Max Mustermann');
 
         $this->assertSame($fetchedUser1, $fetchedUser2);
-
-        $this->eventStore->commit();
     }
 
     /**
@@ -479,13 +423,9 @@ class AggregateRepositoryTest extends TestCase
      */
     public function it_clears_identity_map_manually(): void
     {
-        $this->eventStore->beginTransaction();
-
         $user = User::create('John Doe', 'contact@prooph.de');
 
         $this->repository->saveAggregateRoot($user);
-
-        $this->eventStore->commit();
 
         // fill identity map
         $this->repository->getAggregateRoot(
@@ -517,12 +457,8 @@ class AggregateRepositoryTest extends TestCase
 
         $this->eventStore->create(new Stream(new StreamName('foo'), new \ArrayIterator()));
 
-        $this->eventStore->beginTransaction();
-
         $user = User::create('John Doe', 'contact@prooph.de');
 
         $this->repository->saveAggregateRoot($user);
-
-        $this->eventStore->commit();
     }
 }
