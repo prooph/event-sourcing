@@ -23,10 +23,10 @@ use Prooph\EventSourcing\Snapshot\SnapshotStore;
 use Prooph\EventStore\ActionEventEmitterEventStore;
 use Prooph\EventStore\Stream;
 use Prooph\EventStore\StreamName;
+use ProophTest\EventStore\ActionEventEmitterEventStoreTestCase;
 use ProophTest\EventStore\Mock\User;
 use ProophTest\EventStore\Mock\UserCreated;
 use ProophTest\EventStore\Mock\UsernameChanged;
-use ProophTest\EventStore\ActionEventEmitterEventStoreTestCase;
 use Prophecy\Argument;
 
 class AggregateRepositoryTest extends ActionEventEmitterEventStoreTestCase

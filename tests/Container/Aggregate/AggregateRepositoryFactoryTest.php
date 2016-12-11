@@ -18,8 +18,8 @@ use Prooph\EventSourcing\Container\Aggregate\AggregateRepositoryFactory;
 use Prooph\EventStore\EventStore;
 use Prooph\EventStore\Exception\ConfigurationException;
 use ProophTest\EventSourcing\Mock\RepositoryMock;
-use ProophTest\EventStore\Mock\User;
 use ProophTest\EventStore\ActionEventEmitterEventStoreTestCase;
+use ProophTest\EventStore\Mock\User;
 
 class AggregateRepositoryFactoryTest extends ActionEventEmitterEventStoreTestCase
 {
