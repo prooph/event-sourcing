@@ -31,7 +31,7 @@ class User extends AggregateRoot
     public static function nameNew(string $name): self
     {
         $id = Uuid::uuid4()->toString();
-        $instance = new self();
+        $instance = new static();
 
         $instance->recordThat(UserCreated::occur($id, ['id' => $id, 'name' => $name]));
 
