@@ -20,10 +20,12 @@
         "DDD",
         "prooph"
     ],
+    "minimum-stability": "dev",
+    "prefer-stable": true,
     "require": {
         "php": "^7.1",
-        "prooph/common" : "^4.0.0-beta",
-        "prooph/event-store" : "^7.0.0-beta"
+        "prooph/common" : "^4.0.0-beta1",
+        "prooph/event-store" : "^7.0.0-beta1"
     },
     "require-dev": {
         "container-interop/container-interop": "^1.1",
