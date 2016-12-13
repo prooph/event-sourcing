@@ -22,8 +22,8 @@
     ],
     "require": {
         "php": "^7.1",
-        "prooph/common" : "4.0.x-dev",
-        "prooph/event-store" : "7.0.x-dev"
+        "prooph/common" : "^4.0.0-beta",
+        "prooph/event-store" : "^7.0.0-beta"
     },
     "require-dev": {
         "container-interop/container-interop": "^1.1",
