@@ -13,26 +13,28 @@ abstract class User extends \Prooph\EventSourcing\AggregateRoot
     
     protected $email;
     
-    public function name()
+    public function name(): string
     {
         return $this->name;
     }
     
-    public function email()
+    public function email(): string
     {
         return $this->email;
     }
     
-    protected function whenUserWasRegisterd(UserWasRegisterd $event)
+    protected function apply(AggregateChanged $e): void
     {
-        $this->name = $event->name();
-        $this->email = $event->email();
+        if ($e instanceof UserWasRegisterd) {
+            $this->name = $e->name();
+            $this->email = $e->email();
+        }
     }
 }
 
 class Admin extends User
 {
-    public static function register($name, $email)
+    public static function register(string $name, string $email): Admin
     {
         $self = new self();
         $self->recordThat(UserWasRegisterd::withData('admin', $name, $email);
@@ -43,7 +45,7 @@ class Admin extends User
 
 class Member extends User
 {
-    public static function register($name, $email)
+    public static function register(string $name, string $email): Member
     {
         $self = new self();
         $self->recordThat(UserWasRegisterd::withData('member', $name, $email);

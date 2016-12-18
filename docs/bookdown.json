@@ -5,8 +5,9 @@
     {"repositories": "repositories.md"},
     {"snapshots": "snapshots.md"},
     {"inheritance": "inheritance.md"},
-    {"interop_factories": "interop_factories.md"}
+    {"interop_factories": "interop_factories.md"},
+    {"migration": "migration.md"}
   ],
   "target": "./html",
-  "template": "../vendor/tobiju/bookdown-bootswatch-templates/templates/main.php"
+  "template": "../vendor/prooph/bookdown-template/templates/main.php"
 }

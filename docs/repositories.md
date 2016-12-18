@@ -18,11 +18,9 @@ prooph/event-store does not include base classes or traits to add event sourced 
 Sounds bad? It isn't!
 
 It is your job to write something like `Buttercup.Protects` for your model. Don't be lazy in this case.
-If you just want to play with the idea you can have a look at [prooph/event-sourcing](https://github.com/prooph/event-sourcing).
-It is our internal event sourcing package and ships with support for prooph/event-store.
 
 The event store doesn't know anything about aggregates. It is just interested in `Prooph\Common\Messaging\Message events`.
-These events are organized in `Prooph\EventStore\Stream\Stream`s.
+These events are organized in `Prooph\EventStore\Stream`s.
 A repository is responsible for extracting pending events from aggregates and putting them in the correct stream.
 And the repository must also be able to load persisted events from a stream and reconstitute an aggregate.
 To provide this functionality the repository makes use of various helper classes explained below.
@@ -108,7 +106,7 @@ Checkout the snapshot docs for more information.
 
 An event stream can be compared with a table in a relational database (and in case of the pdo-event-store it is a table).
 By default the repository puts all events of all aggregates (no matter the type) in a single stream called **event_stream**.
-If you wish to use another name, you can pass a custom `Prooph\EventStore\Stream\StreamName` to the repository.
+If you wish to use another name, you can pass a custom `Prooph\EventStore\StreamName` to the repository.
 This is especially useful when you want to have an event stream per aggregate type, for example store all user related events
 in a `user_stream`.
 
@@ -134,11 +132,7 @@ $this->repository = new AggregateRepository(
     new ConfigurableAggregateTranslator()
 );
 
-$this->eventStore->beginTransaction();
-
 $this->eventStore->create(new Stream(new StreamName('event_stream'), []));
-
-$this->eventStore->commit();
 ```
 
 Notice the injected dependencies! Snapshot store, stream name and stream mode are optional and not injected for all tests.
@@ -151,13 +145,9 @@ For the test cases we also create the stream on every run. In a real application
  */
 public function it_adds_a_new_aggregate(): void
 {
-    $this->eventStore->beginTransaction();
-
     $user = User::create('John Doe', 'contact@prooph.de');
 
-    $this->repository->addAggregateRoot($user);
-
-    $this->eventStore->commit();
+    $this->repository->saveAggregateRoot($user);
 
     $fetchedUser = $this->repository->getAggregateRoot(
         $user->getId()->toString()
@@ -181,15 +171,9 @@ In the first test case you can see how an aggregate (the user entity in this cas
  */
 public function it_tracks_changes_of_aggregate(): void
 {
-    $this->eventStore->beginTransaction();
-
     $user = User::create('John Doe', 'contact@prooph.de');
 
-    $this->repository->addAggregateRoot($user);
-
-    $this->eventStore->commit();
-
-    $this->eventStore->beginTransaction();
+    $this->repository->saveAggregateRoot($user);
 
     $fetchedUser = $this->repository->getAggregateRoot(
         $user->getId()->toString()
@@ -198,8 +182,8 @@ public function it_tracks_changes_of_aggregate(): void
     $this->assertNotSame($user, $fetchedUser);
 
     $fetchedUser->changeName('Max Mustermann');
-
-    $this->eventStore->commit();
+    
+    $this->repository->saveAggregateRoot($fetchedUser);
 
     $fetchedUser2 = $this->repository->getAggregateRoot(
         $user->getId()->toString()
@@ -212,13 +196,9 @@ public function it_tracks_changes_of_aggregate(): void
 ```
 
 Here we first add the user, then load it with the help of the repository and finally we change the user entity.
-The change causes a `UserNameChanged` event. You may notice that after changing the user name, the user is not passed to
-a repository method. Only `$this->eventStore->commit();` is called. But as you can see in the last test assertion the username
-is changed and the appropriate domain event was added to the `event_stream`. This happens becasue the repository manages an identity map
-internally. Each aggregate root loaded via `AggregateRepository::getAggregateRoot` is added to the identity map and
-new events recorded by such an agggregate root are added automatically to the event stream on `EventStore::commit`.
+The change causes a `UserNameChanged` event.
 
-**But** the identity map is cleared after each transaction commit. You may notice the `assertNotSame` checks in the test.
+**Note** the identity map is cleared after each transaction commit. You may notice the `assertNotSame` checks in the test.
 The repository keeps an aggregate only in memory as long as the transaction is active. Otherwise multiple long-running
 processes dealing with the same aggregate would run into concurrency issues very fast.
 
