@@ -20,6 +20,8 @@
         "DDD",
         "prooph"
     ],
+    "minimum-stability": "dev",
+    "prefer-stable": true,
     "require": {
         "php": "^7.1",
         "prooph/common" : "4.0.x-dev",
@@ -32,6 +34,7 @@
         "prooph/php-cs-fixer-config": "^0.1.1",
         "phpspec/prophecy": "dev-patch-1 as 1.6.2",
         "satooshi/php-coveralls": "^1.0",
+        "prooph/bookdown-template": "^0.2.3",
         "malukenho/docheader": "^0.1.4"
     },
     "conflict": {
