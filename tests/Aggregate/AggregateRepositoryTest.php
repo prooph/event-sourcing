@@ -466,7 +466,7 @@ class AggregateRepositoryTest extends ActionEventEmitterEventStoreTestCase
      */
     public function it_does_not_throw_an_exception_if_no_pending_event_is_present()
     {
-        $user = User::create('John Doe', 'contact@prooph.de');
+        $user = User::nameNew('John Doe');
         $this->repository->saveAggregateRoot($user);
         $this->repository->saveAggregateRoot($user);
     }
