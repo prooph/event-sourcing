@@ -17,7 +17,7 @@ this behaviour has been removed and you always have to call `saveAggregateRoot($
 
 The classes `Prooph\EventStore\Aggregate\*` are moved from the event-store repository to the event-sourcing repository.
 Hence the new class name `Prooph\EventSourcing\Aggregate\*`. This includes the `AggregateRepository`, `AggregateTranslator`,
-`AggregateType`, `AggregateTypeProvider` and `ConfigurableAggregateTranslator` as well as some exception classes.
+`AggregateType` and `AggregateTypeProvider` as well as some exception classes.
 
 Same goes for `Prooph\EventStore\Snapshot\*` classes.
 
@@ -25,6 +25,12 @@ Reason:
 
 The event-store should not know anything about event sourcing at all, it's only a mechanism to store a stream of events.
 Therefore all those classes are moved.
+
+## ConfigurableAggregateTranslator
+
+The `ConfigurableAggregateTranslator` was part of `Prooph\EventStore` v6 and has been completely removed.
+If you want to use something similar (especially when you don't want to extend from `Prooph\EventSourcing\AggregateRoot`)
+then you can implement the `Prooph\EventSourcing\Aggregate\AggregateTranslator` interface yourself.
 
 ## Snapshot Store
 
