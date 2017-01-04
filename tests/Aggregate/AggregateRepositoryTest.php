@@ -217,7 +217,7 @@ class AggregateRepositoryTest extends ActionEventEmitterEventStoreTestCase
 
         $loadedEvents = [];
 
-        $this->eventStore->getActionEventEmitter()->attachListener(
+        $this->eventStore->attach(
             'load',
             function (ActionEvent $event) use (&$loadedEvents) {
                 foreach ($event->getParam('streamEvents', []) as $streamEvent) {
@@ -270,7 +270,7 @@ class AggregateRepositoryTest extends ActionEventEmitterEventStoreTestCase
 
         $loadedEvents = [];
 
-        $this->eventStore->getActionEventEmitter()->attachListener(
+        $this->eventStore->attach(
             'load',
             function (ActionEvent $event) use (&$loadedEvents) {
                 foreach ($event->getParam('streamEvents', []) as $streamEvent) {
@@ -300,7 +300,7 @@ class AggregateRepositoryTest extends ActionEventEmitterEventStoreTestCase
 
         $loadedEvents = [];
 
-        $this->eventStore->getActionEventEmitter()->attachListener(
+        $this->eventStore->attach(
             'load',
             function (ActionEvent $event) use (&$loadedEvents) {
                 $stream = $event->getParam('stream');
@@ -353,7 +353,7 @@ class AggregateRepositoryTest extends ActionEventEmitterEventStoreTestCase
 
         $loadedEvents = [];
 
-        $this->eventStore->getActionEventEmitter()->attachListener(
+        $this->eventStore->attach(
             'load',
             function (ActionEvent $event) use (&$loadedEvents) {
                 $stream = $event->getParam('stream');
