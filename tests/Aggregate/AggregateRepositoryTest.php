@@ -459,4 +459,15 @@ class AggregateRepositoryTest extends ActionEventEmitterEventStoreTestCase
 
         $this->repository->saveAggregateRoot($user);
     }
+
+    /**
+     * @test
+     * @see https://github.com/prooph/event-sourcing/issues/42
+     */
+    public function it_does_not_throw_an_exception_if_no_pending_event_is_present()
+    {
+        $user = User::create('John Doe', 'contact@prooph.de');
+        $this->repository->saveAggregateRoot($user);
+        $this->repository->saveAggregateRoot($user);
+    }
 }

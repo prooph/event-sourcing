@@ -92,9 +92,13 @@ class AggregateRepository
 
         $createStream = false;
 
-        $firstEvent = $domainEvents[0];
+        $firstEvent = reset($domainEvents);
 
-        if ($this->isFirstEvent($firstEvent) && $this->oneStreamPerAggregate) {
+        if (false === $firstEvent) {
+            return;
+        }
+
+        if ($this->oneStreamPerAggregate && $this->isFirstEvent($firstEvent)) {
             $createStream = true;
         }
 
