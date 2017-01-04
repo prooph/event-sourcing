@@ -22,7 +22,7 @@ before_script:
   - mkdir -p "$HOME/.php-cs-fixer"
   - phpenv config-rm xdebug.ini
   - composer self-update
-  - composer update --prefer-source $DEPENDENCIES
+  - composer update $DEPENDENCIES
 
 script:
   - if [[ $TEST_COVERAGE == 'true' ]]; then php -dzend_extension=xdebug.so ./vendor/bin/phpunit --coverage-text --coverage-clover ./build/logs/clover.xml; else ./vendor/bin/phpunit; fi

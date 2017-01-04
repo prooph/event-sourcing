@@ -56,6 +56,11 @@
             "ProophTest\\EventStore\\": "vendor/prooph/event-store/tests/"
         }
     },
+    "config": {
+        "preferred-install": {
+            "prooph/*": "source"
+        }
+    },
     "scripts": {
         "check": [
             "@cs",
