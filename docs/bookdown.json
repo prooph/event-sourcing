@@ -3,6 +3,7 @@
   "content": [
     {"intro": "../README.md"},
     {"repositories": "repositories.md"},
+    {"snapshots": "snapshots.md"},
     {"inheritance": "inheritance.md"},
     {"interop_factories": "interop_factories.md"},
     {"migration": "migration.md"}
