@@ -31,11 +31,15 @@
         "container-interop/container-interop": "^1.1",
         "sandrokeil/interop-config": "^2.0.1",
         "phpunit/phpunit": "^5.7",
+        "prooph/snapshot-store": "1.0.x-dev",
         "prooph/php-cs-fixer-config": "^0.1.1",
         "phpspec/prophecy": "dev-patch-1 as 1.6.2",
         "satooshi/php-coveralls": "^1.0",
         "prooph/bookdown-template": "^0.2.3",
         "malukenho/docheader": "^0.1.4"
+    },
+    "suggest": {
+        "prooph/snapshot-store": "For usage with snapshots"
     },
     "conflict": {
         "sandrokeil/interop-config": "<2.0.1"

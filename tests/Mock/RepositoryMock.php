@@ -15,9 +15,9 @@ namespace ProophTest\EventSourcing\Mock;
 use Prooph\EventSourcing\Aggregate\AggregateRepository;
 use Prooph\EventSourcing\Aggregate\AggregateTranslator;
 use Prooph\EventSourcing\Aggregate\AggregateType;
-use Prooph\EventSourcing\Snapshot\SnapshotStore;
 use Prooph\EventStore\EventStore;
 use Prooph\EventStore\StreamName;
+use Prooph\SnapshotStore\SnapshotStore;
 
 final class RepositoryMock extends AggregateRepository
 {

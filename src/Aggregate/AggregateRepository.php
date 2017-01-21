@@ -14,13 +14,13 @@ namespace Prooph\EventSourcing\Aggregate;
 
 use ArrayIterator;
 use Prooph\Common\Messaging\Message;
-use Prooph\EventSourcing\Snapshot\SnapshotStore;
 use Prooph\EventStore\EventStore;
 use Prooph\EventStore\Exception\StreamNotFound;
 use Prooph\EventStore\Metadata\MetadataMatcher;
 use Prooph\EventStore\Metadata\Operator;
 use Prooph\EventStore\Stream;
 use Prooph\EventStore\StreamName;
+use Prooph\SnapshotStore\SnapshotStore;
 
 class AggregateRepository
 {
@@ -212,7 +212,7 @@ class AggregateRepository
      */
     protected function loadFromSnapshotStore(string $aggregateId)
     {
-        $snapshot = $this->snapshotStore->get($this->aggregateType, $aggregateId);
+        $snapshot = $this->snapshotStore->get($this->aggregateType->toString(), $aggregateId);
 
         if ($snapshot) {
             $lastVersion = $snapshot->lastVersion();

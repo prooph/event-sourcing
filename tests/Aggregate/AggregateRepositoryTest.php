@@ -17,12 +17,12 @@ use Prooph\EventSourcing\Aggregate\AggregateRepository;
 use Prooph\EventSourcing\Aggregate\AggregateType;
 use Prooph\EventSourcing\Aggregate\Exception\AggregateTypeException;
 use Prooph\EventSourcing\EventStoreIntegration\AggregateTranslator;
-use Prooph\EventSourcing\Snapshot\InMemorySnapshotStore;
-use Prooph\EventSourcing\Snapshot\Snapshot;
-use Prooph\EventSourcing\Snapshot\SnapshotStore;
 use Prooph\EventStore\ActionEventEmitterEventStore;
 use Prooph\EventStore\Stream;
 use Prooph\EventStore\StreamName;
+use Prooph\SnapshotStore\InMemorySnapshotStore;
+use Prooph\SnapshotStore\Snapshot;
+use Prooph\SnapshotStore\SnapshotStore;
 use ProophTest\EventSourcing\Mock\User;
 use ProophTest\EventSourcing\Mock\UserCreated;
 use ProophTest\EventSourcing\Mock\UsernameChanged;
@@ -201,7 +201,7 @@ class AggregateRepositoryTest extends ActionEventEmitterEventStoreTestCase
 
         $now = new \DateTimeImmutable('now', new \DateTimeZone('UTC'));
         $snapshot = new Snapshot(
-            AggregateType::fromAggregateRootClass(User::class),
+            User::class,
             $user->id(),
             $user,
             1,
@@ -254,7 +254,7 @@ class AggregateRepositoryTest extends ActionEventEmitterEventStoreTestCase
 
         $now = new \DateTimeImmutable('now', new \DateTimeZone('UTC'));
         $snapshot = new Snapshot(
-            AggregateType::fromAggregateRootClass(User::class),
+            User::class,
             $user->id(),
             $user,
             1,
@@ -332,7 +332,7 @@ class AggregateRepositoryTest extends ActionEventEmitterEventStoreTestCase
         $this->repository->saveAggregateRoot($user);
 
         $snapshot = new Snapshot(
-            AggregateType::fromAggregateRootClass(User::class),
+            User::class,
             $user->id(),
             $user,
             1,
