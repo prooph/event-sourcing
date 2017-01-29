@@ -174,7 +174,7 @@ class AggregateRepositoryTest extends ActionEventEmitterEventStoreTestCase
                 1,
                 null,
                 null
-            )->willReturn(new Stream(new StreamName(User::class . '-123'), new \ArrayIterator()));
+            )->willReturn(new \EmptyIterator());
 
         $repository = new AggregateRepository(
             $eventStore->reveal(),
@@ -301,11 +301,9 @@ class AggregateRepositoryTest extends ActionEventEmitterEventStoreTestCase
         $this->eventStore->attach(
             'load',
             function (ActionEvent $event) use (&$loadedEvents) {
-                $stream = $event->getParam('stream');
-                if (! $stream) {
-                    return;
-                }
-                foreach ($stream->streamEvents() as $streamEvent) {
+                $streamEvents = $event->getParam('streamEvents');
+
+                foreach ($streamEvents as $streamEvent) {
                     $loadedEvents[] = $streamEvent;
                 }
             },
@@ -354,14 +352,13 @@ class AggregateRepositoryTest extends ActionEventEmitterEventStoreTestCase
         $this->eventStore->attach(
             'load',
             function (ActionEvent $event) use (&$loadedEvents) {
-                $stream = $event->getParam('stream');
-                if (! $stream) {
-                    return;
-                }
-                foreach ($stream->streamEvents() as $streamEvent) {
+                $streamEvents = $event->getParam('streamEvents');
+
+                foreach ($streamEvents as $streamEvent) {
                     $loadedEvents[] = $streamEvent;
                 }
-                $event->getParam('stream')->streamEvents()->rewind();
+
+                $event->getParam('streamEvents')->rewind();
             },
             -1000
         );
