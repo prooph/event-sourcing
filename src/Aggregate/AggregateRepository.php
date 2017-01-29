@@ -145,7 +145,7 @@ class AggregateRepository
 
         if ($this->oneStreamPerAggregate) {
             try {
-                $stream = $this->eventStore->load($streamName, 1);
+                $streamEvents = $this->eventStore->load($streamName, 1);
             } catch (StreamNotFound $e) {
                 return null;
             }
@@ -163,13 +163,11 @@ class AggregateRepository
             );
 
             try {
-                $stream = $this->eventStore->load($streamName, 1, null, $metadataMatcher);
+                $streamEvents = $this->eventStore->load($streamName, 1, null, $metadataMatcher);
             } catch (StreamNotFound $e) {
                 return null;
             }
         }
-
-        $streamEvents = $stream->streamEvents();
 
         if (! $streamEvents->valid()) {
             return null;
@@ -226,7 +224,7 @@ class AggregateRepository
 
         if ($this->oneStreamPerAggregate) {
             try {
-                $stream = $this->eventStore->load(
+                $streamEvents = $this->eventStore->load(
                     $streamName,
                     $lastVersion + 1
                 );
@@ -252,7 +250,7 @@ class AggregateRepository
             );
 
             try {
-                $stream = $this->eventStore->load(
+                $streamEvents = $this->eventStore->load(
                     $streamName,
                     $lastVersion + 1,
                     null,
@@ -262,8 +260,6 @@ class AggregateRepository
                 return $aggregateRoot;
             }
         }
-
-        $streamEvents = $stream->streamEvents();
 
         if (! $streamEvents->valid()) {
             return $aggregateRoot;
