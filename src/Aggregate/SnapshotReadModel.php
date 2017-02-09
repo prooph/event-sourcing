@@ -83,7 +83,7 @@ final class SnapshotReadModel implements ReadModel
 
         foreach ($this->aggregateCache as $aggregateRoot) {
             $snapshots[] = new Snapshot(
-                $aggregateRoot,
+                $this->aggregateRepository->aggregateType()->toString(),
                 $this->aggregateTranslator->extractAggregateId($aggregateRoot),
                 $aggregateRoot,
                 $this->aggregateTranslator->extractAggregateVersion($aggregateRoot),
