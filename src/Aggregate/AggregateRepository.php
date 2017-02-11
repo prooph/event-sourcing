@@ -184,11 +184,6 @@ class AggregateRepository
         return $eventSourcedAggregateRoot;
     }
 
-    public function aggregateType(): AggregateType
-    {
-        return $this->aggregateType;
-    }
-
     /**
      * @param object $aggregateRoot
      */
