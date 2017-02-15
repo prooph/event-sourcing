@@ -14,12 +14,12 @@ namespace Prooph\EventSourcing\Container\Aggregate;
 use Interop\Config\ConfigurationTrait;
 use Interop\Config\RequiresConfigId;
 use Interop\Config\RequiresMandatoryOptions;
-use Interop\Container\ContainerInterface;
 use Prooph\EventSourcing\Aggregate\AggregateRepository;
 use Prooph\EventSourcing\Aggregate\AggregateType;
 use Prooph\EventStore\EventStore;
 use Prooph\EventStore\Exception\ConfigurationException;
 use Prooph\EventStore\StreamName;
+use Psr\Container\ContainerInterface;
 
 final class AggregateRepositoryFactory implements RequiresConfigId, RequiresMandatoryOptions
 {

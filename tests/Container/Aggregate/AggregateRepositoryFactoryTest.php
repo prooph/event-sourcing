@@ -12,7 +12,6 @@ declare(strict_types=1);
 
 namespace ProophTest\EventSourcing\Container\Aggregate;
 
-use Interop\Container\ContainerInterface;
 use Prooph\EventSourcing\Aggregate\AggregateTranslator;
 use Prooph\EventSourcing\Container\Aggregate\AggregateRepositoryFactory;
 use Prooph\EventStore\EventStore;
@@ -20,6 +19,7 @@ use Prooph\EventStore\Exception\ConfigurationException;
 use ProophTest\EventSourcing\Mock\RepositoryMock;
 use ProophTest\EventStore\ActionEventEmitterEventStoreTestCase;
 use ProophTest\EventStore\Mock\User;
+use Psr\Container\ContainerInterface;
 
 class AggregateRepositoryFactoryTest extends ActionEventEmitterEventStoreTestCase
 {
@@ -59,7 +59,7 @@ class AggregateRepositoryFactoryTest extends ActionEventEmitterEventStoreTestCas
     public function it_throws_invalid_argument_exception_without_container_on_static_call(): void
     {
         $this->expectException(\InvalidArgumentException::class);
-        $this->expectExceptionMessage('The first argument must be of type Interop\Container\ContainerInterface');
+        $this->expectExceptionMessage('The first argument must be of type Psr\Container\ContainerInterface');
 
         AggregateRepositoryFactory::other_config_id();
     }
