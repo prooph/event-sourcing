@@ -12,6 +12,7 @@ declare(strict_types=1);
 
 namespace ProophTest\EventSourcing;
 
+use DateTimeImmutable;
 use PHPUnit\Framework\TestCase;
 use Prooph\EventSourcing\AggregateChanged;
 use Ramsey\Uuid\Uuid;
@@ -45,7 +46,7 @@ class AggregateChangedTest extends TestCase
     {
         $event = AggregateChanged::occur('1', []);
 
-        $this->assertInstanceOf('\DateTimeImmutable', $event->createdAt());
+        $this->assertInstanceOf(DateTimeImmutable::class, $event->createdAt());
     }
 
     /**

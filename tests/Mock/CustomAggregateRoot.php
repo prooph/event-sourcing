@@ -12,6 +12,7 @@ declare(strict_types=1);
 
 namespace ProophTest\EventSourcing\Mock;
 
+use Iterator;
 use Prooph\Common\Messaging\Message;
 
 final class CustomAggregateRoot implements CustomAggregateRootContract
@@ -25,7 +26,7 @@ final class CustomAggregateRoot implements CustomAggregateRootContract
         return $this->version;
     }
 
-    public static function buildFromHistoryEvents(\Iterator $historyEvents): CustomAggregateRootContract
+    public static function buildFromHistoryEvents(Iterator $historyEvents): CustomAggregateRootContract
     {
         $self = new self();
 
@@ -34,7 +35,7 @@ final class CustomAggregateRoot implements CustomAggregateRootContract
         return $self;
     }
 
-    public function getHistoryEvents(): \Iterator
+    public function getHistoryEvents(): Iterator
     {
         return $this->historyEvents;
     }

@@ -12,11 +12,12 @@ declare(strict_types=1);
 
 namespace ProophTest\EventSourcing\Mock;
 
+use Iterator;
 use Prooph\Common\Messaging\Message;
 
 interface DefaultAggregateRootContract
 {
-    public static function reconstituteFromHistory(\Iterator $historyEvents): DefaultAggregateRootContract;
+    public static function reconstituteFromHistory(Iterator $historyEvents): DefaultAggregateRootContract;
 
     public function getVersion(): int;
 

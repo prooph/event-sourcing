@@ -12,6 +12,7 @@ declare(strict_types=1);
 
 namespace ProophTest\EventSourcing\Mock;
 
+use Iterator;
 use Prooph\Common\Messaging\Message;
 
 final class FaultyAggregateRoot implements DefaultAggregateRootContract
@@ -22,11 +23,11 @@ final class FaultyAggregateRoot implements DefaultAggregateRootContract
         return 1;
     }
 
-    public static function reconstituteFromHistory(\Iterator $historyEvents): DefaultAggregateRootContract
+    public static function reconstituteFromHistory(Iterator $historyEvents): DefaultAggregateRootContract
     {
         //faulty method
         return new class() implements DefaultAggregateRootContract {
-            public static function reconstituteFromHistory(\Iterator $historyEvents): DefaultAggregateRootContract
+            public static function reconstituteFromHistory(Iterator $historyEvents): DefaultAggregateRootContract
             {
                 return new self();
             }

@@ -12,6 +12,7 @@ declare(strict_types=1);
 
 namespace ProophTest\EventSourcing\EventStoreIntegration;
 
+use ArrayIterator;
 use PHPUnit\Framework\TestCase;
 use Prooph\Common\Event\ProophActionEventEmitter;
 use Prooph\EventSourcing\Aggregate\AggregateRepository;
@@ -43,7 +44,7 @@ class AggregateTranslatorTest extends TestCase
 
         $this->eventStore->beginTransaction();
 
-        $this->eventStore->create(new Stream(new StreamName('event_stream'), new \ArrayIterator([])));
+        $this->eventStore->create(new Stream(new StreamName('event_stream'), new ArrayIterator([])));
 
         $this->eventStore->commit();
 
@@ -104,7 +105,7 @@ class AggregateTranslatorTest extends TestCase
         $newName = 'Jane Doe';
 
         $translator = new AggregateTranslator();
-        $translator->replayStreamEvents($loadedUser, new \ArrayIterator([UserNameChanged::occur($loadedUser->id(), [
+        $translator->replayStreamEvents($loadedUser, new ArrayIterator([UserNameChanged::occur($loadedUser->id(), [
             'username' => $newName,
         ])]));
 
