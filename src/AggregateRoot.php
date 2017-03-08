@@ -93,5 +93,5 @@ abstract class AggregateRoot
     /**
      * Apply given event
      */
-    abstract protected function apply(AggregateChanged $e): void;
+    abstract protected function apply(AggregateChanged $event): void;
 }
