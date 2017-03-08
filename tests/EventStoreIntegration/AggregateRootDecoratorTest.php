@@ -12,9 +12,12 @@ declare(strict_types=1);
 
 namespace ProophTest\EventSourcing\EventStoreIntegration;
 
+use ArrayIterator;
+use BadMethodCallException;
 use PHPUnit\Framework\TestCase;
 use Prooph\EventSourcing\EventStoreIntegration\AggregateRootDecorator;
 use ProophTest\EventSourcing\Mock\ExtendedAggregateRootDecorator;
+use RuntimeException;
 
 class AggregateRootDecoratorTest extends TestCase
 {
@@ -23,11 +26,11 @@ class AggregateRootDecoratorTest extends TestCase
      */
     public function it_throws_exception_when_reconstitute_from_history_with_invalid_class()
     {
-        $this->expectException(\RuntimeException::class);
+        $this->expectException(RuntimeException::class);
         $this->expectExceptionMessage('Aggregate root class UnknownClass cannot be found');
 
         $decorator = AggregateRootDecorator::newInstance();
-        $decorator->fromHistory('UnknownClass', new \ArrayIterator([]));
+        $decorator->fromHistory('UnknownClass', new ArrayIterator([]));
     }
 
     /**
@@ -35,7 +38,7 @@ class AggregateRootDecoratorTest extends TestCase
      */
     public function it_throws_exception_when_accessing_aggregate_id()
     {
-        $this->expectException(\BadMethodCallException::class);
+        $this->expectException(BadMethodCallException::class);
         $this->expectExceptionMessage('The AggregateRootDecorator does not have an id');
 
         $decorator = ExtendedAggregateRootDecorator::newInstance();

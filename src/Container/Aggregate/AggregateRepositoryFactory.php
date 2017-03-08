@@ -14,6 +14,7 @@ namespace Prooph\EventSourcing\Container\Aggregate;
 use Interop\Config\ConfigurationTrait;
 use Interop\Config\RequiresConfigId;
 use Interop\Config\RequiresMandatoryOptions;
+use InvalidArgumentException;
 use Prooph\EventSourcing\Aggregate\AggregateRepository;
 use Prooph\EventSourcing\Aggregate\AggregateType;
 use Prooph\EventStore\EventStore;
@@ -43,12 +44,12 @@ final class AggregateRepositoryFactory implements RequiresConfigId, RequiresMand
      * ];
      * </code>
      *
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException
      */
     public static function __callStatic(string $name, array $arguments): AggregateRepository
     {
         if (! isset($arguments[0]) || ! $arguments[0] instanceof ContainerInterface) {
-            throw new \InvalidArgumentException(
+            throw new InvalidArgumentException(
                 sprintf('The first argument must be of type %s', ContainerInterface::class)
             );
         }

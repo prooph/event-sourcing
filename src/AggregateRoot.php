@@ -12,6 +12,9 @@ declare(strict_types=1);
 
 namespace Prooph\EventSourcing;
 
+use Iterator;
+use RuntimeException;
+
 abstract class AggregateRoot
 {
     /**
@@ -29,9 +32,9 @@ abstract class AggregateRoot
     protected $recordedEvents = [];
 
     /**
-     * @throws \RuntimeException
+     * @throws RuntimeException
      */
-    protected static function reconstituteFromHistory(\Iterator $historyEvents): self
+    protected static function reconstituteFromHistory(Iterator $historyEvents): self
     {
         $instance = new static();
         $instance->replay($historyEvents);
@@ -78,9 +81,9 @@ abstract class AggregateRoot
     /**
      * Replay past events
      *
-     * @throws \RuntimeException
+     * @throws RuntimeException
      */
-    protected function replay(\Iterator $historyEvents): void
+    protected function replay(Iterator $historyEvents): void
     {
         foreach ($historyEvents as $pastEvent) {
             /** @var AggregateChanged $pastEvent */

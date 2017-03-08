@@ -12,13 +12,14 @@ declare(strict_types=1);
 
 namespace ProophTest\EventSourcing\Mock;
 
+use Iterator;
 use Prooph\Common\Messaging\Message;
 
 interface CustomAggregateRootContract
 {
     public function version(): int;
 
-    public static function buildFromHistoryEvents(\Iterator $historyEvents): CustomAggregateRootContract;
+    public static function buildFromHistoryEvents(Iterator $historyEvents): CustomAggregateRootContract;
 
     public function identifier(): string;
 

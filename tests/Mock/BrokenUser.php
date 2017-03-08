@@ -15,6 +15,7 @@ namespace ProophTest\EventSourcing\Mock;
 use Prooph\EventSourcing\AggregateChanged;
 use Prooph\EventSourcing\AggregateRoot;
 use Ramsey\Uuid\Uuid;
+use RuntimeException;
 
 class BrokenUser extends AggregateRoot
 {
@@ -73,7 +74,7 @@ class BrokenUser extends AggregateRoot
     {
         switch (get_class($e)) {
             default:
-                throw new \RuntimeException(
+                throw new RuntimeException(
                     sprintf(
                         'Unknown event "%s" applied to user aggregate',
                         $e->messageName()

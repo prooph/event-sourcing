@@ -12,9 +12,11 @@ declare(strict_types=1);
 
 namespace ProophTest\EventSourcing\Mock;
 
+use Iterator;
 use Prooph\EventSourcing\AggregateChanged;
 use Prooph\EventSourcing\AggregateRoot;
 use Ramsey\Uuid\Uuid;
+use RuntimeException;
 
 class User extends AggregateRoot
 {
@@ -38,7 +40,7 @@ class User extends AggregateRoot
         return $instance;
     }
 
-    public static function fromHistory(\Iterator $historyEvents): self
+    public static function fromHistory(Iterator $historyEvents): self
     {
         return self::reconstituteFromHistory($historyEvents);
     }
@@ -85,7 +87,7 @@ class User extends AggregateRoot
                 $this->name = $e->newUsername();
                 break;
             default:
-                throw new \RuntimeException(
+                throw new RuntimeException(
                     sprintf(
                         'Unknown event "%s" applied to user aggregate',
                         $e->messageName()

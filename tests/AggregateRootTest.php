@@ -12,11 +12,13 @@ declare(strict_types=1);
 
 namespace ProophTest\EventSourcing;
 
+use ArrayIterator;
 use PHPUnit\Framework\TestCase;
 use Prooph\EventSourcing\EventStoreIntegration\AggregateRootDecorator;
 use ProophTest\EventSourcing\Mock\BrokenUser;
 use ProophTest\EventSourcing\Mock\User;
 use ProophTest\EventSourcing\Mock\UserCreated;
+use RuntimeException;
 
 class AggregateRootTest extends TestCase
 {
@@ -35,7 +37,7 @@ class AggregateRootTest extends TestCase
         //In between would be the process of persisting recorded events to an event stream
         //Only if this was successful the events can be applied to the aggregate root
         //We skip the persistence process here and apply the events directly
-        $decorator->replayStreamEvents($user, new \ArrayIterator($recordedEvents));
+        $decorator->replayStreamEvents($user, new ArrayIterator($recordedEvents));
 
         $this->assertEquals('John', $user->name());
 
@@ -43,7 +45,7 @@ class AggregateRootTest extends TestCase
 
         $additionalRecordedEvents = $decorator->extractRecordedEvents($user);
 
-        $decorator->replayStreamEvents($user, new \ArrayIterator($additionalRecordedEvents));
+        $decorator->replayStreamEvents($user, new ArrayIterator($additionalRecordedEvents));
 
         $this->assertEquals('Max', $user->name());
 
@@ -67,14 +69,14 @@ class AggregateRootTest extends TestCase
      */
     public function it_throws_exception_when_no_handler_on_aggregate()
     {
-        $this->expectException(\RuntimeException::class);
+        $this->expectException(RuntimeException::class);
         $this->expectExceptionMessage('Unknown event "' . UserCreated::class . '" applied to user aggregate');
 
         $brokenUser = BrokenUser::nameNew('John');
 
         AggregateRootDecorator::newInstance()->applyStreamEvents(
             $brokenUser,
-            new \ArrayIterator($brokenUser->accessRecordedEvents())
+            new ArrayIterator($brokenUser->accessRecordedEvents())
         );
     }
 
@@ -87,15 +89,15 @@ class AggregateRootTest extends TestCase
 
         $recordedEvents = $user->accessRecordedEvents();
 
-        AggregateRootDecorator::newInstance()->replayStreamEvents($user, new \ArrayIterator($recordedEvents));
+        AggregateRootDecorator::newInstance()->replayStreamEvents($user, new ArrayIterator($recordedEvents));
 
         $user->changeName('Max');
 
         $additionalRecordedEvents = $user->accessRecordedEvents();
 
-        AggregateRootDecorator::newInstance()->replayStreamEvents($user, new \ArrayIterator($additionalRecordedEvents));
+        AggregateRootDecorator::newInstance()->replayStreamEvents($user, new ArrayIterator($additionalRecordedEvents));
 
-        $historyEvents = new \ArrayIterator(array_merge($recordedEvents, $additionalRecordedEvents));
+        $historyEvents = new ArrayIterator(array_merge($recordedEvents, $additionalRecordedEvents));
 
         $sameUser = User::fromHistory($historyEvents);
 

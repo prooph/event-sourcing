@@ -46,11 +46,11 @@ final class AggregateTranslator implements EventStoreAggregateTranslator
 
     /**
      * @param AggregateType $aggregateType
-     * @param \Iterator $historyEvents
+     * @param Iterator $historyEvents
      *
      * @return object reconstructed AggregateRoot
      */
-    public function reconstituteAggregateFromHistory(AggregateType $aggregateType, \Iterator $historyEvents)
+    public function reconstituteAggregateFromHistory(AggregateType $aggregateType, Iterator $historyEvents)
     {
         return $this->getAggregateRootDecorator()
             ->fromHistory($aggregateType->toString(), $historyEvents);

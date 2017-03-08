@@ -12,9 +12,11 @@ declare(strict_types=1);
 
 namespace Prooph\EventSourcing\EventStoreIntegration;
 
+use BadMethodCallException;
 use Iterator;
 use Prooph\EventSourcing\AggregateChanged;
 use Prooph\EventSourcing\AggregateRoot;
+use RuntimeException;
 
 class AggregateRootDecorator extends AggregateRoot
 {
@@ -44,12 +46,12 @@ class AggregateRootDecorator extends AggregateRoot
     }
 
     /**
-     * @throws \RuntimeException
+     * @throws RuntimeException
      */
-    public function fromHistory($arClass, \Iterator $aggregateChangedEvents): AggregateRoot
+    public function fromHistory($arClass, Iterator $aggregateChangedEvents): AggregateRoot
     {
         if (! class_exists($arClass)) {
-            throw new \RuntimeException(
+            throw new RuntimeException(
                 sprintf('Aggregate root class %s cannot be found', $arClass)
             );
         }
@@ -63,11 +65,11 @@ class AggregateRootDecorator extends AggregateRoot
     }
 
     /**
-     * @throws \BadMethodCallException
+     * @throws BadMethodCallException
      */
     protected function aggregateId(): string
     {
-        throw new \BadMethodCallException('The AggregateRootDecorator does not have an id');
+        throw new BadMethodCallException('The AggregateRootDecorator does not have an id');
     }
 
     protected function apply(AggregateChanged $e): void

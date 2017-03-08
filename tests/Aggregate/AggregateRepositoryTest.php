@@ -12,6 +12,10 @@ declare(strict_types=1);
 
 namespace ProophTest\EventSourcing\Aggregate;
 
+use ArrayIterator;
+use DateTimeImmutable;
+use DateTimeZone;
+use EmptyIterator;
 use Prooph\Common\Event\ActionEvent;
 use Prooph\EventSourcing\Aggregate\AggregateRepository;
 use Prooph\EventSourcing\Aggregate\AggregateType;
@@ -28,6 +32,7 @@ use ProophTest\EventSourcing\Mock\UserCreated;
 use ProophTest\EventSourcing\Mock\UsernameChanged;
 use ProophTest\EventStore\ActionEventEmitterEventStoreTestCase;
 use Prophecy\Argument;
+use ReflectionClass;
 
 class AggregateRepositoryTest extends ActionEventEmitterEventStoreTestCase
 {
@@ -51,7 +56,7 @@ class AggregateRepositoryTest extends ActionEventEmitterEventStoreTestCase
             new AggregateTranslator()
         );
 
-        $this->eventStore->create(new Stream(new StreamName('event_stream'), new \ArrayIterator()));
+        $this->eventStore->create(new Stream(new StreamName('event_stream'), new ArrayIterator()));
     }
 
     /**
@@ -174,7 +179,7 @@ class AggregateRepositoryTest extends ActionEventEmitterEventStoreTestCase
                 1,
                 null,
                 null
-            )->willReturn(new \EmptyIterator());
+            )->willReturn(new EmptyIterator());
 
         $repository = new AggregateRepository(
             $eventStore->reveal(),
@@ -199,7 +204,7 @@ class AggregateRepositoryTest extends ActionEventEmitterEventStoreTestCase
 
         $this->repository->saveAggregateRoot($user);
 
-        $now = new \DateTimeImmutable('now', new \DateTimeZone('UTC'));
+        $now = new DateTimeImmutable('now', new DateTimeZone('UTC'));
         $snapshot = new Snapshot(
             User::class,
             $user->id(),
@@ -252,7 +257,7 @@ class AggregateRepositoryTest extends ActionEventEmitterEventStoreTestCase
 
         $this->repository->saveAggregateRoot($user);
 
-        $now = new \DateTimeImmutable('now', new \DateTimeZone('UTC'));
+        $now = new DateTimeImmutable('now', new DateTimeZone('UTC'));
         $snapshot = new Snapshot(
             User::class,
             $user->id(),
@@ -334,7 +339,7 @@ class AggregateRepositoryTest extends ActionEventEmitterEventStoreTestCase
             $user->id(),
             $user,
             1,
-            new \DateTimeImmutable('now', new \DateTimeZone('UTC'))
+            new DateTimeImmutable('now', new DateTimeZone('UTC'))
         );
 
         $this->snapshotStore->save($snapshot);
@@ -385,7 +390,7 @@ class AggregateRepositoryTest extends ActionEventEmitterEventStoreTestCase
             $this->snapshotStore
         );
 
-        $this->eventStore->create(new Stream(new StreamName('event_stream'), new \ArrayIterator()));
+        $this->eventStore->create(new Stream(new StreamName('event_stream'), new ArrayIterator()));
     }
 
     /**
@@ -427,7 +432,7 @@ class AggregateRepositoryTest extends ActionEventEmitterEventStoreTestCase
             $user->id()
         );
 
-        $reflectionClass = new \ReflectionClass($this->repository);
+        $reflectionClass = new ReflectionClass($this->repository);
 
         $reflectionProperty = $reflectionClass->getProperty('identityMap');
         $reflectionProperty->setAccessible(true);
@@ -450,7 +455,7 @@ class AggregateRepositoryTest extends ActionEventEmitterEventStoreTestCase
             new StreamName('foo')
         );
 
-        $this->eventStore->create(new Stream(new StreamName('foo'), new \ArrayIterator()));
+        $this->eventStore->create(new Stream(new StreamName('foo'), new ArrayIterator()));
 
         $user = User::nameNew('John Doe');
 
