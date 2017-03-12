@@ -161,6 +161,11 @@ class AggregateRepository
                 Operator::EQUALS(),
                 $aggregateId
             );
+            $metadataMatcher = $metadataMatcher->withMetadataMatch(
+                '_aggregate_version',
+                Operator::GREATER_THAN_EQUALS(),
+                1
+            );
 
             try {
                 $streamEvents = $this->eventStore->load($streamName, 1, null, $metadataMatcher);
