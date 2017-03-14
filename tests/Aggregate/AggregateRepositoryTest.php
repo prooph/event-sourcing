@@ -464,7 +464,7 @@ class AggregateRepositoryTest extends ActionEventEmitterEventStoreTestCase
 
     /**
      * @test
-     * @see https://github.com/prooph/event-sourcing/issues/42
+     * Test for https://github.com/prooph/event-sourcing/issues/42
      */
     public function it_does_not_throw_an_exception_if_no_pending_event_is_present()
     {
