@@ -26,16 +26,12 @@ And the repository must also be able to load persisted events from a stream and 
 To provide this functionality the repository makes use of various helper classes explained below.
 
 ## AggregateType
-Each repository is responsible for one `Prooph\EventStore\Aggregate\AggregateType`. Super types are not supported.
-Imagine we have a domain with `Admin extends User` and `Employee extends User`. You'd need to have a `AdminRepository` and
-a `EmployeeRepository` in this case. If this is not what you want you can create a custom aggregate translator (see below)
-which is capable of reconstituting the correct types based on information derived from persisted domain events.
-Then you can have a `UserRepository` set up with your custom aggregate translator and it should work.
+Each repository is responsible for one `\Prooph\EventSourcing\Aggregate\AggregateType`.
 
 ## AggregateTranslator
 
 To achieve 100% decoupling between layers and/or contexts you can make use of translation adapters.
-For prooph/event-store such a translation adapter is called an `Prooph\EventStore\Aggregate\AggregateTranslator`.
+For prooph/event-store such a translation adapter is called a `Prooph\EventSourcing\Aggregate\AggregateTranslator`.
 
 The interface requires you to implement 5 methods:
 
@@ -43,64 +39,16 @@ The interface requires you to implement 5 methods:
 - extractAggregateVersion
 - extractPendingStreamEvents
 - reconstituteAggregateFromHistory
-- applyStreamEvents
+- replayStreamEvents
 
-To make your life easier prooph/event-store ships with a `Prooph\EventStore\Aggregate\ConfigurableAggregateTranslator` which implements the interface.
-
-Let's have a look at the constructor
-
-```php
-public function __construct(
-    string $identifierMethodName = null,
-    string $versionMethodName = null,
-    string $popRecordedEventsMethodName = null,
-    string $replayEventsMethodsName = null,
-    string $staticReconstituteFromHistoryMethodName = null,
-    string $eventToMessageCallback = null,
-    string $messageToEventCallback = null)
-{
-    //...
-}
-```
-
-We can identify 7 dependencies but all are optional.
-
-- `$identifierMethodName`
-  - defaults to `getId`
-  - used to `extractAggregateId` and must return a string
-  - you can have a translator per aggregate type, so if you prefer to have methods reflecting domain language you likely want to use methods like `getTrackingId`, `getProductNumber`, etc.. As you can see, this is no problem for the event store. Feel free to model your aggregates exactly the way you need it!
-- `$versionMethodName`
-  - defaults to `getVersion`
-  - used to `extractVersion` of the aggregate root
-- `$popRecordedEventsMethodName`
-  - defaults to `popRecordedEvents`
-  - with this method the `ConfigurableAggregateTranslator` requests the latest recorded events from your aggregate
-  - the aggregate should also clear its internal event cache before returning the events as no additional method is invoked
-- `replayStreamEvents`
-  - defaults to `replay`
-  - used in case the repository loaded a snapshot and needs to replay newer events
-- `$staticReconstituteFromHistoryMethodName`
-  - defaults to `reconstituteFromHistory`
-  - like indicated in the parameter name the referenced method must be static (a named constructor) which must return an instance of the aggregate with all events replayed
-- `$eventToMessageCallback`
-  - completely optional
-  - you can pass any callable
-  - the callable is invoked for each domain event returned by `$popRecordedEventsMethodName` and can be used to translate a domain event into a `Prooph\Common\Messaging\Message`
-  - the message interface is required by the event store implementations to function correctly
-  - you can also decide to let your domain events implement the interface. This would make your life easier when you want to make use of advanced features provided by prooph. But, again. Your domain events don't have to implement the interface. It is your choice!
-- `$messageToEventCallback`
-  - completely optional
-  - it is the opposite of `$eventToMessageCallback`
-  - when you pass a callable it is invoked for each message (loaded from the event store) before `$staticReconstituteFromHistoryMethodName` or `$applyEventsMethodsName`is called
-
-
-*Note: When using the translation callbacks shown above you should consider translating domain events into `Prooph\Common\Messaging\DomainEvent` objects. It is a default implementation of the `Message` interface and all event store implementations can handle it out-of-the-box.
-If you decide to provide your own implementation of `Prooph\Common\Messaging\Message` you should have a look at `Prooph\Common\Messaging\MessageFactory` and `Prooph\Common\Messaging\MessageConverter` because the event store implementations work with these to translate events into PHP arrays and back.*
+To make your life easier prooph/event-sourcing ships with a `\Prooph\EventSourcing\EventStoreIntegration\AggregateTranslator` which implements the interface.
 
 ## Snapshot Store
 
 A repository can be set up with a snapshot store to speed up loading of aggregates.
-Checkout the snapshot docs for more information.
+
+You need to install [Prooph SnapshotStore](https://github.com/prooph/snapshot-store) and a persistable implementation of it,
+like [pdo-snapshot-store](https://github.com/prooph/pdo-snapshot-store/) or [mongodb-snapshot-store](https://github.com/prooph/mongodb-snapshot-store/).
 
 ## Event Streams
 
@@ -112,7 +60,6 @@ in a `user_stream`.
 
 The repository can also be configured to create a new stream for each new aggregate instance. You need to turn the last
 constructor parameter `oneStreamPerAggregate` to true to enable the mode.
-This can be useful when working for example with MongoDB and you want to persist all events of an aggregate in single document (take care of the document size limit).
 If the mode is enabled the repository builds a unique stream name for each aggregate by using the `AggregateType` and append
 the `aggregateId` of the aggregate. The stream name for a new `Acme\User` with id `123` would look like this: `Acme\User-123`.
 
@@ -121,18 +68,18 @@ Check your event store implemtation of choice for details. You can also override
 for building the stream name.
 
 ## Wiring It Together
-Best way to see a repository in action is by looking at the `ProophTest\EventStore\Aggregate\AggregateRepositoryTest`.
+Best way to see a repository in action is by looking at the `\ProophTest\EventSourcing\Aggregate\AggregateRepositoryTest`.
 
 ### Set Up
 
 ```php
 $this->repository = new AggregateRepository(
     $this->eventStore,
-    AggregateType::fromAggregateRootClass('ProophTest\EventStore\Mock\User'),
-    new ConfigurableAggregateTranslator()
+    AggregateType::fromAggregateRootClass('ProophTest\EventSourcing\Mock\User'),
+    new AggregateTranslator()
 );
 
-$this->eventStore->create(new Stream(new StreamName('event_stream'), []));
+$this->eventStore->create(new Stream(new StreamName('event_stream'), new ArrayIterator()));
 ```
 
 Notice the injected dependencies! Snapshot store, stream name and stream mode are optional and not injected for all tests.

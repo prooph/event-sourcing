@@ -47,6 +47,9 @@ configuration to our application configuration:
 If you want to speed up loading of aggregates with a snapshot store then you need to make
 it available as service in the container and use the configuration to let the factory inject the snapshot store in the repository.
 
+Also you need to install [Prooph SnapshotStore](https://github.com/prooph/snapshot-store) and a persistable implementation of it,
+like [pdo-snapshot-store](https://github.com/prooph/pdo-snapshot-store/) or [mongodb-snapshot-store](https://github.com/prooph/mongodb-snapshot-store/).
+
 ```php
 [
     'prooph' => [
@@ -61,13 +64,13 @@ it available as service in the container and use the configuration to let the fa
             ],
         ],
     ],
-    // zf2 service manager example to configure snapshot store service below
+    // zf3 service manager example to configure snapshot store service below
     'dependencies' => [
         'aliases' => [
             'awesome_snapshot_store' => InMemorySnaphotStore::class,
         ],
         'factories' => [
-            InMemorySnaphotStore::class => InvokaleFactory::class,
+            InMemorySnaphotStore::class => InvokableFactory::class,
         ],
     ],
 ]
