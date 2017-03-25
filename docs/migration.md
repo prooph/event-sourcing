@@ -34,8 +34,8 @@ then you can implement the `Prooph\EventSourcing\Aggregate\AggregateTranslator` 
 
 ## Snapshot Store
 
-The snapshot store is now a simple interface, see `Prooph\SnapshotStore\SnapshotStore`. The adapters are all removed
-and replaced by different snapshot store implementation, f.e. `Prooph\SnapshotStore\InMemorySnapshotStore`.
+The snapshot store is now a simple interface, see `Prooph\SnapshotStore\SnapshotStore`. The adapters have all been removed
+and replaced with different snapshot store implementation, f.e. `Prooph\SnapshotStore\InMemorySnapshotStore`.
   
 ## Aggregate Root
 

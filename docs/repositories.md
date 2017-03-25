@@ -58,7 +58,7 @@ If you wish to use another name, you can pass a custom `Prooph\EventStore\Stream
 This is especially useful when you want to have an event stream per aggregate type, for example store all user related events
 in a `user_stream`.
 
-The repository can also be configured to create a new stream for each new aggregate instance. You need to turn the last
+The repository can also be configured to create a new stream for each new aggregate instance. You'll need to turn the last
 constructor parameter `oneStreamPerAggregate` to true to enable the mode.
 If the mode is enabled the repository builds a unique stream name for each aggregate by using the `AggregateType` and append
 the `aggregateId` of the aggregate. The stream name for a new `Acme\User` with id `123` would look like this: `Acme\User-123`.
@@ -68,6 +68,7 @@ Check your event store implemtation of choice for details. You can also override
 for building the stream name.
 
 ## Wiring It Together
+
 Best way to see a repository in action is by looking at the `\ProophTest\EventSourcing\Aggregate\AggregateRepositoryTest`.
 
 ### Set Up
@@ -153,6 +154,7 @@ The test case has some more tests including snapshot usage and working with diff
 Just browse through the test methods for details.
 
 ## Loading of thousands aggregates
+
 If you need to load thousands of aggregates for reading only, your memory can be exhausted, because the 
 `AggregateRepository` uses an identity map. So every loaded aggregate is stored there, unless a commit is executed. If
 you have a read only process, you should consider to clear the identity map at some time. This can be done by calling 
