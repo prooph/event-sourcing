@@ -91,11 +91,11 @@ final class UserAggregateTranslator extends \Prooph\EventSourcing\EventStoreInte
 final class EventStoreUserCollection extends 
     \Prooph\EventStore\Aggregate\AggregateRepository
 {
-    public function add(User $user)
+    public function save(User $user): void
     {
-        $this->addAggregateRoot($user);
+        $this->saveAggregateRoot($user);
     }
-    public function get(UserId $userId)
+    public function get(UserId $userId): ?User
     {
         return $this->getAggregateRoot($userId->toString());
     }
@@ -111,7 +111,7 @@ final class EventStoreUserCollection extends
 ```php
 final class EventStoreUserCollectionFactory
 {
-    public function __invoke(ContainerInterface $container)
+    public function __invoke(ContainerInterface $container): EventStoreUserCollection
     {
         return new EventStoreUserCollection(
             $container->get(EventStore::class),
