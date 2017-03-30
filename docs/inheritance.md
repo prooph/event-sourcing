@@ -125,3 +125,5 @@ final class EventStoreUserCollectionFactory
 If you use the provided container factory (\Prooph\EventStore\Container\Aggregate\AbstractAggregateRepositoryFactory)
 then you can also just change the `aggregate_translator` key in your config to point to the new `UserAggregateTranslator`
 and register the `UserAggregateTranslator` in your container.
+
+see also: http://www.sasaprolic.com/2016/02/inheritance-with-aggregate-roots-in.html
