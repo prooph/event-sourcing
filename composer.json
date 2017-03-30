@@ -24,8 +24,7 @@
     "prefer-stable": true,
     "require": {
         "php": "^7.1",
-        "prooph/common" : "^4.0",
-        "prooph/event-store" : "7.0.x-dev"
+        "prooph/event-store" : "^7.0"
     },
     "require-dev": {
         "psr/container": "^1.0",
@@ -46,7 +45,7 @@
     },
     "extra": {
         "branch-alias": {
-            "dev-develop": "5.0-dev"
+            "dev-master": "5.1-dev"
         }
     },
     "autoload": {
