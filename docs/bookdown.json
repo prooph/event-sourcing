@@ -1,5 +1,5 @@
 {
-  "title": "Prooph EventSourcing",
+  "title": "Event Sourcing",
   "content": [
     {"intro": "../README.md"},
     {"repositories": "repositories.md"},
