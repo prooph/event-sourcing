@@ -17,16 +17,16 @@ use PHPUnit\Framework\TestCase;
 use Prooph\Common\Event\ProophActionEventEmitter;
 use Prooph\EventSourcing\Aggregate\AggregateRepository;
 use Prooph\EventSourcing\Aggregate\AggregateType;
-use Prooph\EventSourcing\EventStoreIntegration\AggregateRootDecorator;
-use Prooph\EventSourcing\EventStoreIntegration\AggregateTranslator;
+use Prooph\EventSourcing\EventStoreIntegration\ClosureAggregateTranslator as AggregateTranslator;
 use Prooph\EventStore\EventStore;
 use Prooph\EventStore\InMemoryEventStore;
 use Prooph\EventStore\Stream;
 use Prooph\EventStore\StreamName;
 use ProophTest\EventSourcing\Mock\User;
 use ProophTest\EventSourcing\Mock\UserNameChanged;
+use RuntimeException;
 
-class AggregateTranslatorTest extends TestCase
+class ClosureAggregateTranslatorTest extends TestCase
 {
     /**
      * @var InMemoryEventStore
@@ -115,14 +115,16 @@ class AggregateTranslatorTest extends TestCase
     /**
      * @test
      */
-    public function it_can_use_custom_aggregate_root_decorator()
+    public function it_throws_exception_when_reconstitute_from_history_with_invalid_class()
     {
-        $mock = $this->createMock(AggregateRootDecorator::class);
+        $this->expectException(RuntimeException::class);
+        $this->expectExceptionMessage('Aggregate root class UnknownClass cannot be found');
 
         $translator = new AggregateTranslator();
-        $translator->setAggregateRootDecorator($mock);
-
-        $this->assertSame($mock, $translator->getAggregateRootDecorator());
+        $translator->reconstituteAggregateFromHistory(
+            AggregateType::fromString('UnknownClass'),
+            new ArrayIterator([])
+        );
     }
 
     protected function resetRepository()

@@ -14,7 +14,9 @@ namespace Prooph\EventSourcing\EventStoreIntegration;
 
 use Iterator;
 use Prooph\Common\Messaging\Message;
+use Prooph\EventSourcing\Aggregate\AggregateTranslator as EventStoreAggregateTranslator;
 use Prooph\EventSourcing\Aggregate\AggregateType;
+use RuntimeException;
 
 final class ClosureAggregateTranslator implements EventStoreAggregateTranslator
 {
