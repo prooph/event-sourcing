@@ -12,35 +12,13 @@ declare(strict_types=1);
 
 namespace Prooph\EventSourcing;
 
-use Iterator;
-use RuntimeException;
+use Prooph\EventSourcing\Aggregate\EventProducerTrait;
+use Prooph\EventSourcing\Aggregate\EventSourcedTrait;
 
 abstract class AggregateRoot
 {
-    /**
-     * Current version
-     *
-     * @var int
-     */
-    protected $version = 0;
-
-    /**
-     * List of events that are not committed to the EventStore
-     *
-     * @var AggregateChanged[]
-     */
-    protected $recordedEvents = [];
-
-    /**
-     * @throws RuntimeException
-     */
-    protected static function reconstituteFromHistory(Iterator $historyEvents): self
-    {
-        $instance = new static();
-        $instance->replay($historyEvents);
-
-        return $instance;
-    }
+    use EventProducerTrait;
+    use EventSourcedTrait;
 
     /**
      * We do not allow public access to __construct, this way we make sure that an aggregate root can only
@@ -51,50 +29,4 @@ abstract class AggregateRoot
     }
 
     abstract protected function aggregateId(): string;
-
-    /**
-     * Get pending events and reset stack
-     *
-     * @return AggregateChanged[]
-     */
-    protected function popRecordedEvents(): array
-    {
-        $pendingEvents = $this->recordedEvents;
-
-        $this->recordedEvents = [];
-
-        return $pendingEvents;
-    }
-
-    /**
-     * Record an aggregate changed event
-     */
-    protected function recordThat(AggregateChanged $event): void
-    {
-        $this->version += 1;
-
-        $this->recordedEvents[] = $event->withVersion($this->version);
-
-        $this->apply($event);
-    }
-
-    /**
-     * Replay past events
-     *
-     * @throws RuntimeException
-     */
-    protected function replay(Iterator $historyEvents): void
-    {
-        foreach ($historyEvents as $pastEvent) {
-            /** @var AggregateChanged $pastEvent */
-            $this->version = $pastEvent->version();
-
-            $this->apply($pastEvent);
-        }
-    }
-
-    /**
-     * Apply given event
-     */
-    abstract protected function apply(AggregateChanged $event): void;
 }
