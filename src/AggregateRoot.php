@@ -27,6 +27,4 @@ abstract class AggregateRoot
     protected function __construct()
     {
     }
-
-    abstract protected function aggregateId(): string;
 }

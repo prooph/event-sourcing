@@ -51,6 +51,8 @@ trait EventSourcedTrait
         }
     }
 
+    abstract protected function aggregateId(): string;
+
     /**
      * Apply given event
      */

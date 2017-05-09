@@ -56,6 +56,8 @@ trait EventProducerTrait
         $this->apply($event);
     }
 
+    abstract protected function aggregateId(): string;
+
     /**
      * Apply given event
      */
