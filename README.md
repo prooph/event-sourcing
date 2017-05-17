@@ -30,7 +30,7 @@ with the bundled [AggregateRoot](https://github.com/prooph/event-sourcing/blob/m
 # Used Third-Party Libraries
 
 - Uuids of the AggregateChangedEvents are generated with [ramsey/uuid](https://github.com/ramsey/uuid)
-- Assertions are performed by [beberlei/assert](https://github.com/beberlei/assert) 
+- Assertions are performed by [beberlei/assert](https://github.com/beberlei/assert)
 
 
 
