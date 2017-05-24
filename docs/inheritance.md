@@ -127,3 +127,29 @@ then you can also just change the `aggregate_translator` key in your config to p
 and register the `UserAggregateTranslator` in your container.
 
 see also: http://www.sasaprolic.com/2016/02/inheritance-with-aggregate-roots-in.html
+
+## Alternative to AggregateRoot inheritance
+
+Abstract `Prooph\EventSourcing\AggregateRoot` class provides a solid basis for
+your aggregate roots, however, it is not mandatory. Two traits,
+`Prooph\EventSourcing\Aggregate\EventProducerTrait` and
+`Prooph\EventSourcing\Aggregate\EventSourcedTrait`, together provide exactly
+the same functionality.
+
+- `EventProducerTrait` is responsible for event producing side of Event
+  Sourcing and might be used independently of `EventSourcedTrait` when you are
+  not ready to start with full event sourcing but still want to get the benefit
+  of design validation and audit trail provided by Event Sourcing. Forcing all
+  changes to be applied internally via event sourcing will ensure events data
+  consistency with the state and will make it easier to switch to full event
+  sourcing later on.
+
+- `EventSourcedTrait` is responsible for restoring state from event stream, it
+  should be used together with `EventProducerTrait` as normally you will not be
+  applying events not produced by that aggregate root.
+
+Default aggregate translator uses `AggregateRootDecorator` to access protected
+methods of `Prooph\EventSourcing\AggregateRoot` descendants, you will need to
+switch to
+`Prooph\EventSourcing\EventStoreIntegration\ClosureAggregateTranslator` for
+aggregate roots using traits.
