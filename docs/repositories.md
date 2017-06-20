@@ -153,6 +153,33 @@ processes dealing with the same aggregate would run into concurrency issues very
 The test case has some more tests including snapshot usage and working with different stream names / strategies.
 Just browse through the test methods for details.
 
+## Aggregate Type Mapping
+
+It's possible to map an aggregate type `user` to an aggregate root class like `My\Model\User`. To do that, add the
+aggregate type mapping to your repository and use the provided aggregate type. The aggregate type mapping is the last
+argument of the aggregate repositories constructor.
+
+Example configuration:
+
+```php
+[
+    'prooph' => [
+        'event_sourcing' => [
+            'aggregate_repository' => [
+                'user_repository' => [ //<-- here the container id is referenced
+                    'repository_class' => MyUserRepository::class,
+                    'aggregate_type' => 'user', //<-- The custom aggregate type
+                    'aggregate_translator' => 'user_translator',
+                    'aggregate_type_mapping' => [
+                        'user' => MyUserClass, //<-- The aggregate root FQCN the repository is responsible for
+                    ],
+                ],
+            ],
+        ],
+    ],
+]
+```
+
 ## Loading of thousands aggregates
 
 If you need to load thousands of aggregates for reading only, your memory can be exhausted, because the 
