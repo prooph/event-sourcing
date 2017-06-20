@@ -166,13 +166,12 @@ Example configuration:
     'prooph' => [
         'event_sourcing' => [
             'aggregate_repository' => [
-                'user_repository' => [ //<-- here the container id is referenced
+                'user_repository' => [
                     'repository_class' => MyUserRepository::class,
-                    'aggregate_type' => 'user', //<-- The custom aggregate type
-                    'aggregate_translator' => 'user_translator',
-                    'aggregate_type_mapping' => [
-                        'user' => MyUserClass, //<-- The aggregate root FQCN the repository is responsible for
+                    'aggregate_type' => [
+                        'user' => MyUser::class, // <- custom name to class mapping 
                     ],
+                    'aggregate_translator' => 'user_translator',
                 ],
             ],
         ],

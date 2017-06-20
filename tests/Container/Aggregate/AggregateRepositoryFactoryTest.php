@@ -132,11 +132,10 @@ class AggregateRepositoryFactoryTest extends ActionEventEmitterEventStoreTestCas
                     'aggregate_repository' => [
                         'repository_mock' => [
                             'repository_class' => RepositoryMock::class,
-                            'aggregate_type' => User::class,
-                            'aggregate_translator' => 'user_translator',
-                            'aggregate_type_mapping' => [
+                            'aggregate_type' => [
                                 'user' => User::class,
                             ],
+                            'aggregate_translator' => 'user_translator',
                         ],
                     ],
                 ],

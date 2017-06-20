@@ -83,10 +83,10 @@ final class AggregateRepositoryFactory implements RequiresConfigId, RequiresMand
 
         $eventStore = $container->get(EventStore::class);
 
-        if (class_exists($config['aggregate_type'])) {
-            $aggregateType = AggregateType::fromAggregateRootClass($config['aggregate_type']);
+        if (is_array($config['aggregate_type'])) {
+            $aggregateType = AggregateType::fromMapping($config['aggregate_type']);
         } else {
-            $aggregateType = AggregateType::fromString($config['aggregate_type']);
+            $aggregateType = AggregateType::fromAggregateRootClass($config['aggregate_type']);
         }
 
         $aggregateTranslator = $container->get($config['aggregate_translator']);
@@ -97,16 +97,13 @@ final class AggregateRepositoryFactory implements RequiresConfigId, RequiresMand
 
         $oneStreamPerAggregate = (bool) ($config['one_stream_per_aggregate'] ?? false);
 
-        $aggregateTypeMapping = $config['aggregate_type_mapping'] ?? [];
-
         return new $repositoryClass(
             $eventStore,
             $aggregateType,
             $aggregateTranslator,
             $snapshotStore,
             $streamName,
-            $oneStreamPerAggregate,
-            $aggregateTypeMapping
+            $oneStreamPerAggregate
         );
     }
 

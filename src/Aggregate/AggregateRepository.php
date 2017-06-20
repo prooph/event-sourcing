@@ -59,19 +59,13 @@ class AggregateRepository
      */
     protected $oneStreamPerAggregate;
 
-    /**
-     * @var array
-     */
-    protected $aggregateTypeMapping = [];
-
     public function __construct(
         EventStore $eventStore,
         AggregateType $aggregateType,
         AggregateTranslator $aggregateTranslator,
         SnapshotStore $snapshotStore = null,
         StreamName $streamName = null,
-        bool $oneStreamPerAggregate = false,
-        array $aggregateTypeMapping = []
+        bool $oneStreamPerAggregate = false
     ) {
         $this->eventStore = $eventStore;
         $this->aggregateType = $aggregateType;
@@ -79,7 +73,6 @@ class AggregateRepository
         $this->snapshotStore = $snapshotStore;
         $this->streamName = $streamName;
         $this->oneStreamPerAggregate = $oneStreamPerAggregate;
-        $this->aggregateTypeMapping = $aggregateTypeMapping;
     }
 
     /**
@@ -180,14 +173,8 @@ class AggregateRepository
             return null;
         }
 
-        if (isset($this->aggregateTypeMapping[$this->aggregateType->toString()])) {
-            $aggregateType = AggregateType::fromAggregateRootClass($this->aggregateTypeMapping[$this->aggregateType->toString()]);
-        } else {
-            $aggregateType = $this->aggregateType;
-        }
-
         $eventSourcedAggregateRoot = $this->aggregateTranslator->reconstituteAggregateFromHistory(
-            $aggregateType,
+            $this->aggregateType,
             $streamEvents
         );
 
@@ -281,14 +268,8 @@ class AggregateRepository
         if ($aggregateRoot) {
             $this->aggregateTranslator->replayStreamEvents($aggregateRoot, $streamEvents);
         } else {
-            if (isset($this->aggregateTypeMapping[$this->aggregateType->toString()])) {
-                $aggregateType = AggregateType::fromAggregateRootClass($this->aggregateTypeMapping[$this->aggregateType->toString()]);
-            } else {
-                $aggregateType = $this->aggregateType;
-            }
-
             $aggregateRoot = $this->aggregateTranslator->reconstituteAggregateFromHistory(
-                $aggregateType,
+                $this->aggregateType,
                 $streamEvents
             );
         }
@@ -336,12 +317,6 @@ class AggregateRepository
      */
     protected function assertAggregateType($eventSourcedAggregateRoot)
     {
-        if (isset($this->aggregateTypeMapping[$this->aggregateType->toString()])) {
-            $aggregateType = AggregateType::fromAggregateRootClass($this->aggregateTypeMapping[$this->aggregateType->toString()]);
-        } else {
-            $aggregateType = $this->aggregateType;
-        }
-
-        $aggregateType->assert($eventSourcedAggregateRoot);
+        $this->aggregateType->assert($eventSourcedAggregateRoot);
     }
 }

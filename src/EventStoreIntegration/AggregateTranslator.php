@@ -52,8 +52,12 @@ final class AggregateTranslator implements EventStoreAggregateTranslator
      */
     public function reconstituteAggregateFromHistory(AggregateType $aggregateType, Iterator $historyEvents)
     {
+        if (! $aggregateRootClass = $aggregateType->mappedClass()) {
+            $aggregateRootClass = $aggregateType->toString();
+        }
+
         return $this->getAggregateRootDecorator()
-            ->fromHistory($aggregateType->toString(), $historyEvents);
+            ->fromHistory($aggregateRootClass, $historyEvents);
     }
 
     /**

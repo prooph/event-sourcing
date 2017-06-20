@@ -480,12 +480,11 @@ class AggregateRepositoryTest extends ActionEventEmitterEventStoreTestCase
     {
         $this->repository = new AggregateRepository(
             $this->eventStore,
-            AggregateType::fromString('user'),
+            AggregateType::fromMapping(['user' => User::class]),
             new AggregateTranslator(),
             null,
             null,
-            false,
-            ['user' => User::class]
+            false
         );
 
         $user = User::nameNew('John Doe');

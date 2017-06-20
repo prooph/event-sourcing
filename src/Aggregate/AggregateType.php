@@ -15,9 +15,14 @@ namespace Prooph\EventSourcing\Aggregate;
 class AggregateType
 {
     /**
-     * @var string
+     * @var string|null
      */
     protected $aggregateType;
+
+    /**
+     * @var array
+     */
+    protected $mapping = [];
 
     /**
      * Use this factory when aggregate type should be detected based on given aggregate root
@@ -38,7 +43,10 @@ class AggregateType
             return $eventSourcedAggregateRoot->aggregateType();
         }
 
-        return new static(get_class($eventSourcedAggregateRoot));
+        $self = new static();
+        $self->aggregateType = get_class($eventSourcedAggregateRoot);
+
+        return $self;
     }
 
     /**
@@ -53,32 +61,49 @@ class AggregateType
             throw new Exception\InvalidArgumentException(sprintf('Aggregate root class %s can not be found', $aggregateRootClass));
         }
 
-        return new static($aggregateRootClass);
+        $self = new static();
+        $self->aggregateType = $aggregateRootClass;
+
+        return $self;
     }
 
     /**
      * Use this factory when the aggregate type is not equal to the aggregate root class
+     *
+     * @throws Exception\InvalidArgumentException
      */
     public static function fromString(string $aggregateTypeString): AggregateType
     {
-        return new static($aggregateTypeString);
-    }
-
-    /**
-     * @throws Exception\InvalidArgumentException
-     */
-    private function __construct(string $aggregateType)
-    {
-        if (empty($aggregateType)) {
+        if (empty($aggregateTypeString)) {
             throw new Exception\InvalidArgumentException('AggregateType must be a non empty string');
         }
 
-        $this->aggregateType = $aggregateType;
+        $self = new static();
+        $self->aggregateType = $aggregateTypeString;
+
+        return $self;
+    }
+
+    public static function fromMapping(array $mapping): AggregateType
+    {
+        $self = new static();
+        $self->mapping = $mapping;
+
+        return $self;
+    }
+
+    private function __construct()
+    {
+    }
+
+    public function mappedClass(): ?string
+    {
+        return empty($this->mapping) ? null : current($this->mapping);
     }
 
     public function toString(): string
     {
-        return $this->aggregateType;
+        return empty($this->mapping) ? $this->aggregateType : key($this->mapping);
     }
 
     public function __toString(): string
@@ -104,6 +129,10 @@ class AggregateType
 
     public function equals(AggregateType $other): bool
     {
-        return $this->toString() === $other->toString();
+        if (! $aggregateTypeString = $this->mappedClass()) {
+            $aggregateTypeString = $this->toString();
+        }
+
+        return $aggregateTypeString === $other->toString() || $aggregateTypeString === $other->mappedClass();
     }
 }
