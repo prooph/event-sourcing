@@ -83,7 +83,7 @@ final class AggregateRepositoryFactory implements RequiresConfigId, RequiresMand
 
         $eventStore = $container->get(EventStore::class);
 
-        if (class_exists($config['aggregate_type'])){
+        if (class_exists($config['aggregate_type'])) {
             $aggregateType = AggregateType::fromAggregateRootClass($config['aggregate_type']);
         } else {
             $aggregateType = AggregateType::fromString($config['aggregate_type']);
