@@ -156,8 +156,12 @@ Just browse through the test methods for details.
 ## Aggregate Type Mapping
 
 It's possible to map an aggregate type `user` to an aggregate root class like `My\Model\User`. To do that, add the
-aggregate type mapping to your repository and use the provided aggregate type. The aggregate type mapping is the last
-argument of the aggregate repositories constructor.
+aggregate type mapping to your repository and use the provided aggregate type. The aggregate type mapping is implemented
+in the AggregateType class like this:
+
+```php
+$aggregateType = AggregateType::fromMapping(['user' => MyUser::class]);
+```
 
 Example configuration:
 
