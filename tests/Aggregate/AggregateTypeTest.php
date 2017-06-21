@@ -46,6 +46,17 @@ class AggregateTypeTest extends TestCase
     /**
      * @test
      */
+    public function it_creates_aggregate_type_from_mapping(): void
+    {
+        $aggregateType = AggregateType::fromMapping(['user' => User::class]);
+
+        $this->assertSame('user', $aggregateType->toString());
+        $this->assertSame(User::class, $aggregateType->mappedClass());
+    }
+
+    /**
+     * @test
+     */
     public function it_throws_exception_on_creating_from_aggregate_root_class_when_unknown_class_given(): void
     {
         $this->expectException(InvalidArgumentException::class);
@@ -66,6 +77,8 @@ class AggregateTypeTest extends TestCase
         $aggregateRoot->aggregateType()->willReturn(AggregateType::fromAggregateRootClass(User::class));
 
         $aggregateType->assert($aggregateRoot->reveal());
+
+        $this->assertNull($aggregateType->mappedClass());
     }
 
     /**

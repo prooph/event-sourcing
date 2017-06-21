@@ -445,7 +445,7 @@ class AggregateRepositoryTest extends ActionEventEmitterEventStoreTestCase
     /**
      * @test
      */
-    public function it_used_provided_stream_name(): void
+    public function it_uses_provided_stream_name(): void
     {
         $this->repository = new AggregateRepository(
             $this->eventStore,
@@ -471,5 +471,31 @@ class AggregateRepositoryTest extends ActionEventEmitterEventStoreTestCase
         $user = User::nameNew('John Doe');
         $this->repository->saveAggregateRoot($user);
         $this->repository->saveAggregateRoot($user);
+    }
+
+    /**
+     * @test
+     */
+    public function it_uses_custom_aggregate_type_names(): void
+    {
+        $this->repository = new AggregateRepository(
+            $this->eventStore,
+            AggregateType::fromMapping(['user' => User::class]),
+            new AggregateTranslator(),
+            null,
+            null,
+            false
+        );
+
+        $user = User::nameNew('John Doe');
+        $this->repository->saveAggregateRoot($user);
+
+        $events = $this->eventStore->load(new StreamName('event_stream'));
+
+        $this->assertTrue($events->valid());
+
+        $event = $events->current();
+
+        $this->assertSame('user', $event->metadata()['_aggregate_type']);
     }
 }
