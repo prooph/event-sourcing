@@ -1,7 +1,34 @@
 # Change Log
 
-## [v5.0.0](https://github.com/prooph/event-sourcing/tree/v5.0.0)
+## [v5.2](https://github.com/prooph/event-sourcing/tree/v5.2)
 
+[Full Changelog](https://github.com/prooph/event-sourcing/compare/v5.1...v5.2)
+
+**Implemented enhancements:**
+
+- AggregateType in RepositoryFactory [\#64](https://github.com/prooph/event-sourcing/issues/64)
+- remove map iterator [\#67](https://github.com/prooph/event-sourcing/pull/67) ([prolic](https://github.com/prolic))
+- use custom aggregate type mapping [\#65](https://github.com/prooph/event-sourcing/pull/65) ([prolic](https://github.com/prolic))
+
+## [v5.1](https://github.com/prooph/event-sourcing/tree/v5.1) (2017-05-24)
+[Full Changelog](https://github.com/prooph/event-sourcing/compare/v5.0.1...v5.1)
+
+**Implemented enhancements:**
+
+- Extract aggregate root into traits to make it easier to avoid domain extending infrastructure [\#62](https://github.com/prooph/event-sourcing/pull/62) ([Xerkus](https://github.com/Xerkus))
+
+**Merged pull requests:**
+
+- minor corrections - README.md [\#63](https://github.com/prooph/event-sourcing/pull/63) ([geekcom](https://github.com/geekcom))
+
+## [v5.0.1](https://github.com/prooph/event-sourcing/tree/v5.0.1) (2017-05-09)
+[Full Changelog](https://github.com/prooph/event-sourcing/compare/v5.0.0...v5.0.1)
+
+**Merged pull requests:**
+
+- Bump snapshot store dependency to stable [\#61](https://github.com/prooph/event-sourcing/pull/61) ([Xerkus](https://github.com/Xerkus))
+
+## [v5.0.0](https://github.com/prooph/event-sourcing/tree/v5.0.0) (2017-03-30)
 [Full Changelog](https://github.com/prooph/event-sourcing/compare/v5.0.0-beta3...v5.0.0)
 
 **Closed issues:**
