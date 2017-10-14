@@ -24,7 +24,7 @@ with the bundled [AggregateRoot](https://github.com/prooph/event-sourcing/blob/m
 
 # Support
 
-- Ask any questions on [prooph-users](https://groups.google.com/forum/?hl=de#!forum/prooph) google group.
+- Ask questions on Stack Overflow tagged with [#prooph](https://stackoverflow.com/questions/tagged/prooph).
 - File issues at [https://github.com/prooph/event-sourcing/issues](https://github.com/prooph/event-sourcing/issues).
 
 # Used Third-Party Libraries
