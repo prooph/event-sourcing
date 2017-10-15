@@ -1,0 +1,10 @@
+{
+  "title": "Aggregate Snapshots",
+  "content": [
+    {"intro": "introduction.md"},
+    {"snapshotter": "https://raw.githubusercontent.com/prooph/snapshotter/master/docs/bookdown.json"},
+    {"snapshot_store": "https://raw.githubusercontent.com/prooph/snapshot-store/master/docs/bookdown.json"}
+  ],
+  "tocDepth": 1,
+  "numbering": false
+}

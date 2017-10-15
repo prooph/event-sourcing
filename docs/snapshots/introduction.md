@@ -1,4 +1,4 @@
-# Snapshots
+# Introduction
 
 One of the counter-arguments against Event-Sourcing you might heard about is that replaying events takes too much time.
 
@@ -11,12 +11,10 @@ in most cases.
 If aggregate reconstitution gets slow you can add an additional layer to the system which
 is capable of providing aggregate snapshots.
 
-Choose one of the `Prooph\SnapshotStore\*` to take snapshots.
+Choose one of the `Prooph\SnapshotStore\*` implementations and combine it with `prooph/snapshotter` to take snapshots.
 Inject the snapshot store into an aggregate repository and the repository will use the snapshot store to speed up
 aggregate loading.
 
-Our example application [proophessor-do](https://github.com/prooph/proophessor-do) contains a snapshotting tutorial.
-
 *Note: All SnapshotStores ship with interop factories to ease set up.*
 
-For more informations about snapshots and how to configure them, see [Prooph Snapshotter](https://github.com/prooph/snapshotter).
+More information about snapshots and how to configure them can be found on the next pages.

@@ -6,3 +6,4 @@
 .php_cs.cache
 nbproject
 composer.lock
+docs/html
