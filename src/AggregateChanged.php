@@ -22,6 +22,9 @@ class AggregateChanged extends DomainEvent
      */
     protected $payload = [];
 
+    /**
+     * @return static
+     */
     public static function occur(string $aggregateId, array $payload = []): self
     {
         return new static($aggregateId, $payload);
