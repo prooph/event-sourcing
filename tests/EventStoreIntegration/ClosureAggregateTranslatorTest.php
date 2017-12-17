@@ -53,7 +53,7 @@ class ClosureAggregateTranslatorTest extends TestCase
     /**
      * @test
      */
-    public function it_translates_aggregate_back_and_forth(): void
+    public function it_translates_aggregate_back_and_forth(): User
     {
         $this->eventStore->beginTransaction();
 
