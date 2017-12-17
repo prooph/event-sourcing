@@ -12,6 +12,7 @@ declare(strict_types=1);
 
 namespace ProophTest\EventSourcing\Mock;
 
+use Prooph\EventSourcing\AggregateChanged;
 use Prooph\EventSourcing\EventStoreIntegration\AggregateRootDecorator;
 
 class ExtendedAggregateRootDecorator extends AggregateRootDecorator
@@ -19,5 +20,10 @@ class ExtendedAggregateRootDecorator extends AggregateRootDecorator
     public function getAggregateId(): string
     {
         return $this->aggregateId();
+    }
+
+    public function doApply(AggregateChanged $event): void
+    {
+        $this->apply($event);
     }
 }

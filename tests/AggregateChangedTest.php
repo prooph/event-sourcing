@@ -22,7 +22,7 @@ class AggregateChangedTest extends TestCase
     /**
      * @test
      */
-    public function it_has_a_new_uuid_after_construct()
+    public function it_has_a_new_uuid_after_construct(): void
     {
         $event = AggregateChanged::occur('1', []);
 
@@ -32,7 +32,7 @@ class AggregateChangedTest extends TestCase
     /**
      * @test
      */
-    public function it_references_an_aggregate()
+    public function it_references_an_aggregate(): void
     {
         $event = AggregateChanged::occur('1', []);
 
@@ -42,7 +42,7 @@ class AggregateChangedTest extends TestCase
     /**
      * @test
      */
-    public function it_has_an_occurred_on_datetime_after_construct()
+    public function it_has_an_occurred_on_datetime_after_construct(): void
     {
         $event = AggregateChanged::occur('1', []);
 
@@ -52,7 +52,7 @@ class AggregateChangedTest extends TestCase
     /**
      * @test
      */
-    public function it_has_assigned_payload_after_construct()
+    public function it_has_assigned_payload_after_construct(): void
     {
         $payload = ['test payload'];
 
@@ -64,7 +64,7 @@ class AggregateChangedTest extends TestCase
     /**
      * @test
      */
-    public function it_can_track_aggregate_version_but_is_immutable()
+    public function it_can_track_aggregate_version_but_is_immutable(): void
     {
         $orgEvent = AggregateChanged::occur('1', ['key' => 'value']);
 
