@@ -25,7 +25,7 @@ class AggregateRootTest extends TestCase
     /**
      * @test
      */
-    public function it_applies_event_by_calling_appropriate_event_handler()
+    public function it_applies_event_by_calling_appropriate_event_handler(): void
     {
         $decorator = AggregateRootDecorator::newInstance();
 
@@ -67,7 +67,7 @@ class AggregateRootTest extends TestCase
     /**
      * @test
      */
-    public function it_throws_exception_when_no_handler_on_aggregate()
+    public function it_throws_exception_when_no_handler_on_aggregate(): void
     {
         $this->expectException(RuntimeException::class);
         $this->expectExceptionMessage('Unknown event "' . UserCreated::class . '" applied to user aggregate');
@@ -83,7 +83,7 @@ class AggregateRootTest extends TestCase
     /**
      * @test
      */
-    public function it_reconstructs_itself_from_history()
+    public function it_reconstructs_itself_from_history(): void
     {
         $user = User::nameNew('John');
 
@@ -108,7 +108,7 @@ class AggregateRootTest extends TestCase
     /**
      * @test
      */
-    public function it_clears_pending_events_after_returning_them()
+    public function it_clears_pending_events_after_returning_them(): void
     {
         $user = User::nameNew('John');
 

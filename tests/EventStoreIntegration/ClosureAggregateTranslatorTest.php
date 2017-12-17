@@ -37,7 +37,7 @@ class ClosureAggregateTranslatorTest extends TestCase
      */
     protected $repository;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->eventStore = new InMemoryEventStore(new ProophActionEventEmitter());
 
@@ -53,7 +53,7 @@ class ClosureAggregateTranslatorTest extends TestCase
     /**
      * @test
      */
-    public function it_translates_aggregate_back_and_forth()
+    public function it_translates_aggregate_back_and_forth(): User
     {
         $this->eventStore->beginTransaction();
 
@@ -88,7 +88,7 @@ class ClosureAggregateTranslatorTest extends TestCase
      * @depends it_translates_aggregate_back_and_forth
      * @param User $loadedUser
      */
-    public function it_extracts_version(User $loadedUser)
+    public function it_extracts_version(User $loadedUser): void
     {
         $translator = new AggregateTranslator();
         $this->assertEquals(2, $translator->extractAggregateVersion($loadedUser));
@@ -99,7 +99,7 @@ class ClosureAggregateTranslatorTest extends TestCase
      * @depends it_translates_aggregate_back_and_forth
      * @param User $loadedUser
      */
-    public function it_applies_stream_events(User $loadedUser)
+    public function it_applies_stream_events(User $loadedUser): void
     {
         $newName = 'Jane Doe';
 
@@ -114,7 +114,7 @@ class ClosureAggregateTranslatorTest extends TestCase
     /**
      * @test
      */
-    public function it_throws_exception_when_reconstitute_from_history_with_invalid_class()
+    public function it_throws_exception_when_reconstitute_from_history_with_invalid_class(): void
     {
         $this->expectException(RuntimeException::class);
         $this->expectExceptionMessage('Aggregate root class UnknownClass cannot be found');
@@ -126,7 +126,7 @@ class ClosureAggregateTranslatorTest extends TestCase
         );
     }
 
-    protected function resetRepository()
+    protected function resetRepository(): void
     {
         $this->repository = new AggregateRepository(
             $this->eventStore,

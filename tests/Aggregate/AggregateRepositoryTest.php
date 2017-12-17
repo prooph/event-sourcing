@@ -190,7 +190,7 @@ class AggregateRepositoryTest extends ActionEventEmitterEventStoreTestCase
             true
         );
 
-        $repository->getAggregateRoot('123');
+        $this->assertNull($repository->getAggregateRoot('123'));
     }
 
     /**
@@ -344,9 +344,7 @@ class AggregateRepositoryTest extends ActionEventEmitterEventStoreTestCase
 
         $this->snapshotStore->save($snapshot);
 
-        $fetchedUser = $this->repository->getAggregateRoot(
-            $user->id()
-        );
+        $fetchedUser = $this->repository->getAggregateRoot($user->id());
 
         $fetchedUser->changeName('Max Mustermann');
 
@@ -368,16 +366,55 @@ class AggregateRepositoryTest extends ActionEventEmitterEventStoreTestCase
             -1000
         );
 
-        $this->repository->getAggregateRoot(
-            $user->id()
-        );
+        $this->repository->getAggregateRoot($user->id());
 
         $this->assertCount(1, $loadedEvents);
         $this->assertInstanceOf(UsernameChanged::class, $loadedEvents[0]);
         $this->assertEquals(2, $this->repository->extractAggregateVersion($fetchedUser));
     }
 
-    protected function prepareSnapshotStoreAggregateRepository()
+    /**
+     * @test
+     */
+    public function it_uses_snapshot_store_and_applies_pending_events_when_snapshot_store_found_nothing(): void
+    {
+        $this->prepareSnapshotStoreAggregateRepository();
+
+        $user = User::nameNew('John Doe');
+
+        $this->repository->saveAggregateRoot($user);
+
+        $fetchedUser = $this->repository->getAggregateRoot($user->id());
+
+        $fetchedUser->changeName('Max Mustermann');
+
+        $this->repository->saveAggregateRoot($fetchedUser);
+
+        $loadedEvents = [];
+
+        $this->eventStore->attach(
+            'load',
+            function (ActionEvent $event) use (&$loadedEvents) {
+                $streamEvents = $event->getParam('streamEvents');
+
+                foreach ($streamEvents as $streamEvent) {
+                    $loadedEvents[] = $streamEvent;
+                }
+
+                $event->getParam('streamEvents')->rewind();
+            },
+            -1000
+        );
+
+        $this->repository->getAggregateRoot($user->id());
+
+        $this->assertCount(2, $loadedEvents);
+        $this->assertInstanceOf(UserCreated::class, $loadedEvents[0]);
+        $this->assertInstanceOf(UsernameChanged::class, $loadedEvents[1]);
+        $this->assertEquals(2, $this->repository->extractAggregateVersion($fetchedUser));
+    }
+
+    protected function prepareSnapshotStoreAggregateRepository(): void
     {
         parent::setUp();
 
@@ -447,15 +484,19 @@ class AggregateRepositoryTest extends ActionEventEmitterEventStoreTestCase
      */
     public function it_uses_provided_stream_name(): void
     {
+        $streamName = $this->prophesize(StreamName::class);
+        $streamName->toString()->willReturn('foo')->shouldBeCalled();
+        $streamName = $streamName->reveal();
+
         $this->repository = new AggregateRepository(
             $this->eventStore,
             AggregateType::fromAggregateRootClass(User::class),
             new AggregateTranslator(),
             null,
-            new StreamName('foo')
+            $streamName
         );
 
-        $this->eventStore->create(new Stream(new StreamName('foo'), new ArrayIterator()));
+        $this->eventStore->create(new Stream($streamName, new ArrayIterator()));
 
         $user = User::nameNew('John Doe');
 
@@ -466,11 +507,11 @@ class AggregateRepositoryTest extends ActionEventEmitterEventStoreTestCase
      * @test
      * Test for https://github.com/prooph/event-sourcing/issues/42
      */
-    public function it_does_not_throw_an_exception_if_no_pending_event_is_present()
+    public function it_does_not_throw_an_exception_if_no_pending_event_is_present(): void
     {
         $user = User::nameNew('John Doe');
-        $this->repository->saveAggregateRoot($user);
-        $this->repository->saveAggregateRoot($user);
+        $this->assertNull($this->repository->saveAggregateRoot($user));
+        $this->assertNull($this->repository->saveAggregateRoot($user));
     }
 
     /**
@@ -497,5 +538,73 @@ class AggregateRepositoryTest extends ActionEventEmitterEventStoreTestCase
         $event = $events->current();
 
         $this->assertSame('user', $event->metadata()['_aggregate_type']);
+    }
+
+    /**
+     * @test
+     */
+    public function it_returns_nothing_when_no_stream_found(): void
+    {
+        $this->repository = new AggregateRepository(
+            $this->eventStore,
+            AggregateType::fromMapping(['user' => User::class]),
+            new AggregateTranslator(),
+            null,
+            new StreamName('unknown'),
+            false
+        );
+
+        $this->assertNull($this->repository->getAggregateRoot('some_id'));
+    }
+
+    /**
+     * @test
+     */
+    public function it_returns_nothing_when_no_stream_found_using_one_stream_per_aggregate(): void
+    {
+        $this->repository = new AggregateRepository(
+            $this->eventStore,
+            AggregateType::fromMapping(['user' => User::class]),
+            new AggregateTranslator(),
+            null,
+            new StreamName('unknown'),
+            true
+        );
+
+        $this->assertNull($this->repository->getAggregateRoot('some_id'));
+    }
+
+    /**
+     * @test
+     */
+    public function it_returns_nothing_when_no_stream_found_using_snapshot_store(): void
+    {
+        $this->repository = new AggregateRepository(
+            $this->eventStore,
+            AggregateType::fromMapping(['user' => User::class]),
+            new AggregateTranslator(),
+            new InMemorySnapshotStore(),
+            new StreamName('unknown'),
+            false
+        );
+
+        $this->assertNull($this->repository->getAggregateRoot('some_id'));
+    }
+
+    /**
+     * @test
+     */
+    public function it_returns_nothing_when_no_stream_found_using_one_stream_per_aggregate_and_snapshot_store(): void
+    {
+        $this->repository = new AggregateRepository(
+            $this->eventStore,
+            AggregateType::fromMapping(['user' => User::class]),
+            new AggregateTranslator(),
+            new InMemorySnapshotStore(),
+            new StreamName('unknown'),
+            true
+        );
+
+        $this->assertNull($this->repository->getAggregateRoot('some_id'));
     }
 }
