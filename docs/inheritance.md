@@ -60,27 +60,86 @@ So in order to make this work, you need 3 small changes in your application.
 ## Step 1: Create a UserAggregateTranslator
 
 ```php
-final class UserAggregateTranslator extends \Prooph\EventSourcing\EventStoreIntegration\AggregateTranslator
+final class UserAggregateTranslator implements \Prooph\EventSourcing\Aggregate\AggregateTranslator
 {
     /**
-     * @param \Prooph\EventStore\Aggregate\AggregateType $aggregateType
-     * @param \Iterator $historyEvents
+     * @var AggregateRootDecorator
+     */
+    protected $aggregateRootDecorator;
+
+    /**
+     * @param object $eventSourcedAggregateRoot
+     *
+     * @return int
+     */
+    public function extractAggregateVersion($eventSourcedAggregateRoot): int
+    {
+        return $this->getAggregateRootDecorator()->extractAggregateVersion($eventSourcedAggregateRoot);
+    }
+
+    /**
+     * @param object $anEventSourcedAggregateRoot
+     *
+     * @return string
+     */
+    public function extractAggregateId($anEventSourcedAggregateRoot): string
+    {
+        return $this->getAggregateRootDecorator()->extractAggregateId($anEventSourcedAggregateRoot);
+    }
+
+    /**
+     * @param AggregateType $aggregateType
+     * @param Iterator $historyEvents
+     *
      * @return object reconstructed AggregateRoot
      */
-    public function reconstituteAggregateFromHistory(
-        \Prooph\EventStore\Aggregate\AggregateType $aggregateType, 
-        \Iterator $historyEvents
-    ) {
+    public function reconstituteAggregateFromHistory(AggregateType $aggregateType, Iterator $historyEvents)
+    {
         $aggregateRootDecorator = $this->getAggregateRootDecorator();
-        
+
         $firstEvent = $historyEvents->current();
         $type = $firstEvent->type();
-        
+
         if ($type === 'admin') {
             return $aggregateRootDecorator->fromHistory(Admin::class, $historyEvents);
         } elseif ($type === 'member') {
             return $aggregateRootDecorator->fromHistory(Member::class, $historyEvents);
         }
+    }
+
+    /**
+     * @param object $anEventSourcedAggregateRoot
+     *
+     * @return Message[]
+     */
+    public function extractPendingStreamEvents($anEventSourcedAggregateRoot): array
+    {
+        return $this->getAggregateRootDecorator()->extractRecordedEvents($anEventSourcedAggregateRoot);
+    }
+
+    /**
+     * @param object $anEventSourcedAggregateRoot
+     * @param Iterator $events
+     *
+     * @return void
+     */
+    public function replayStreamEvents($anEventSourcedAggregateRoot, Iterator $events): void
+    {
+        $this->getAggregateRootDecorator()->replayStreamEvents($anEventSourcedAggregateRoot, $events);
+    }
+
+    public function getAggregateRootDecorator(): AggregateRootDecorator
+    {
+        if (null === $this->aggregateRootDecorator) {
+            $this->aggregateRootDecorator = AggregateRootDecorator::newInstance();
+        }
+
+        return $this->aggregateRootDecorator;
+    }
+
+    public function setAggregateRootDecorator(AggregateRootDecorator $anAggregateRootDecorator): void
+    {
+        $this->aggregateRootDecorator = $anAggregateRootDecorator;
     }
 }
 ```
