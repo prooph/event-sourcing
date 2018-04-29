@@ -81,7 +81,13 @@ final class AggregateRepositoryFactory implements RequiresConfigId, RequiresMand
             throw ConfigurationException::configurationError(sprintf('Repository class %s must be a sub class of %s', $repositoryClass, AggregateRepository::class));
         }
 
-        $eventStore = $container->get(EventStore::class);
+        $eventStoreClass = $config['event_store_class'] ?? EventStore::class;
+
+        $eventStore = $container->get($eventStoreClass);
+
+        if (! $eventStore instanceof EventStore) {
+            throw ConfigurationException::configurationError(sprintf('Event store class %s must be of type %s', $eventStoreClass, EventStore::class));
+        }
 
         if (is_array($config['aggregate_type'])) {
             $aggregateType = AggregateType::fromMapping($config['aggregate_type']);
