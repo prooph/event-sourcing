@@ -20,25 +20,20 @@ use Prooph\EventStore\StreamName;
 
 final class EventStoreMock implements EventStore
 {
-
     public function updateStreamMetadata(StreamName $streamName, array $newMetadata): void
     {
-
     }
 
     public function create(Stream $stream): void
     {
-
     }
 
     public function appendTo(StreamName $streamName, Iterator $streamEvents): void
     {
-
     }
 
     public function delete(StreamName $streamName): void
     {
-
     }
 
     public function fetchStreamMetadata(StreamName $streamName): array
