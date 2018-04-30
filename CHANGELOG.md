@@ -1,7 +1,22 @@
 # Change Log
 
-## [v5.3.0](https://github.com/prooph/event-sourcing/tree/v5.3.0)
+## [v5.4.0](https://github.com/prooph/event-sourcing/tree/v5.4.0)
 
+[Full Changelog](https://github.com/prooph/event-sourcing/compare/v5.3.0...v5.4.0)
+
+**Implemented enhancements:**
+
+- Allow to add a custom event store to AggregateRepository [\#76](https://github.com/prooph/event-sourcing/pull/76) ([Orkin](https://github.com/Orkin))
+
+**Closed issues:**
+
+- Move 'aggregateId' up [\#74](https://github.com/prooph/event-sourcing/issues/74)
+
+**Merged pull requests:**
+
+- Update documentation on aggregate root inheritance [\#75](https://github.com/prooph/event-sourcing/pull/75) ([fritz-gerneth](https://github.com/fritz-gerneth))
+
+## [v5.3.0](https://github.com/prooph/event-sourcing/tree/v5.3.0) (2017-12-17)
 [Full Changelog](https://github.com/prooph/event-sourcing/compare/v5.2.0...v5.3.0)
 
 **Implemented enhancements:**
