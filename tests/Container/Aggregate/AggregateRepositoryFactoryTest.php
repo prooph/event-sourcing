@@ -17,6 +17,7 @@ use Prooph\EventSourcing\Aggregate\AggregateTranslator;
 use Prooph\EventSourcing\Container\Aggregate\AggregateRepositoryFactory;
 use Prooph\EventStore\EventStore;
 use Prooph\EventStore\Exception\ConfigurationException;
+use ProophTest\EventSourcing\Mock\EventStoreMock;
 use ProophTest\EventSourcing\Mock\RepositoryMock;
 use ProophTest\EventStore\ActionEventEmitterEventStoreTestCase;
 use ProophTest\EventStore\Mock\User;
@@ -45,6 +46,37 @@ class AggregateRepositoryFactoryTest extends ActionEventEmitterEventStoreTestCas
             ],
         ]);
         $container->get(EventStore::class)->willReturn($this->eventStore);
+
+        $userTranslator = $this->prophesize(AggregateTranslator::class);
+
+        $container->get('user_translator')->willReturn($userTranslator->reveal());
+
+        $factory = [AggregateRepositoryFactory::class, 'repository_mock'];
+        self::assertInstanceOf(RepositoryMock::class, $factory($container->reveal()));
+    }
+
+    /**
+     * @test
+     */
+    public function it_creates_an_aggregate_from_static_call_with_custom_event_store(): void
+    {
+        $container = $this->prophesize(ContainerInterface::class);
+        $container->has('config')->willReturn(true);
+        $container->get('config')->willReturn([
+            'prooph' => [
+                'event_sourcing' => [
+                    'aggregate_repository' => [
+                        'repository_mock' => [
+                            'repository_class' => RepositoryMock::class,
+                            'event_store' => EventStoreMock::class,
+                            'aggregate_type' => User::class,
+                            'aggregate_translator' => 'user_translator',
+                        ],
+                    ],
+                ],
+            ],
+        ]);
+        $container->get(EventStoreMock::class)->willReturn($this->eventStore);
 
         $userTranslator = $this->prophesize(AggregateTranslator::class);
 
@@ -117,6 +149,39 @@ class AggregateRepositoryFactoryTest extends ActionEventEmitterEventStoreTestCas
 
         $factory = new AggregateRepositoryFactory('repository_mock');
         $factory->__invoke($container->reveal());
+    }
+
+    /**
+     * @test
+     */
+    public function it_throws_exception_when_invalid_event_store_class_given(): void
+    {
+        $this->expectException(\TypeError::class);
+
+        $container = $this->prophesize(ContainerInterface::class);
+        $container->has('config')->willReturn(true);
+        $container->get('config')->willReturn([
+            'prooph' => [
+                'event_sourcing' => [
+                    'aggregate_repository' => [
+                        'repository_mock' => [
+                            'repository_class' => RepositoryMock::class,
+                            'event_store' => 'stdClass',
+                            'aggregate_type' => User::class,
+                            'aggregate_translator' => 'user_translator',
+                        ],
+                    ],
+                ],
+            ],
+        ]);
+        $container->get('stdClass')->willReturn('stdClass');
+
+        $userTranslator = $this->prophesize(AggregateTranslator::class);
+
+        $container->get('user_translator')->willReturn($userTranslator->reveal());
+
+        $factory = [AggregateRepositoryFactory::class, 'repository_mock'];
+        self::assertInstanceOf(RepositoryMock::class, $factory($container->reveal()));
     }
 
     /**

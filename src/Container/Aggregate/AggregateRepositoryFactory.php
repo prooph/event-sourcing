@@ -13,6 +13,7 @@ declare(strict_types=1);
 namespace Prooph\EventSourcing\Container\Aggregate;
 
 use Interop\Config\ConfigurationTrait;
+use Interop\Config\ProvidesDefaultOptions;
 use Interop\Config\RequiresConfigId;
 use Interop\Config\RequiresMandatoryOptions;
 use InvalidArgumentException;
@@ -23,7 +24,7 @@ use Prooph\EventStore\Exception\ConfigurationException;
 use Prooph\EventStore\StreamName;
 use Psr\Container\ContainerInterface;
 
-final class AggregateRepositoryFactory implements RequiresConfigId, RequiresMandatoryOptions
+final class AggregateRepositoryFactory implements RequiresConfigId, RequiresMandatoryOptions, ProvidesDefaultOptions
 {
     use ConfigurationTrait;
 
@@ -81,7 +82,7 @@ final class AggregateRepositoryFactory implements RequiresConfigId, RequiresMand
             throw ConfigurationException::configurationError(sprintf('Repository class %s must be a sub class of %s', $repositoryClass, AggregateRepository::class));
         }
 
-        $eventStore = $container->get(EventStore::class);
+        $eventStore = $container->get($config['event_store']);
 
         if (is_array($config['aggregate_type'])) {
             $aggregateType = AggregateType::fromMapping($config['aggregate_type']);
@@ -118,6 +119,18 @@ final class AggregateRepositoryFactory implements RequiresConfigId, RequiresMand
             'repository_class',
             'aggregate_type',
             'aggregate_translator',
+        ];
+    }
+
+    /**
+     * Returns a list of default options, which are merged in \Interop\Config\RequiresConfig::options()
+     *
+     * @return iterable List with default options and values, can be nested
+     */
+    public function defaultOptions(): iterable
+    {
+        return [
+            'event_store' => EventStore::class,
         ];
     }
 }
