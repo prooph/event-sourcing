@@ -68,7 +68,7 @@ class AggregateRepositoryFactoryTest extends ActionEventEmitterEventStoreTestCas
                     'aggregate_repository' => [
                         'repository_mock' => [
                             'repository_class' => RepositoryMock::class,
-                            'event_store_class' => EventStoreMock::class,
+                            'event_store' => EventStoreMock::class,
                             'aggregate_type' => User::class,
                             'aggregate_translator' => 'user_translator',
                         ],
@@ -156,7 +156,7 @@ class AggregateRepositoryFactoryTest extends ActionEventEmitterEventStoreTestCas
      */
     public function it_throws_exception_when_invalid_event_store_class_given(): void
     {
-        $this->expectException(ConfigurationException::class);
+        $this->expectException(\TypeError::class);
 
         $container = $this->prophesize(ContainerInterface::class);
         $container->has('config')->willReturn(true);
@@ -166,7 +166,7 @@ class AggregateRepositoryFactoryTest extends ActionEventEmitterEventStoreTestCas
                     'aggregate_repository' => [
                         'repository_mock' => [
                             'repository_class' => RepositoryMock::class,
-                            'event_store_class' => 'stdClass',
+                            'event_store' => 'stdClass',
                             'aggregate_type' => User::class,
                             'aggregate_translator' => 'user_translator',
                         ],
