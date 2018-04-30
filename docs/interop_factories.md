@@ -96,6 +96,24 @@ You can also configure a custom stream name (default is `event_stream`):
 ]
 ```
 
+You can add your custom event store too (default is `EventStore::class`):
+```php
+[
+    'prooph' => [
+        'event_sourcing' => [
+            'aggregate_repository' => [
+                'user_repository' => [
+                    'repository_class' => MyUserRepository::class,
+                    'event_store' => MyCustomEventStore::class, // <-- Custom event store service id
+                    'aggregate_type' => MyUser::class,
+                    'aggregate_translator' => 'user_translator',
+                ],
+            ],
+        ],
+    ],
+]
+```
+
 Last but not least you can enable the so called "One-Stream-Per-Aggregate-Mode":
 ```php
 [
