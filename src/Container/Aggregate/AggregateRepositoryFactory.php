@@ -127,7 +127,7 @@ final class AggregateRepositoryFactory implements RequiresConfigId, RequiresMand
      *
      * @return iterable List with default options and values, can be nested
      */
-    public function defaultOptions() : iterable
+    public function defaultOptions(): iterable
     {
         return [
             'event_store' => EventStore::class,
