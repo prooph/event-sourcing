@@ -153,6 +153,8 @@ processes dealing with the same aggregate would run into concurrency issues very
 The test case has some more tests including snapshot usage and working with different stream names / strategies.
 Just browse through the test methods for details.
 
+You can also disable the identity map by passing that option to the constructor (provided interop-factory can do this for you as well).
+
 ## Aggregate Type Mapping
 
 It's possible to map an aggregate type `user` to an aggregate root class like `My\Model\User`. To do that, add the
@@ -186,9 +188,9 @@ Example configuration:
 ## Loading of thousands aggregates
 
 If you need to load thousands of aggregates for reading only, your memory can be exhausted, because the 
-`AggregateRepository` uses an identity map. So every loaded aggregate is stored there, unless a commit is executed. If
-you have a read only process, you should consider to clear the identity map at some time. This can be done by calling 
-`clearIdentityMap()`.
+`AggregateRepository` uses an identity map (if it's not disabled). So every loaded aggregate is stored there,
+unless a commit is executed. If you have a read only process, you should consider to clear the identity map
+at some time. This can be done by calling `clearIdentityMap()`.
 
 ```php
 $thousandsOfAggregateIds = [ // lots of ids here ];

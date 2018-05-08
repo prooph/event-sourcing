@@ -114,6 +114,25 @@ You can add your custom event store too (default is `EventStore::class`):
 ]
 ```
 
+You can also disable the identity map
+```php
+[
+    'prooph' => [
+        'event_sourcing' => [
+            'aggregate_repository' => [
+                'user_repository' => [
+                    'repository_class' => MyUserRepository::class,
+                    'event_store' => MyCustomEventStore::class, // <-- Custom event store service id
+                    'aggregate_type' => MyUser::class,
+                    'aggregate_translator' => 'user_translator',
+                    'disable_identity_map' => true,
+                ],
+            ],
+        ],
+    ],
+]
+```
+
 Last but not least you can enable the so called "One-Stream-Per-Aggregate-Mode":
 ```php
 [
