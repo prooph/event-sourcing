@@ -1,7 +1,14 @@
 # Change Log
 
-## [v5.4.0](https://github.com/prooph/event-sourcing/tree/v5.4.0)
+## [v5.5.0](https://github.com/prooph/event-sourcing/tree/v5.5.0)
 
+[Full Changelog](https://github.com/prooph/event-sourcing/compare/v5.4.0...v5.5.0)
+
+**Implemented enhancements:**
+
+- add option to disable identity map [\#77](https://github.com/prooph/event-sourcing/pull/77) ([prolic](https://github.com/prolic))
+
+## [v5.4.0](https://github.com/prooph/event-sourcing/tree/v5.4.0) (2018-04-30)
 [Full Changelog](https://github.com/prooph/event-sourcing/compare/v5.3.0...v5.4.0)
 
 **Implemented enhancements:**
