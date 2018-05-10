@@ -82,6 +82,36 @@ class AggregateRepositoryTest extends ActionEventEmitterEventStoreTestCase
     /**
      * @test
      */
+    public function it_ignores_identity_map_if_disabled(): void
+    {
+        $this->repository = new AggregateRepository(
+            $this->eventStore,
+            AggregateType::fromAggregateRootClass(User::class),
+            new AggregateTranslator(),
+            null,
+            null,
+            false,
+            true
+        );
+
+        $user = User::nameNew('John Doe');
+
+        $this->repository->saveAggregateRoot($user);
+
+        $fetchedUser = $this->repository->getAggregateRoot(
+            $user->id()
+        );
+
+        $fetchedUser2 = $this->repository->getAggregateRoot(
+            $user->id()
+        );
+
+        $this->assertNotSame($fetchedUser, $fetchedUser2);
+    }
+
+    /**
+     * @test
+     */
     public function it_removes_aggregate_from_identity_map_when_save_is_called(): void
     {
         $user = User::nameNew('John Doe');

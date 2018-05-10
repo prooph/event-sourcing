@@ -75,11 +75,18 @@ final class AggregateRepositoryFactory implements RequiresConfigId, RequiresMand
         $repositoryClass = $config['repository_class'];
 
         if (! class_exists($repositoryClass)) {
-            throw ConfigurationException::configurationError(sprintf('Repository class %s cannot be found', $repositoryClass));
+            throw ConfigurationException::configurationError(sprintf(
+                'Repository class %s cannot be found',
+                $repositoryClass
+            ));
         }
 
         if (! is_subclass_of($repositoryClass, AggregateRepository::class)) {
-            throw ConfigurationException::configurationError(sprintf('Repository class %s must be a sub class of %s', $repositoryClass, AggregateRepository::class));
+            throw ConfigurationException::configurationError(sprintf(
+                'Repository class %s must be a sub class of %s',
+                $repositoryClass,
+                AggregateRepository::class
+            ));
         }
 
         $eventStore = $container->get($config['event_store']);
@@ -96,15 +103,14 @@ final class AggregateRepositoryFactory implements RequiresConfigId, RequiresMand
 
         $streamName = isset($config['stream_name']) ? new StreamName($config['stream_name']) : null;
 
-        $oneStreamPerAggregate = (bool) ($config['one_stream_per_aggregate'] ?? false);
-
         return new $repositoryClass(
             $eventStore,
             $aggregateType,
             $aggregateTranslator,
             $snapshotStore,
             $streamName,
-            $oneStreamPerAggregate
+            $config['one_stream_per_aggregate'],
+            $config['disable_identity_map']
         );
     }
 
@@ -131,6 +137,8 @@ final class AggregateRepositoryFactory implements RequiresConfigId, RequiresMand
     {
         return [
             'event_store' => EventStore::class,
+            'one_stream_per_aggregate' => false,
+            'disable_identity_map' => false,
         ];
     }
 }

@@ -59,13 +59,19 @@ class AggregateRepository
      */
     protected $oneStreamPerAggregate;
 
+    /**
+     * @var bool
+     */
+    protected $disableIdentityMap;
+
     public function __construct(
         EventStore $eventStore,
         AggregateType $aggregateType,
         AggregateTranslator $aggregateTranslator,
         SnapshotStore $snapshotStore = null,
         StreamName $streamName = null,
-        bool $oneStreamPerAggregate = false
+        bool $oneStreamPerAggregate = false,
+        bool $disableIdentityMap = false
     ) {
         $this->eventStore = $eventStore;
         $this->aggregateType = $aggregateType;
@@ -73,6 +79,7 @@ class AggregateRepository
         $this->snapshotStore = $snapshotStore;
         $this->streamName = $streamName;
         $this->oneStreamPerAggregate = $oneStreamPerAggregate;
+        $this->disableIdentityMap = $disableIdentityMap;
     }
 
     /**
@@ -114,7 +121,7 @@ class AggregateRepository
             $this->eventStore->appendTo($streamName, new ArrayIterator($enrichedEvents));
         }
 
-        if (isset($this->identityMap[$aggregateId])) {
+        if (! $this->disableIdentityMap && isset($this->identityMap[$aggregateId])) {
             unset($this->identityMap[$aggregateId]);
         }
     }
@@ -126,14 +133,14 @@ class AggregateRepository
      */
     public function getAggregateRoot(string $aggregateId)
     {
-        if (isset($this->identityMap[$aggregateId])) {
+        if (! $this->disableIdentityMap && isset($this->identityMap[$aggregateId])) {
             return $this->identityMap[$aggregateId];
         }
 
         if ($this->snapshotStore) {
             $eventSourcedAggregateRoot = $this->loadFromSnapshotStore($aggregateId);
 
-            if ($eventSourcedAggregateRoot) {
+            if ($eventSourcedAggregateRoot && ! $this->disableIdentityMap) {
                 //Cache aggregate root in the identity map
                 $this->identityMap[$aggregateId] = $eventSourcedAggregateRoot;
             }
@@ -178,8 +185,10 @@ class AggregateRepository
             $streamEvents
         );
 
-        //Cache aggregate root in the identity map but without pending events
-        $this->identityMap[$aggregateId] = $eventSourcedAggregateRoot;
+        if (! $this->disableIdentityMap) {
+            //Cache aggregate root in the identity map but without pending events
+            $this->identityMap[$aggregateId] = $eventSourcedAggregateRoot;
+        }
 
         return $eventSourcedAggregateRoot;
     }
