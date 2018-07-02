@@ -72,10 +72,10 @@ class BrokenUser extends AggregateRoot
 
     protected function apply(AggregateChanged $e): void
     {
-        switch (get_class($e)) {
+        switch (\get_class($e)) {
             default:
                 throw new RuntimeException(
-                    sprintf(
+                    \sprintf(
                         'Unknown event "%s" applied to user aggregate',
                         $e->messageName()
                     )

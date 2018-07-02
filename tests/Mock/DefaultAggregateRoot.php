@@ -33,7 +33,7 @@ final class DefaultAggregateRoot implements DefaultAggregateRootContract
     {
         $self = new self();
 
-        $self->historyEvents = iterator_to_array($historyEvents);
+        $self->historyEvents = \iterator_to_array($historyEvents);
 
         return $self;
     }

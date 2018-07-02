@@ -78,7 +78,7 @@ class User extends AggregateRoot
 
     protected function apply(AggregateChanged $e): void
     {
-        switch (get_class($e)) {
+        switch (\get_class($e)) {
             case UserCreated::class:
                 $this->id = $e->userId();
                 $this->name = $e->name();
@@ -88,7 +88,7 @@ class User extends AggregateRoot
                 break;
             default:
                 throw new RuntimeException(
-                    sprintf(
+                    \sprintf(
                         'Unknown event "%s" applied to user aggregate',
                         $e->messageName()
                     )
