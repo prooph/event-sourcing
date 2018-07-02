@@ -99,7 +99,7 @@ class AggregateRepository
 
         $createStream = false;
 
-        $firstEvent = reset($domainEvents);
+        $firstEvent = \reset($domainEvents);
 
         if (false === $firstEvent) {
             return;

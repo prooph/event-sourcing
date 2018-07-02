@@ -52,7 +52,7 @@ final class AggregateRepositoryFactory implements RequiresConfigId, RequiresMand
     {
         if (! isset($arguments[0]) || ! $arguments[0] instanceof ContainerInterface) {
             throw new InvalidArgumentException(
-                sprintf('The first argument must be of type %s', ContainerInterface::class)
+                \sprintf('The first argument must be of type %s', ContainerInterface::class)
             );
         }
 
@@ -74,15 +74,15 @@ final class AggregateRepositoryFactory implements RequiresConfigId, RequiresMand
 
         $repositoryClass = $config['repository_class'];
 
-        if (! class_exists($repositoryClass)) {
-            throw ConfigurationException::configurationError(sprintf(
+        if (! \class_exists($repositoryClass)) {
+            throw ConfigurationException::configurationError(\sprintf(
                 'Repository class %s cannot be found',
                 $repositoryClass
             ));
         }
 
-        if (! is_subclass_of($repositoryClass, AggregateRepository::class)) {
-            throw ConfigurationException::configurationError(sprintf(
+        if (! \is_subclass_of($repositoryClass, AggregateRepository::class)) {
+            throw ConfigurationException::configurationError(\sprintf(
                 'Repository class %s must be a sub class of %s',
                 $repositoryClass,
                 AggregateRepository::class
@@ -91,7 +91,7 @@ final class AggregateRepositoryFactory implements RequiresConfigId, RequiresMand
 
         $eventStore = $container->get($config['event_store']);
 
-        if (is_array($config['aggregate_type'])) {
+        if (\is_array($config['aggregate_type'])) {
             $aggregateType = AggregateType::fromMapping($config['aggregate_type']);
         } else {
             $aggregateType = AggregateType::fromAggregateRootClass($config['aggregate_type']);

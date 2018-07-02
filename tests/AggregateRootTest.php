@@ -49,9 +49,9 @@ class AggregateRootTest extends TestCase
 
         $this->assertEquals('Max', $user->name());
 
-        $recordedEvents = array_merge($recordedEvents, $additionalRecordedEvents);
+        $recordedEvents = \array_merge($recordedEvents, $additionalRecordedEvents);
 
-        $this->assertEquals(2, count($recordedEvents));
+        $this->assertEquals(2, \count($recordedEvents));
 
         $userCreatedEvent = $recordedEvents[0];
 
@@ -97,7 +97,7 @@ class AggregateRootTest extends TestCase
 
         AggregateRootDecorator::newInstance()->replayStreamEvents($user, new ArrayIterator($additionalRecordedEvents));
 
-        $historyEvents = new ArrayIterator(array_merge($recordedEvents, $additionalRecordedEvents));
+        $historyEvents = new ArrayIterator(\array_merge($recordedEvents, $additionalRecordedEvents));
 
         $sameUser = User::fromHistory($historyEvents);
 
@@ -114,10 +114,10 @@ class AggregateRootTest extends TestCase
 
         $recordedEvens = $user->accessRecordedEvents();
 
-        $this->assertEquals(1, count($recordedEvens));
+        $this->assertEquals(1, \count($recordedEvens));
 
         $recordedEvens = $user->accessRecordedEvents();
 
-        $this->assertEquals(0, count($recordedEvens));
+        $this->assertEquals(0, \count($recordedEvens));
     }
 }

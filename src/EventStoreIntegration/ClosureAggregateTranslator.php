@@ -74,9 +74,9 @@ final class ClosureAggregateTranslator implements EventStoreAggregateTranslator
 
         $arClass = $aggregateType->toString();
 
-        if (! class_exists($arClass)) {
+        if (! \class_exists($arClass)) {
             throw new RuntimeException(
-                sprintf('Aggregate root class %s cannot be found', $arClass)
+                \sprintf('Aggregate root class %s cannot be found', $arClass)
             );
         }
 

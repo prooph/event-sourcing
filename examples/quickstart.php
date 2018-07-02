@@ -84,7 +84,7 @@ namespace My\Model {
 
         protected function apply(AggregateChanged $event): void
         {
-            switch (get_class($event)) {
+            switch (\get_class($event)) {
                 case UserWasCreated::class:
                     //Simply assign the event payload to the appropriate properties
                     $this->uuid = Uuid::fromString($event->aggregateId());
@@ -199,7 +199,7 @@ namespace {
         TransactionalActionEventEmitterEventStore::EVENT_CREATE,
         function (ActionEvent $event): void {
             foreach ($event->getParam('stream')->streamEvents() as $streamEvent) {
-                echo sprintf(
+                echo \sprintf(
                     'Event with name %s was recorded. It occurred on %s UTC /// ',
                     $streamEvent->messageName(),
                     $streamEvent->createdAt()->format('Y-m-d H:i:s')
@@ -241,7 +241,7 @@ namespace {
         TransactionalActionEventEmitterEventStore::EVENT_APPEND_TO,
         function (ActionEvent $event): void {
             foreach ($event->getParam('streamEvents') as $streamEvent) {
-                echo sprintf(
+                echo \sprintf(
                         'Event with name %s was recorded. It occurred on %s UTC /// ',
                         $streamEvent->messageName(),
                         $streamEvent->createdAt()->format('Y-m-d H:i:s')

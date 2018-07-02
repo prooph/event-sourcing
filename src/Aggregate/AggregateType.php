@@ -33,9 +33,9 @@ class AggregateType
      */
     public static function fromAggregateRoot($eventSourcedAggregateRoot): AggregateType
     {
-        if (! is_object($eventSourcedAggregateRoot)) {
+        if (! \is_object($eventSourcedAggregateRoot)) {
             throw new Exception\AggregateTypeException(
-                sprintf('Aggregate root must be an object but type of %s given', gettype($eventSourcedAggregateRoot))
+                \sprintf('Aggregate root must be an object but type of %s given', \gettype($eventSourcedAggregateRoot))
             );
         }
 
@@ -44,7 +44,7 @@ class AggregateType
         }
 
         $self = new static();
-        $self->aggregateType = get_class($eventSourcedAggregateRoot);
+        $self->aggregateType = \get_class($eventSourcedAggregateRoot);
 
         return $self;
     }
@@ -57,8 +57,8 @@ class AggregateType
      */
     public static function fromAggregateRootClass(string $aggregateRootClass): AggregateType
     {
-        if (! class_exists($aggregateRootClass)) {
-            throw new Exception\InvalidArgumentException(sprintf('Aggregate root class %s can not be found', $aggregateRootClass));
+        if (! \class_exists($aggregateRootClass)) {
+            throw new Exception\InvalidArgumentException(\sprintf('Aggregate root class %s can not be found', $aggregateRootClass));
         }
 
         $self = new static();
@@ -98,12 +98,12 @@ class AggregateType
 
     public function mappedClass(): ?string
     {
-        return empty($this->mapping) ? null : current($this->mapping);
+        return empty($this->mapping) ? null : \current($this->mapping);
     }
 
     public function toString(): string
     {
-        return empty($this->mapping) ? $this->aggregateType : key($this->mapping);
+        return empty($this->mapping) ? $this->aggregateType : \key($this->mapping);
     }
 
     public function __toString(): string
@@ -122,7 +122,7 @@ class AggregateType
 
         if (! $this->equals($otherAggregateType)) {
             throw new Exception\AggregateTypeException(
-                sprintf('Aggregate types must be equal. %s != %s', $this->toString(), $otherAggregateType->toString())
+                \sprintf('Aggregate types must be equal. %s != %s', $this->toString(), $otherAggregateType->toString())
             );
         }
     }
