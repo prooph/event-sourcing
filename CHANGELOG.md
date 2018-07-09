@@ -1,7 +1,22 @@
 # Change Log
 
-## [v5.5.0](https://github.com/prooph/event-sourcing/tree/v5.5.0)
+## [v5.6.0](https://github.com/prooph/event-sourcing/tree/v5.6.0)
 
+[Full Changelog](https://github.com/prooph/event-sourcing/compare/v5.5.0...v5.6.0)
+
+**Implemented enhancements:**
+
+- add metadata to create stream [\#81](https://github.com/prooph/event-sourcing/pull/81) ([hiddeb](https://github.com/hiddeb))
+
+**Closed issues:**
+
+- Keep/add the aggregate in the indentity map after saving [\#78](https://github.com/prooph/event-sourcing/issues/78)
+
+**Merged pull requests:**
+
+- Added .gitattributes file [\#80](https://github.com/prooph/event-sourcing/pull/80) ([Brammm](https://github.com/Brammm))
+
+## [v5.5.0](https://github.com/prooph/event-sourcing/tree/v5.5.0) (2018-05-10)
 [Full Changelog](https://github.com/prooph/event-sourcing/compare/v5.4.0...v5.5.0)
 
 **Implemented enhancements:**
