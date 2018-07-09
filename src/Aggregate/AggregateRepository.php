@@ -60,6 +60,11 @@ class AggregateRepository
     protected $oneStreamPerAggregate;
 
     /**
+     * @var array
+     */
+    protected $metadata;
+
+    /**
      * @var bool
      */
     protected $disableIdentityMap;
@@ -71,7 +76,8 @@ class AggregateRepository
         SnapshotStore $snapshotStore = null,
         StreamName $streamName = null,
         bool $oneStreamPerAggregate = false,
-        bool $disableIdentityMap = false
+        bool $disableIdentityMap = false,
+        array $metadata = []
     ) {
         $this->eventStore = $eventStore;
         $this->aggregateType = $aggregateType;
@@ -80,6 +86,7 @@ class AggregateRepository
         $this->streamName = $streamName;
         $this->oneStreamPerAggregate = $oneStreamPerAggregate;
         $this->disableIdentityMap = $disableIdentityMap;
+        $this->metadata = $metadata;
     }
 
     /**
@@ -114,7 +121,7 @@ class AggregateRepository
         }
 
         if ($createStream) {
-            $stream = new Stream($streamName, new ArrayIterator($enrichedEvents));
+            $stream = new Stream($streamName, new ArrayIterator($enrichedEvents), $this->metadata);
 
             $this->eventStore->create($stream);
         } else {

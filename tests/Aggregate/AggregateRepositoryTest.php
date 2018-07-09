@@ -22,6 +22,7 @@ use Prooph\EventSourcing\Aggregate\AggregateType;
 use Prooph\EventSourcing\Aggregate\Exception\AggregateTypeException;
 use Prooph\EventSourcing\EventStoreIntegration\AggregateTranslator;
 use Prooph\EventStore\ActionEventEmitterEventStore;
+use Prooph\EventStore\EventStore;
 use Prooph\EventStore\Stream;
 use Prooph\EventStore\StreamName;
 use Prooph\SnapshotStore\InMemorySnapshotStore;
@@ -636,5 +637,71 @@ class AggregateRepositoryTest extends ActionEventEmitterEventStoreTestCase
         );
 
         $this->assertNull($this->repository->getAggregateRoot('some_id'));
+    }
+
+    /**
+     * @test
+     */
+    public function it_adds_a_new_aggregate_with_metadata_stream(): void
+    {
+        $this->repository = new AggregateRepository(
+            $this->eventStore,
+            AggregateType::fromAggregateRootClass(User::class),
+            new AggregateTranslator(),
+            null,
+            null,
+            false,
+            true,
+            ['_aggregate_type' => User::class]
+        );
+
+        $user = User::nameNew('John Doe');
+
+        $this->repository->saveAggregateRoot($user);
+
+        $fetchedUser = $this->repository->getAggregateRoot(
+            $user->id()
+        );
+
+        $this->assertInstanceOf(User::class, $fetchedUser);
+
+        $this->assertNotSame($user, $fetchedUser);
+
+        $this->assertEquals('John Doe', $fetchedUser->name());
+    }
+
+    /**
+     * @test
+     */
+    public function it_uses_provided_metadata(): void
+    {
+        $streamName = 'foo';
+        $user = User::nameNew('John Doe');
+
+        $eventstore = $this->prophesize(EventStore::class);
+
+        $callback = function (Stream $stream) use ($user, $streamName) {
+            $this->assertEquals(new StreamName($streamName . '-' . $user->id()), (string) $stream->streamName());
+            $this->assertSame(['_aggregate_type' => User::class], $stream->metadata());
+
+            return true;
+        };
+
+        $eventstore->create(
+            Argument::that($callback)
+        )->shouldBeCalled();
+
+        $this->repository = new AggregateRepository(
+            $eventstore->reveal(),
+            AggregateType::fromAggregateRootClass(User::class),
+            new AggregateTranslator(),
+            null,
+            new StreamName($streamName),
+            true,
+            false,
+            ['_aggregate_type' => User::class]
+        );
+
+        $this->repository->saveAggregateRoot($user);
     }
 }
