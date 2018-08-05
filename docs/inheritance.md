@@ -7,6 +7,8 @@ If you want to make inheritance work with aggregate roots using a common reposit
 Consider the following use case:
 
 ```php
+<?php
+
 abstract class User extends \Prooph\EventSourcing\AggregateRoot
 {
     protected $name;
@@ -60,40 +62,31 @@ So in order to make this work, you need 3 small changes in your application.
 ## Step 1: Create a UserAggregateTranslator
 
 ```php
+<?php
+
 final class UserAggregateTranslator implements \Prooph\EventSourcing\Aggregate\AggregateTranslator
 {
     /**
-     * @var AggregateRootDecorator
+     * @var \Prooph\EventSourcing\Aggregate\AggregateRootDecorator
      */
     protected $aggregateRootDecorator;
-
-    /**
-     * @param object $eventSourcedAggregateRoot
-     *
-     * @return int
-     */
-    public function extractAggregateVersion($eventSourcedAggregateRoot): int
+    
+    public function extractNextExpectedVersion(object $eventSourcedAggregateRoot): int
     {
-        return $this->getAggregateRootDecorator()->extractAggregateVersion($eventSourcedAggregateRoot);
+        return $this->getAggregateRootDecorator->extractNextExpectedVersion($eventSourcedAggregateRoot);
     }
 
-    /**
-     * @param object $anEventSourcedAggregateRoot
-     *
-     * @return string
-     */
-    public function extractAggregateId($anEventSourcedAggregateRoot): string
+    public function setNextExpectedVersion(object $eventSourcedAggregateRoot, int $nextExpectedVersion): void
     {
-        return $this->getAggregateRootDecorator()->extractAggregateId($anEventSourcedAggregateRoot);
+        $this->getAggregateRootDecorator->setNextExpectedVersion($eventSourcedAggregateRoot, $nextExpectedVersion);
     }
 
-    /**
-     * @param AggregateType $aggregateType
-     * @param Iterator $historyEvents
-     *
-     * @return object reconstructed AggregateRoot
-     */
-    public function reconstituteAggregateFromHistory(AggregateType $aggregateType, Iterator $historyEvents)
+    public function extractAggregateId(object $eventSourcedAggregateRoot): string
+    {
+        return $this->getAggregateRootDecorator()->extractAggregateId($eventSourcedAggregateRoot);
+    }
+
+    public function reconstituteAggregateFromHistory(\Prooph\EventSourcing\Aggregate\AggregateType $aggregateType, Iterator $historyEvents): object
     {
         $aggregateRootDecorator = $this->getAggregateRootDecorator();
 
@@ -108,36 +101,28 @@ final class UserAggregateTranslator implements \Prooph\EventSourcing\Aggregate\A
     }
 
     /**
-     * @param object $anEventSourcedAggregateRoot
-     *
-     * @return Message[]
+     * @return \Prooph\Common\Messaging\Message[]
      */
-    public function extractPendingStreamEvents($anEventSourcedAggregateRoot): array
+    public function extractPendingStreamEvents(object $eventSourcedAggregateRoot): array
     {
-        return $this->getAggregateRootDecorator()->extractRecordedEvents($anEventSourcedAggregateRoot);
+        return $this->getAggregateRootDecorator()->extractRecordedEvents($eventSourcedAggregateRoot);
     }
 
-    /**
-     * @param object $anEventSourcedAggregateRoot
-     * @param Iterator $events
-     *
-     * @return void
-     */
-    public function replayStreamEvents($anEventSourcedAggregateRoot, Iterator $events): void
+    public function replayStreamEvents(object $eventSourcedAggregateRoot, Iterator $events): void
     {
-        $this->getAggregateRootDecorator()->replayStreamEvents($anEventSourcedAggregateRoot, $events);
+        $this->getAggregateRootDecorator()->replayStreamEvents($eventSourcedAggregateRoot, $events);
     }
 
-    public function getAggregateRootDecorator(): AggregateRootDecorator
+    public function getAggregateRootDecorator(): \Prooph\EventSourcing\Aggregate\AggregateRootDecorator
     {
         if (null === $this->aggregateRootDecorator) {
-            $this->aggregateRootDecorator = AggregateRootDecorator::newInstance();
+            $this->aggregateRootDecorator = \Prooph\EventSourcing\Aggregate\AggregateRootDecorator::newInstance();
         }
 
         return $this->aggregateRootDecorator;
     }
 
-    public function setAggregateRootDecorator(AggregateRootDecorator $anAggregateRootDecorator): void
+    public function setAggregateRootDecorator(\Prooph\EventSourcing\Aggregate\AggregateRootDecorator $anAggregateRootDecorator): void
     {
         $this->aggregateRootDecorator = $anAggregateRootDecorator;
     }
@@ -147,8 +132,10 @@ final class UserAggregateTranslator implements \Prooph\EventSourcing\Aggregate\A
 ## Step 2: Change the assertion method in the EventStoreUserCollection
 
 ```php
+<?php
+
 final class EventStoreUserCollection extends 
-    \Prooph\EventStore\Aggregate\AggregateRepository
+    \Prooph\EventSourcing\Aggregate\AggregateRepository
 {
     public function save(User $user): void
     {
@@ -168,14 +155,17 @@ final class EventStoreUserCollection extends
 ## Step 3: Make use of your custom AggregateTranslator
 
 ```php
+<?php
+
 final class EventStoreUserCollectionFactory
 {
-    public function __invoke(ContainerInterface $container): EventStoreUserCollection
+    public function __invoke(\Psr\Container\ContainerInterface $container): EventStoreUserCollection
     {
         return new EventStoreUserCollection(
-            $container->get(EventStore::class),
-            AggregateType::fromAggregateRootClass(User::class),
-            new UserAggregateTranslator()
+            $container->get(EventStoreConnection::class),
+            new AggregateType(['user' => User::class]),
+            new UserAggregateRootTranslator(),
+            ...
         );
     }
 }
@@ -209,6 +199,6 @@ the same functionality.
 
 Default aggregate translator uses `AggregateRootDecorator` to access protected
 methods of `Prooph\EventSourcing\AggregateRoot` descendants, you will need to
-switch to
-`Prooph\EventSourcing\Aggregate\ClosureAggregateTranslator` for
+switch to a custom implementation of 
+`Prooph\EventSourcing\Aggregate\AggregateTranslator` for
 aggregate roots using traits.

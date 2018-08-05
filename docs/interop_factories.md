@@ -34,117 +34,13 @@ configuration to our application configuration:
         'event_sourcing' => [
             'aggregate_repository' => [
                 'user_repository' => [ //<-- here the container id is referenced
+                    'event_store_connection' => 'es_connection', // <-- service name of your event store connection
                     'repository_class' => MyUserRepository::class, //<-- FQCN of the repository responsible for the aggregate root
-                    'aggregate_type' => MyUser::class, //<-- The aggregate root FQCN the repository is responsible for
+                    'aggregate_type' => [
+                        'user' => MyUser::class, //<-- The aggregate root FQCN the repository is responsible for
+                    ],
                     'aggregate_translator' => 'user_translator', //<-- The aggregate translator must be available as service in the container
-                ],
-            ],
-        ],
-    ],
-]
-```
-
-If you want to speed up loading of aggregates with a snapshot store then you need to make
-it available as service in the container and use the configuration to let the factory inject the snapshot store in the repository.
-
-Also you need to install [Prooph SnapshotStore](https://github.com/prooph/snapshot-store) and a persistable implementation of it,
-like [pdo-snapshot-store](https://github.com/prooph/pdo-snapshot-store/) or [mongodb-snapshot-store](https://github.com/prooph/mongodb-snapshot-store/).
-
-```php
-[
-    'prooph' => [
-        'event_sourcing' => [
-            'aggregate_repository' => [
-                'user_repository' => [
-                    'repository_class' => MyUserRepository::class,
-                    'aggregate_type' => MyUser::class,
-                    'aggregate_translator' => 'user_translator',
-                    'snapshot_store' => 'awesome_snapshot_store' // <-- SnapshotStore service id
-                ],
-            ],
-        ],
-    ],
-    // zf3 service manager example to configure snapshot store service below
-    'dependencies' => [
-        'aliases' => [
-            'awesome_snapshot_store' => InMemorySnaphotStore::class,
-        ],
-        'factories' => [
-            InMemorySnaphotStore::class => InvokableFactory::class,
-        ],
-    ],
-]
-```
-
-You can also configure a custom stream name (default is `event_stream`):
-
-```php
-[
-    'prooph' => [
-        'event_sourcing' => [
-            'aggregate_repository' => [
-                'user_repository' => [
-                    'repository_class' => MyUserRepository::class,
-                    'aggregate_type' => MyUser::class,
-                    'aggregate_translator' => 'user_translator',
-                    'snapshot_store' => 'awesome_snapshot_store', // <-- SnapshotStore service id
-                    'stream_name' => 'user_stream' // <-- Custom stream name
-                ],
-            ],
-        ],
-    ],
-]
-```
-
-You can add your custom event store too (default is `EventStore::class`):
-```php
-[
-    'prooph' => [
-        'event_sourcing' => [
-            'aggregate_repository' => [
-                'user_repository' => [
-                    'repository_class' => MyUserRepository::class,
-                    'event_store' => MyCustomEventStore::class, // <-- Custom event store service id
-                    'aggregate_type' => MyUser::class,
-                    'aggregate_translator' => 'user_translator',
-                ],
-            ],
-        ],
-    ],
-]
-```
-
-You can also disable the identity map
-```php
-[
-    'prooph' => [
-        'event_sourcing' => [
-            'aggregate_repository' => [
-                'user_repository' => [
-                    'repository_class' => MyUserRepository::class,
-                    'event_store' => MyCustomEventStore::class, // <-- Custom event store service id
-                    'aggregate_type' => MyUser::class,
-                    'aggregate_translator' => 'user_translator',
-                    'disable_identity_map' => true,
-                ],
-            ],
-        ],
-    ],
-]
-```
-
-Last but not least you can enable the so called "One-Stream-Per-Aggregate-Mode":
-```php
-[
-    'prooph' => [
-        'event_sourcing' => [
-            'aggregate_repository' => [
-                'user_repository' => [
-                    'repository_class' => MyUserRepository::class,
-                    'aggregate_type' => MyUser::class,
-                    'aggregate_translator' => 'user_translator',
-                    'snapshot_store' => 'awesome_snapshot_store', // <-- SnapshotStore service id
-                    'one_stream_per_aggregate' => true // <-- Enable One-Stream-Per-Aggregate-Mode
+                    'category' => 'user', // this is your prefix for all streams
                 ],
             ],
         ],
