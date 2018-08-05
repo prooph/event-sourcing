@@ -79,11 +79,13 @@ class AggregateRepository
             }
         }
 
-        $this->eventStoreConnection->appendToStream(
+        $writeResult = $this->eventStoreConnection->appendToStream(
             $stream,
             $expectedVersion,
             $eventData
         );
+
+        $this->aggregateTranslator->setExpectedVersion($eventSourcedAggregateRoot, $writeResult->nextExpectedVersion());
     }
 
     /**

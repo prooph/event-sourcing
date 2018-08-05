@@ -12,34 +12,37 @@ declare(strict_types=1);
 
 namespace ProophTest\EventSourcing\Aggregate;
 
+use Generator;
 use PHPUnit\Framework\TestCase;
-use Prooph\EventSourcing\Aggregate\AggregateRepository;
 use Prooph\EventSourcing\Aggregate\AggregateRootTranslator;
 use Prooph\EventSourcing\Aggregate\AggregateType;
+use Prooph\EventSourcing\Aggregate\AsyncAggregateRepository;
 use Prooph\EventSourcing\MessageTransformer;
-use Prooph\EventStoreClient\EventStoreSyncConnection;
+use Prooph\EventStoreClient\EventStoreAsyncConnection;
 use ProophTest\EventSourcing\Helper\Connection;
 use ProophTest\EventSourcing\Mock\User;
 use ProophTest\EventSourcing\Mock\UserCreated;
+use Throwable;
+use function Amp\call;
+use function Amp\Promise\wait;
 
-class AggregateRepositoryTest extends TestCase
+class AsyncAggregateRepositoryTest extends TestCase
 {
     /**
-     * @var EventStoreSyncConnection
+     * @var EventStoreAsyncConnection
      */
     protected $eventStoreConnection;
 
     /**
-     * @var AggregateRepository
+     * @var AsyncAggregateRepository
      */
     protected $repository;
 
     protected function setUp(): void
     {
-        $this->eventStoreConnection = Connection::createSync();
-        $this->eventStoreConnection->connect();
+        $this->eventStoreConnection = Connection::createAsync();
 
-        $this->repository = new AggregateRepository(
+        $this->repository = new AsyncAggregateRepository(
             $this->eventStoreConnection,
             new AggregateType(['user' => User::class]),
             new AggregateRootTranslator(),
@@ -53,41 +56,56 @@ class AggregateRepositoryTest extends TestCase
 
     /**
      * @test
+     * @throws Throwable
      */
     public function it_adds_a_new_aggregate(): void
     {
-        $user = User::nameNew('John Doe');
+        wait(call(function (): Generator {
+            yield $this->eventStoreConnection->connectAsync();
 
-        $this->repository->saveAggregateRoot($user);
+            $user = User::nameNew('John Doe');
 
-        $fetchedUser = $this->repository->getAggregateRoot(
-            $user->id()
-        );
+            yield $this->repository->saveAggregateRoot($user);
 
-        $this->assertInstanceOf(User::class, $fetchedUser);
+            $fetchedUser = yield $this->repository->getAggregateRoot(
+                $user->id()
+            );
 
-        $this->assertNotSame($user, $fetchedUser);
+            $this->assertInstanceOf(User::class, $fetchedUser);
 
-        $this->assertEquals('John Doe', $fetchedUser->name());
+            $this->assertNotSame($user, $fetchedUser);
+
+            $this->assertEquals('John Doe', $fetchedUser->name());
+        }));
     }
 
     /**
      * @test
+     * @throws Throwable
      */
     public function it_returns_early_on_get_aggregate_root_when_there_are_no_stream_events(): void
     {
-        $this->assertNull($this->repository->getAggregateRoot('something'));
+        wait(call(function (): Generator {
+            yield $this->eventStoreConnection->connectAsync();
+
+            $this->assertNull(yield $this->repository->getAggregateRoot('something'));
+        }));
     }
 
     /**
      * @test
      * @doesNotPerformAssertions
+     * @throws Throwable
      * Test for https://github.com/prooph/event-sourcing/issues/42
      */
     public function it_does_not_throw_an_exception_if_no_pending_event_is_present(): void
     {
-        $user = User::nameNew('John Doe');
-        $this->repository->saveAggregateRoot($user);
-        $this->repository->saveAggregateRoot($user);
+        wait(call(function (): Generator {
+            yield $this->eventStoreConnection->connectAsync();
+
+            $user = User::nameNew('John Doe');
+            yield $this->repository->saveAggregateRoot($user);
+            yield $this->repository->saveAggregateRoot($user);
+        }));
     }
 }
