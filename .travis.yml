@@ -3,17 +3,11 @@ language: php
 matrix:
   fast_finish: true
   include:
-    - php: 7.1
+    - php: 7.2
       env:
         - DEPENDENCIES=""
         - EXECUTE_CS_CHECK=true
         - TEST_COVERAGE=true
-    - php: 7.1
-      env:
-        - DEPENDENCIES="--prefer-lowest --prefer-stable"
-    - php: 7.2
-      env:
-        - DEPENDENCIES=""
     - php: 7.2
       env:
         - DEPENDENCIES="--prefer-lowest --prefer-stable"
@@ -25,6 +19,14 @@ cache:
     - $HOME/.local
 
 before_script:
+  - echo downloading event-store 4.1.1-hotfix1
+  - wget https://eventstore.org/downloads/EventStore-OSS-Ubuntu-14.04-v4.1.1-hotfix1.tar.gz
+  - echo extracting event-store
+  - tar xf EventStore-OSS-Ubuntu-14.04-v4.1.1-hotfix1.tar.gz
+  - cd EventStore-OSS-Ubuntu-14.04-v4.1.1-hotfix1
+  - echo starting event-store
+  - ./run-node.sh --run-projections=all --mem-db --ext-tcp-heartbeat-interval 5000 --ext-tcp-heartbeat-timeout 1500 > /dev/null &
+  - cd ..
   - mkdir -p "$HOME/.php-cs-fixer"
   - phpenv config-rm xdebug.ini
   - composer self-update
