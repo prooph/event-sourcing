@@ -60,17 +60,4 @@ class AggregateChangedTest extends TestCase
 
         $this->assertEquals($payload, $event->payload());
     }
-
-    /**
-     * @test
-     */
-    public function it_can_track_aggregate_version_but_is_immutable(): void
-    {
-        $orgEvent = AggregateChanged::occur('1', ['key' => 'value']);
-
-        $newEvent = $orgEvent->withVersion(2);
-
-        $this->assertEquals(1, $orgEvent->version());
-        $this->assertEquals(2, $newEvent->version());
-    }
 }

@@ -10,7 +10,7 @@
 
 declare(strict_types=1);
 
-namespace Prooph\EventSourcing\EventStoreIntegration;
+namespace Prooph\EventSourcing\Aggregate;
 
 use BadMethodCallException;
 use Iterator;
@@ -25,9 +25,14 @@ class AggregateRootDecorator extends AggregateRoot
         return new static();
     }
 
-    public function extractAggregateVersion(AggregateRoot $anAggregateRoot): int
+    public function extractNextExpectedVersion(AggregateRoot $eventSourcedAggregateRoot): int
     {
-        return $anAggregateRoot->version;
+        return $eventSourcedAggregateRoot->nextExpectedVersion;
+    }
+
+    public function setNextExpectedVersion(AggregateRoot $eventSourcedAggregateRoot, int $nextExpectedVersion): void
+    {
+        $eventSourcedAggregateRoot->nextExpectedVersion = $nextExpectedVersion;
     }
 
     /**

@@ -14,10 +14,9 @@ namespace ProophTest\EventSourcing;
 
 use ArrayIterator;
 use PHPUnit\Framework\TestCase;
-use Prooph\EventSourcing\EventStoreIntegration\AggregateRootDecorator;
+use Prooph\EventSourcing\Aggregate\AggregateRootDecorator;
 use ProophTest\EventSourcing\Mock\BrokenUser;
 use ProophTest\EventSourcing\Mock\User;
-use ProophTest\EventSourcing\Mock\UserCreated;
 use RuntimeException;
 
 class AggregateRootTest extends TestCase
@@ -56,12 +55,10 @@ class AggregateRootTest extends TestCase
         $userCreatedEvent = $recordedEvents[0];
 
         $this->assertEquals('John', $userCreatedEvent->name());
-        $this->assertEquals(1, $userCreatedEvent->version());
 
         $userNameChangedEvent = $recordedEvents[1];
 
         $this->assertEquals('Max', $userNameChangedEvent->newUsername());
-        $this->assertEquals(2, $userNameChangedEvent->version());
     }
 
     /**
@@ -70,11 +67,11 @@ class AggregateRootTest extends TestCase
     public function it_throws_exception_when_no_handler_on_aggregate(): void
     {
         $this->expectException(RuntimeException::class);
-        $this->expectExceptionMessage('Unknown event "' . UserCreated::class . '" applied to user aggregate');
+        $this->expectExceptionMessage('Unknown event "user_created" applied to user aggregate');
 
         $brokenUser = BrokenUser::nameNew('John');
 
-        AggregateRootDecorator::newInstance()->applyStreamEvents(
+        AggregateRootDecorator::newInstance()->replayStreamEvents(
             $brokenUser,
             new ArrayIterator($brokenUser->accessRecordedEvents())
         );
@@ -112,12 +109,12 @@ class AggregateRootTest extends TestCase
     {
         $user = User::nameNew('John');
 
-        $recordedEvens = $user->accessRecordedEvents();
+        $recordedEvents = $user->accessRecordedEvents();
 
-        $this->assertEquals(1, \count($recordedEvens));
+        $this->assertEquals(1, \count($recordedEvents));
 
-        $recordedEvens = $user->accessRecordedEvents();
+        $recordedEvents = $user->accessRecordedEvents();
 
-        $this->assertEquals(0, \count($recordedEvens));
+        $this->assertEquals(0, \count($recordedEvents));
     }
 }

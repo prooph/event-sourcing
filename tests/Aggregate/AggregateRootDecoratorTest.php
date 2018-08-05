@@ -10,13 +10,13 @@
 
 declare(strict_types=1);
 
-namespace ProophTest\EventSourcing\EventStoreIntegration;
+namespace ProophTest\EventSourcing\Aggregate;
 
 use ArrayIterator;
 use BadMethodCallException;
 use PHPUnit\Framework\TestCase;
+use Prooph\EventSourcing\Aggregate\AggregateRootDecorator;
 use Prooph\EventSourcing\AggregateChanged;
-use Prooph\EventSourcing\EventStoreIntegration\AggregateRootDecorator;
 use ProophTest\EventSourcing\Mock\ExtendedAggregateRootDecorator;
 use RuntimeException;
 
@@ -48,6 +48,7 @@ class AggregateRootDecoratorTest extends TestCase
 
     /**
      * @test
+     * @doesNotPerformAssertions
      */
     public function it_does_nothing_on_apply_by_default(): void
     {
@@ -55,6 +56,6 @@ class AggregateRootDecoratorTest extends TestCase
 
         $decorator = ExtendedAggregateRootDecorator::newInstance();
 
-        $this->assertNull($decorator->doApply($event->reveal()));
+        $decorator->doApply($event->reveal());
     }
 }

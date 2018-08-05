@@ -10,27 +10,27 @@
 
 declare(strict_types=1);
 
-namespace ProophTest\EventSourcing\EventStoreIntegration;
+namespace ProophTest\EventSourcing\Aggregate;
 
 use ArrayIterator;
 use PHPUnit\Framework\TestCase;
-use Prooph\Common\Event\ProophActionEventEmitter;
 use Prooph\EventSourcing\Aggregate\AggregateRepository;
+use Prooph\EventSourcing\Aggregate\AggregateRootDecorator;
+use Prooph\EventSourcing\Aggregate\AggregateRootTranslator;
 use Prooph\EventSourcing\Aggregate\AggregateType;
-use Prooph\EventSourcing\EventStoreIntegration\AggregateRootDecorator;
-use Prooph\EventSourcing\EventStoreIntegration\AggregateTranslator;
-use Prooph\EventStore\InMemoryEventStore;
-use Prooph\EventStore\Stream;
-use Prooph\EventStore\StreamName;
+use Prooph\EventSourcing\MessageTransformer;
+use Prooph\EventStoreClient\EventStoreSyncConnection;
+use ProophTest\EventSourcing\Helper\Connection;
 use ProophTest\EventSourcing\Mock\User;
+use ProophTest\EventSourcing\Mock\UserCreated;
 use ProophTest\EventSourcing\Mock\UserNameChanged;
 
-class AggregateTranslatorTest extends TestCase
+class AggregateRootTranslatorTest extends TestCase
 {
     /**
-     * @var InMemoryEventStore
+     * @var EventStoreSyncConnection
      */
-    protected $eventStore;
+    protected $eventStoreClient;
 
     /**
      * @var AggregateRepository
@@ -39,31 +39,28 @@ class AggregateTranslatorTest extends TestCase
 
     protected function setUp(): void
     {
-        $this->eventStore = new InMemoryEventStore(new ProophActionEventEmitter());
+        $this->eventStoreClient = Connection::createSync();
+        $this->eventStoreClient->connect();
 
-        $this->eventStore->beginTransaction();
-
-        $this->eventStore->create(new Stream(new StreamName('event_stream'), new ArrayIterator([])));
-
-        $this->eventStore->commit();
-
-        $this->resetRepository();
+        $this->repository = new AggregateRepository(
+            $this->eventStoreClient,
+            new AggregateType(['user' => User::class]),
+            new AggregateRootTranslator(),
+            new MessageTransformer([
+                'user_created' => UserCreated::class,
+                'user_name_changed' => UserNameChanged::class,
+            ]),
+            'user',
+            true
+        );
     }
 
-    /**
-     * @test
-     */
+    /** @test */
     public function it_translates_aggregate_back_and_forth(): User
     {
-        $this->eventStore->beginTransaction();
-
         $user = User::nameNew('John Doe');
 
         $this->repository->saveAggregateRoot($user);
-
-        $this->eventStore->commit();
-
-        $this->eventStore->beginTransaction();
 
         //Simulate a normal program flow by fetching the AR before modifying it
         $user = $this->repository->getAggregateRoot($user->id());
@@ -71,10 +68,6 @@ class AggregateTranslatorTest extends TestCase
         $user->changeName('Max Mustermann');
 
         $this->repository->saveAggregateRoot($user);
-
-        $this->eventStore->commit();
-
-        $this->resetRepository();
 
         $loadedUser = $this->repository->getAggregateRoot($user->id());
 
@@ -88,22 +81,11 @@ class AggregateTranslatorTest extends TestCase
      * @depends it_translates_aggregate_back_and_forth
      * @param User $loadedUser
      */
-    public function it_extracts_version(User $loadedUser): void
-    {
-        $translator = new AggregateTranslator();
-        $this->assertEquals(2, $translator->extractAggregateVersion($loadedUser));
-    }
-
-    /**
-     * @test
-     * @depends it_translates_aggregate_back_and_forth
-     * @param User $loadedUser
-     */
     public function it_applies_stream_events(User $loadedUser): void
     {
         $newName = 'Jane Doe';
 
-        $translator = new AggregateTranslator();
+        $translator = new AggregateRootTranslator();
         $translator->replayStreamEvents($loadedUser, new ArrayIterator([UserNameChanged::occur($loadedUser->id(), [
             'username' => $newName,
         ])]));
@@ -111,25 +93,14 @@ class AggregateTranslatorTest extends TestCase
         $this->assertEquals($newName, $loadedUser->name());
     }
 
-    /**
-     * @test
-     */
+    /** @test */
     public function it_can_use_custom_aggregate_root_decorator(): void
     {
         $mock = $this->createMock(AggregateRootDecorator::class);
 
-        $translator = new AggregateTranslator();
+        $translator = new AggregateRootTranslator();
         $translator->setAggregateRootDecorator($mock);
 
         $this->assertSame($mock, $translator->getAggregateRootDecorator());
-    }
-
-    protected function resetRepository(): void
-    {
-        $this->repository = new AggregateRepository(
-            $this->eventStore,
-            AggregateType::fromAggregateRootClass(User::class),
-            new AggregateTranslator()
-        );
     }
 }

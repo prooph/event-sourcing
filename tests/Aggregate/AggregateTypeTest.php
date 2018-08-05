@@ -14,106 +14,35 @@ namespace ProophTest\EventSourcing\Aggregate;
 
 use PHPUnit\Framework\TestCase;
 use Prooph\EventSourcing\Aggregate\AggregateType;
-use Prooph\EventSourcing\Aggregate\AggregateTypeProvider;
-use Prooph\EventSourcing\Aggregate\Exception\AggregateTypeException;
-use Prooph\EventSourcing\Aggregate\Exception\InvalidArgumentException;
-use ProophTest\EventStore\Mock\Post;
-use ProophTest\EventStore\Mock\User;
+use ProophTest\EventSourcing\Mock\User;
 
 class AggregateTypeTest extends TestCase
 {
-    /**
-     * @test
-     */
-    public function it_throws_exception_when_trying_to_create_from_string_as_aggregate_root(): void
-    {
-        $this->expectException(InvalidArgumentException::class);
+    /** @var AggregateType */
+    private $aggregateType;
 
-        AggregateType::fromAggregateRoot('invalid');
+    protected function setUp(): void
+    {
+        $this->aggregateType = new AggregateType([
+            'user' => User::class,
+        ]);
     }
 
-    /**
-     * @test
-     */
-    public function it_delegates_on_creating_from_aggregate_root_when_it_implements_aggregate_type_provider(): void
+    /** @test */
+    public function it_returns_class_name(): void
     {
-        $aggregateRoot = $this->prophesize(AggregateTypeProvider::class);
-        $aggregateRoot->aggregateType()->willReturn(AggregateType::fromString('stdClass'))->shouldBeCalled();
-
-        $this->assertEquals('stdClass', AggregateType::fromAggregateRoot($aggregateRoot->reveal())->toString());
+        $this->assertSame(User::class, $this->aggregateType->className('user'));
     }
 
-    /**
-     * @test
-     */
-    public function it_creates_aggregate_type_from_mapping(): void
+    /** @test */
+    public function it_returns_type_from_class_name(): void
     {
-        $aggregateType = AggregateType::fromMapping(['user' => User::class]);
-
-        $this->assertSame('user', $aggregateType->toString());
-        $this->assertSame(User::class, $aggregateType->mappedClass());
+        $this->assertSame('user', $this->aggregateType->typeFromClassName(User::class));
     }
 
-    /**
-     * @test
-     */
-    public function it_throws_exception_on_creating_from_aggregate_root_class_when_unknown_class_given(): void
+    /** @test */
+    public function it_returns_type_from_aggregate_root(): void
     {
-        $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('Aggregate root class unknown_class can not be found');
-
-        AggregateType::fromAggregateRootClass('unknown_class');
-    }
-
-    /**
-     * @test
-     */
-    public function it_asserts_correct_aggregate_type(): void
-    {
-        $aggregateType = AggregateType::fromAggregateRootClass(User::class);
-
-        $aggregateRoot = $this->prophesize(AggregateTypeProvider::class);
-
-        $aggregateRoot->aggregateType()->willReturn(AggregateType::fromAggregateRootClass(User::class));
-
-        $aggregateType->assert($aggregateRoot->reveal());
-
-        $this->assertNull($aggregateType->mappedClass());
-    }
-
-    /**
-     * @test
-     */
-    public function it_throws_exception_if_type_is_not_correct(): void
-    {
-        $this->expectException(AggregateTypeException::class);
-        $this->expectExceptionMessage('Aggregate types must be equal. ProophTest\EventStore\Mock\User != ProophTest\EventStore\Mock\Post');
-
-        $aggregateType = AggregateType::fromAggregateRootClass(User::class);
-
-        $aggregateRoot = $this->prophesize(AggregateTypeProvider::class);
-
-        $aggregateRoot->aggregateType()->willReturn(AggregateType::fromAggregateRootClass(Post::class));
-
-        $aggregateType->assert($aggregateRoot->reveal());
-    }
-
-    /**
-     * @test
-     */
-    public function it_delegates_to_string(): void
-    {
-        $type = AggregateType::fromAggregateRootClass('stdClass');
-        $this->assertEquals('stdClass', (string) $type);
-    }
-
-    /**
-     * @test
-     */
-    public function it_throws_exception_when_empty_aggregate_type_given(): void
-    {
-        $this->expectException(InvalidArgumentException::class);
-
-        AggregateType::fromString('');
+        $this->assertSame('user', $this->aggregateType->typeFromAggregate(User::nameNew('Alex')));
     }
 }

@@ -210,5 +210,5 @@ the same functionality.
 Default aggregate translator uses `AggregateRootDecorator` to access protected
 methods of `Prooph\EventSourcing\AggregateRoot` descendants, you will need to
 switch to
-`Prooph\EventSourcing\EventStoreIntegration\ClosureAggregateTranslator` for
+`Prooph\EventSourcing\Aggregate\ClosureAggregateTranslator` for
 aggregate roots using traits.

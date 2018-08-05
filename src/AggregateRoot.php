@@ -14,11 +14,15 @@ namespace Prooph\EventSourcing;
 
 use Prooph\EventSourcing\Aggregate\EventProducerTrait;
 use Prooph\EventSourcing\Aggregate\EventSourcedTrait;
+use Prooph\EventStoreClient\ExpectedVersion;
 
 abstract class AggregateRoot
 {
     use EventProducerTrait;
     use EventSourcedTrait;
+
+    /** @var int */
+    protected $nextExpectedVersion = ExpectedVersion::EmptyStream;
 
     /**
      * We do not allow public access to __construct, this way we make sure that an aggregate root can only

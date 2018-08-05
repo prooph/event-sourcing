@@ -17,13 +17,6 @@ use Prooph\EventSourcing\AggregateChanged;
 trait EventProducerTrait
 {
     /**
-     * Current version
-     *
-     * @var int
-     */
-    protected $version = 0;
-
-    /**
      * List of events that are not committed to the EventStore
      *
      * @var AggregateChanged[]
@@ -49,9 +42,7 @@ trait EventProducerTrait
      */
     protected function recordThat(AggregateChanged $event): void
     {
-        $this->version += 1;
-
-        $this->recordedEvents[] = $event->withVersion($this->version);
+        $this->recordedEvents[] = $event;
 
         $this->apply($event);
     }

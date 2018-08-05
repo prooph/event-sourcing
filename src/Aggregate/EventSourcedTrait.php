@@ -19,13 +19,6 @@ use RuntimeException;
 trait EventSourcedTrait
 {
     /**
-     * Current version
-     *
-     * @var int
-     */
-    protected $version = 0;
-
-    /**
      * @throws RuntimeException
      */
     protected static function reconstituteFromHistory(Iterator $historyEvents): self
@@ -45,8 +38,6 @@ trait EventSourcedTrait
     {
         foreach ($historyEvents as $pastEvent) {
             /** @var AggregateChanged $pastEvent */
-            $this->version = $pastEvent->version();
-
             $this->apply($pastEvent);
         }
     }

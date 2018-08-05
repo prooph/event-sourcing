@@ -16,6 +16,8 @@ use Prooph\EventSourcing\AggregateChanged;
 
 class UserNameChanged extends AggregateChanged
 {
+    protected $messageName = 'user_name_changed';
+
     public function newUsername(): string
     {
         return $this->payload['username'];

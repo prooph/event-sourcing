@@ -102,6 +102,8 @@ namespace My\Model {
      */
     class UserWasCreated extends AggregateChanged
     {
+        protected $messageName = 'user_was_created';
+
         public function username(): string
         {
             return $this->payload['name'];
@@ -113,6 +115,8 @@ namespace My\Model {
      */
     class UserWasRenamed extends AggregateChanged
     {
+        protected $messageName = 'user_was_renamed';
+
         public function newName(): string
         {
             return $this->payload['new_name'];
@@ -138,24 +142,30 @@ namespace My\Model {
 namespace My\Infrastructure {
     use My\Model\User;
     use My\Model\UserRepository;
+    use My\Model\UserWasCreated;
+    use My\Model\UserWasRenamed;
     use Prooph\EventSourcing\Aggregate\AggregateRepository;
+    use Prooph\EventSourcing\Aggregate\AggregateRootTranslator;
     use Prooph\EventSourcing\Aggregate\AggregateType;
-    use Prooph\EventSourcing\EventStoreIntegration\AggregateTranslator;
-    use Prooph\EventStore\EventStore;
+    use Prooph\EventSourcing\MessageTransformer;
+    use Prooph\EventStoreClient\EventStoreSyncConnection;
     use Ramsey\Uuid\Uuid;
 
     class UserRepositoryImpl extends AggregateRepository implements UserRepository
     {
-        public function __construct(EventStore $eventStore)
+        public function __construct(EventStoreSyncConnection $eventStoreClient)
         {
-            //We inject a Prooph\EventSourcing\EventStoreIntegration\AggregateTranslator that can handle our AggregateRoots
+            //We inject a Prooph\EventSourcing\Aggregate\AggregateTranslator that can handle our AggregateRoots
             parent::__construct(
-                $eventStore,
-                AggregateType::fromAggregateRootClass('My\Model\User'),
-                new AggregateTranslator(),
-                null, //We don't use a snapshot store in the example
-                null, //Also a custom stream name is not required
-                true //But we enable the "one-stream-per-aggregate" mode
+                $eventStoreClient,
+                new AggregateType(['user' => 'My\Model\User']),
+                new AggregateRootTranslator(),
+                new MessageTransformer([
+                    'user_was_created' => UserWasCreated::class,
+                    'user_was_renamed' => UserWasRenamed::class,
+                ]),
+                'user',
+                true
             );
         }
 
@@ -175,85 +185,33 @@ namespace {
     //Set up an EventStore with an InMemoryAdapter (Only useful for testing, persistent implementations of ProophEventStore are available)
     use My\Infrastructure\UserRepositoryImpl;
     use My\Model\User;
-    use Prooph\Common\Event\ActionEvent;
-    use Prooph\Common\Event\ProophActionEventEmitter;
-    use Prooph\EventStore\InMemoryEventStore;
-    use Prooph\EventStore\TransactionalActionEventEmitterEventStore;
+    use Prooph\EventStoreClient\EventStoreConnectionBuilder;
+    use Prooph\EventStoreClient\IpEndPoint;
 
-    $eventStore = new TransactionalActionEventEmitterEventStore(
-        new InMemoryEventStore(),
-            new ProophActionEventEmitter()
-    );
+    $eventStoreConnection = EventStoreConnectionBuilder::createFromIpEndPoint(new IpEndPoint('127.0.0.1', 1113));
+    $eventStoreConnection->connect();
 
     //Now we set up our user repository and inject the EventStore
     //Normally this should be done in an IoC-Container and the receiver of the repository should require My\Model\UserRepository
-    $userRepository = new UserRepositoryImpl($eventStore);
-
-    //Ok lets start a new transaction and create a user
-    $eventStore->beginTransaction();
+    $userRepository = new UserRepositoryImpl($eventStoreConnection);
 
     $user = User::nameNew('John Doe');
 
-    //Before we save let's attach a listener to check that the UserWasCreated event is recorded
-    $eventStore->attach(
-        TransactionalActionEventEmitterEventStore::EVENT_CREATE,
-        function (ActionEvent $event): void {
-            foreach ($event->getParam('stream')->streamEvents() as $streamEvent) {
-                echo \sprintf(
-                    'Event with name %s was recorded. It occurred on %s UTC /// ',
-                    $streamEvent->messageName(),
-                    $streamEvent->createdAt()->format('Y-m-d H:i:s')
-                ) . PHP_EOL;
-            }
-        },
-        -1000
-    );
-
     $userRepository->save($user);
-
-    //Let's make sure the transaction is written
-    $eventStore->attach(
-        TransactionalActionEventEmitterEventStore::EVENT_COMMIT,
-        function (ActionEvent $event): void {
-            echo 'Transaction commited' . PHP_EOL;
-        },
-        -1000
-    );
-
-    $eventStore->commit();
 
     $userId = $user->userId();
 
+    echo 'created new user with name "John Doe"' . PHP_EOL;
     unset($user);
 
     //Ok, great. Now let's see how we can grab the user from the repository and change the name
-
-    //First we need to start a new transaction
-    $eventStore->beginTransaction();
 
     //The repository automatically tracks changes of the user...
     $loadedUser = $userRepository->get($userId);
 
     $loadedUser->changeName('Max Mustermann');
 
-    //Before we save let's attach a listener again on appendTo to check that the UserWasRenamed event is recorded
-    $eventStore->attach(
-        TransactionalActionEventEmitterEventStore::EVENT_APPEND_TO,
-        function (ActionEvent $event): void {
-            foreach ($event->getParam('streamEvents') as $streamEvent) {
-                echo \sprintf(
-                        'Event with name %s was recorded. It occurred on %s UTC /// ',
-                        $streamEvent->messageName(),
-                        $streamEvent->createdAt()->format('Y-m-d H:i:s')
-                    ) . PHP_EOL;
-            }
-        },
-        -1000
-    );
-
     $userRepository->save($loadedUser);
 
-    //... so we only need to commit the transaction and the UserWasRenamed event should be recorded
-    //(check output of the previously attached listener)
-    $eventStore->commit();
+    echo 'updated user name to "Max Mustermann"' . PHP_EOL;
 }

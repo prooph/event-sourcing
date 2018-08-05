@@ -16,6 +16,8 @@ use Prooph\EventSourcing\AggregateChanged;
 
 class UserCreated extends AggregateChanged
 {
+    protected $messageName = 'user_created';
+
     public function userId(): string
     {
         return $this->payload['id'];

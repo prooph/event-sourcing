@@ -145,7 +145,7 @@ namespace My\Infrastructure {
     use My\Model\UserRepository;
     use Prooph\EventSourcing\Aggregate\AggregateRepository;
     use Prooph\EventSourcing\Aggregate\AggregateType;
-    use Prooph\EventSourcing\EventStoreIntegration\AggregateTranslator;
+    use Prooph\EventSourcing\Aggregate\AggregateTranslator;
     use Prooph\EventStore\EventStore;
     use Ramsey\Uuid\Uuid;
 
@@ -153,7 +153,7 @@ namespace My\Infrastructure {
     {
         public function __construct(EventStore $eventStore)
         {
-            //We inject a Prooph\EventSourcing\EventStoreIntegration\AggregateTranslator that can handle our AggregateRoots
+            //We inject a Prooph\EventSourcing\Aggregate\AggregateTranslator that can handle our AggregateRoots
             parent::__construct(
                 $eventStore,
                 AggregateType::fromAggregateRootClass('My\Model\User'),

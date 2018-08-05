@@ -41,7 +41,7 @@ The interface requires you to implement 5 methods:
 - reconstituteAggregateFromHistory
 - replayStreamEvents
 
-To make your life easier prooph/event-sourcing ships with a `\Prooph\EventSourcing\EventStoreIntegration\AggregateTranslator` which implements the interface.
+To make your life easier prooph/event-sourcing ships with a `\Prooph\EventSourcing\Aggregate\AggregateTranslator` which implements the interface.
 
 ## Snapshot Store
 

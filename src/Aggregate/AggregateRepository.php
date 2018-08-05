@@ -14,325 +14,132 @@ namespace Prooph\EventSourcing\Aggregate;
 
 use ArrayIterator;
 use Prooph\Common\Messaging\Message;
-use Prooph\EventStore\EventStore;
-use Prooph\EventStore\Exception\StreamNotFound;
-use Prooph\EventStore\Metadata\MetadataMatcher;
-use Prooph\EventStore\Metadata\Operator;
-use Prooph\EventStore\Stream;
-use Prooph\EventStore\StreamName;
-use Prooph\SnapshotStore\SnapshotStore;
+use Prooph\EventSourcing\MessageTransformer;
+use Prooph\EventStoreClient\EventStoreSyncConnection;
+use Prooph\EventStoreClient\ExpectedVersion;
+use Prooph\EventStoreClient\Internal\Consts;
+use Prooph\EventStoreClient\SliceReadStatus;
 
 class AggregateRepository
 {
-    /**
-     * @var EventStore
-     */
-    protected $eventStore;
-
-    /**
-     * @var AggregateTranslator
-     */
+    /** @var EventStoreSyncConnection */
+    protected $eventStoreConnection;
+    /** @var AggregateTranslator */
     protected $aggregateTranslator;
-
-    /**
-     * @var AggregateType
-     */
+    /** @var AggregateType */
     protected $aggregateType;
-
-    /**
-     * @var array
-     */
-    protected $identityMap = [];
-
-    /**
-     * @var SnapshotStore|null
-     */
-    protected $snapshotStore;
-
-    /**
-     * @var StreamName
-     */
-    protected $streamName;
-
-    /**
-     * @var bool
-     */
-    protected $oneStreamPerAggregate;
-
-    /**
-     * @var array
-     */
-    protected $metadata;
-
-    /**
-     * @var bool
-     */
-    protected $disableIdentityMap;
+    /** @var MessageTransformer */
+    protected $transformer;
+    /** @var string */
+    protected $category;
+    /** @var bool */
+    protected $optimisticConcurrency;
 
     public function __construct(
-        EventStore $eventStore,
+        EventStoreSyncConnection $eventStoreConnection,
         AggregateType $aggregateType,
         AggregateTranslator $aggregateTranslator,
-        SnapshotStore $snapshotStore = null,
-        StreamName $streamName = null,
-        bool $oneStreamPerAggregate = false,
-        bool $disableIdentityMap = false,
-        array $metadata = []
+        MessageTransformer $transformer,
+        string $category,
+        bool $useOptimisticConcurrencyByDefault = true
     ) {
-        $this->eventStore = $eventStore;
+        $this->eventStoreConnection = $eventStoreConnection;
         $this->aggregateType = $aggregateType;
         $this->aggregateTranslator = $aggregateTranslator;
-        $this->snapshotStore = $snapshotStore;
-        $this->streamName = $streamName;
-        $this->oneStreamPerAggregate = $oneStreamPerAggregate;
-        $this->disableIdentityMap = $disableIdentityMap;
-        $this->metadata = $metadata;
+        $this->transformer = $transformer;
+        $this->category = $category;
+        $this->optimisticConcurrency = $useOptimisticConcurrencyByDefault;
     }
 
-    /**
-     * @param object $eventSourcedAggregateRoot
-     */
-    public function saveAggregateRoot($eventSourcedAggregateRoot): void
+    public function saveAggregateRoot(object $eventSourcedAggregateRoot, int $expectedVersion = null): void
     {
-        $this->assertAggregateType($eventSourcedAggregateRoot);
+        $this->aggregateType->assert($eventSourcedAggregateRoot);
 
         $domainEvents = $this->aggregateTranslator->extractPendingStreamEvents($eventSourcedAggregateRoot);
 
-        $aggregateId = $this->aggregateTranslator->extractAggregateId($eventSourcedAggregateRoot);
-
-        $streamName = $this->determineStreamName($aggregateId);
-
-        $enrichedEvents = [];
-
-        $createStream = false;
-
-        $firstEvent = \reset($domainEvents);
-
-        if (false === $firstEvent) {
+        if (empty($domainEvents)) {
             return;
         }
 
-        if ($this->oneStreamPerAggregate && $this->isFirstEvent($firstEvent)) {
-            $createStream = true;
-        }
+        $aggregateId = $this->aggregateTranslator->extractAggregateId($eventSourcedAggregateRoot);
+        $stream = $this->category . '-' . $aggregateId;
+
+        $eventData = [];
 
         foreach ($domainEvents as $event) {
-            $enrichedEvents[] = $this->enrichEventMetadata($event, $aggregateId);
+            $message = $this->enrichEventMetadata($eventSourcedAggregateRoot, $event);
+            $eventData[] = $this->transformer->toEventData($message);
         }
 
-        if ($createStream) {
-            $stream = new Stream($streamName, new ArrayIterator($enrichedEvents), $this->metadata);
-
-            $this->eventStore->create($stream);
-        } else {
-            $this->eventStore->appendTo($streamName, new ArrayIterator($enrichedEvents));
+        if (null === $expectedVersion) {
+            if ($this->optimisticConcurrency) {
+                $expectedVersion = $this->aggregateTranslator->extractNextExpectedVersion($eventSourcedAggregateRoot);
+            } else {
+                $expectedVersion = ExpectedVersion::Any;
+            }
         }
 
-        if (! $this->disableIdentityMap && isset($this->identityMap[$aggregateId])) {
-            unset($this->identityMap[$aggregateId]);
-        }
+        $this->eventStoreConnection->appendToStream(
+            $stream,
+            $expectedVersion,
+            $eventData
+        );
     }
 
     /**
      * Returns null if no stream events can be found for aggregate root otherwise the reconstituted aggregate root
-     *
-     * @return null|object
      */
-    public function getAggregateRoot(string $aggregateId)
+    public function getAggregateRoot(string $aggregateId): ?object
     {
-        if (! $this->disableIdentityMap && isset($this->identityMap[$aggregateId])) {
-            return $this->identityMap[$aggregateId];
-        }
+        $stream = $this->category . '-' . $aggregateId;
 
-        if ($this->snapshotStore) {
-            $eventSourcedAggregateRoot = $this->loadFromSnapshotStore($aggregateId);
+        $start = 0;
+        $count = Consts::MaxReadSize;
 
-            if ($eventSourcedAggregateRoot && ! $this->disableIdentityMap) {
-                //Cache aggregate root in the identity map
-                $this->identityMap[$aggregateId] = $eventSourcedAggregateRoot;
-            }
+        do {
+            $iterator = new ArrayIterator();
 
-            return $eventSourcedAggregateRoot;
-        }
-
-        $streamName = $this->determineStreamName($aggregateId);
-
-        if ($this->oneStreamPerAggregate) {
-            try {
-                $streamEvents = $this->eventStore->load($streamName, 1);
-            } catch (StreamNotFound $e) {
-                return null;
-            }
-        } else {
-            $metadataMatcher = new MetadataMatcher();
-            $metadataMatcher = $metadataMatcher->withMetadataMatch(
-                '_aggregate_type',
-                Operator::EQUALS(),
-                $this->aggregateType->toString()
-            );
-            $metadataMatcher = $metadataMatcher->withMetadataMatch(
-                '_aggregate_id',
-                Operator::EQUALS(),
-                $aggregateId
+            $streamEventsSlice = $this->eventStoreConnection->readStreamEventsForward(
+                $stream,
+                $start,
+                $count,
+                true
             );
 
-            try {
-                $streamEvents = $this->eventStore->load($streamName, 1, null, $metadataMatcher);
-            } catch (StreamNotFound $e) {
+            if (! $streamEventsSlice->status()->equals(SliceReadStatus::success())) {
                 return null;
             }
-        }
 
-        if (! $streamEvents->valid()) {
-            return null;
-        }
+            $start = $streamEventsSlice->nextEventNumber();
 
-        $eventSourcedAggregateRoot = $this->aggregateTranslator->reconstituteAggregateFromHistory(
-            $this->aggregateType,
-            $streamEvents
-        );
+            foreach ($streamEventsSlice->events() as $event) {
+                $iterator->append($this->transformer->toMessage($event));
+            }
 
-        if (! $this->disableIdentityMap) {
-            //Cache aggregate root in the identity map but without pending events
-            $this->identityMap[$aggregateId] = $eventSourcedAggregateRoot;
-        }
+            if (isset($eventSourcedAggregateRoot)) {
+                $this->aggregateTranslator->replayStreamEvents($eventSourcedAggregateRoot, $iterator);
+            } else {
+                $eventSourcedAggregateRoot = $this->aggregateTranslator->reconstituteAggregateFromHistory(
+                    $this->aggregateType,
+                    $iterator
+                );
+            }
+        } while (! $streamEventsSlice->isEndOfStream());
+
+        $this->aggregateTranslator->setNextExpectedVersion($eventSourcedAggregateRoot, $streamEventsSlice->lastEventNumber());
 
         return $eventSourcedAggregateRoot;
-    }
-
-    /**
-     * @param object $aggregateRoot
-     */
-    public function extractAggregateVersion($aggregateRoot): int
-    {
-        return $this->aggregateTranslator->extractAggregateVersion($aggregateRoot);
-    }
-
-    /**
-     * Empties the identity map. Use this if you load thousands of aggregates to free memory e.g. modulo 500.
-     */
-    public function clearIdentityMap(): void
-    {
-        $this->identityMap = [];
-    }
-
-    protected function isFirstEvent(Message $message): bool
-    {
-        return 1 === $message->metadata()['_aggregate_version'];
-    }
-
-    /**
-     * @return null|object
-     */
-    protected function loadFromSnapshotStore(string $aggregateId)
-    {
-        $snapshot = $this->snapshotStore->get($this->aggregateType->toString(), $aggregateId);
-
-        if ($snapshot) {
-            $lastVersion = $snapshot->lastVersion();
-            $aggregateRoot = $snapshot->aggregateRoot();
-        } else {
-            $lastVersion = 0;
-            $aggregateRoot = null;
-        }
-
-        $streamName = $this->determineStreamName($aggregateId);
-
-        if ($this->oneStreamPerAggregate) {
-            try {
-                $streamEvents = $this->eventStore->load(
-                    $streamName,
-                    $lastVersion + 1
-                );
-            } catch (StreamNotFound $e) {
-                return $aggregateRoot;
-            }
-        } else {
-            $metadataMatcher = new MetadataMatcher();
-            $metadataMatcher = $metadataMatcher->withMetadataMatch(
-                '_aggregate_type',
-                Operator::EQUALS(),
-                $this->aggregateType->toString()
-            );
-            $metadataMatcher = $metadataMatcher->withMetadataMatch(
-                '_aggregate_id',
-                Operator::EQUALS(),
-                $aggregateId
-            );
-            $metadataMatcher = $metadataMatcher->withMetadataMatch(
-                '_aggregate_version',
-                Operator::GREATER_THAN(),
-                $lastVersion
-            );
-
-            try {
-                $streamEvents = $this->eventStore->load(
-                    $streamName,
-                    $lastVersion + 1,
-                    null,
-                    $metadataMatcher
-                );
-            } catch (StreamNotFound $e) {
-                return $aggregateRoot;
-            }
-        }
-
-        if (! $streamEvents->valid()) {
-            return $aggregateRoot;
-        }
-
-        if ($aggregateRoot) {
-            $this->aggregateTranslator->replayStreamEvents($aggregateRoot, $streamEvents);
-        } else {
-            $aggregateRoot = $this->aggregateTranslator->reconstituteAggregateFromHistory(
-                $this->aggregateType,
-                $streamEvents
-            );
-        }
-
-        return $aggregateRoot;
-    }
-
-    /**
-     * Default stream name generation.
-     * Override this method in an extending repository to provide a custom name
-     */
-    protected function determineStreamName(string $aggregateId): StreamName
-    {
-        if ($this->oneStreamPerAggregate) {
-            if (null === $this->streamName) {
-                $prefix = $this->aggregateType->toString();
-            } else {
-                $prefix = $this->streamName->toString();
-            }
-
-            return new StreamName($prefix . '-' . $aggregateId);
-        }
-
-        if (null === $this->streamName) {
-            return new StreamName('event_stream');
-        }
-
-        return $this->streamName;
     }
 
     /**
      * Add aggregate_id and aggregate_type as metadata to $domainEvent
      * Override this method in an extending repository to add more or different metadata.
      */
-    protected function enrichEventMetadata(Message $domainEvent, string $aggregateId): Message
+    protected function enrichEventMetadata(object $eventSourcedAggregateRoot, Message $domainEvent): Message
     {
-        $domainEvent = $domainEvent->withAddedMetadata('_aggregate_id', $aggregateId);
-        $domainEvent = $domainEvent->withAddedMetadata('_aggregate_type', $this->aggregateType->toString());
+        $domainEvent = $domainEvent->withAddedMetadata('effective_time', $domainEvent->createdAt()->format('Y-m-d H:i:s.u'));
+        $domainEvent = $domainEvent->withAddedMetadata('aggregate_type', $this->aggregateType->typeFromAggregate($eventSourcedAggregateRoot));
 
         return $domainEvent;
-    }
-
-    /**
-     * @param object $eventSourcedAggregateRoot
-     */
-    protected function assertAggregateType($eventSourcedAggregateRoot)
-    {
-        $this->aggregateType->assert($eventSourcedAggregateRoot);
     }
 }
