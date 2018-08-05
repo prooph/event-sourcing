@@ -22,14 +22,14 @@ final class AggregateRootTranslator implements AggregateTranslator
      */
     protected $aggregateRootDecorator;
 
-    public function extractNextExpectedVersion(object $eventSourcedAggregateRoot): int
+    public function extractExpectedVersion(object $eventSourcedAggregateRoot): int
     {
-        return $this->aggregateRootDecorator->extractNextExpectedVersion($eventSourcedAggregateRoot);
+        return $this->aggregateRootDecorator->extractExpectedVersion($eventSourcedAggregateRoot);
     }
 
-    public function setNextExpectedVersion(object $eventSourcedAggregateRoot, int $nextExpectedVersion): void
+    public function setExpectedVersion(object $eventSourcedAggregateRoot, int $expectedVersion): void
     {
-        $this->aggregateRootDecorator->setNextExpectedVersion($eventSourcedAggregateRoot, $nextExpectedVersion);
+        $this->aggregateRootDecorator->setExpectedVersion($eventSourcedAggregateRoot, $expectedVersion);
     }
 
     public function extractAggregateId(object $eventSourcedAggregateRoot): string

@@ -73,7 +73,7 @@ class AggregateRepository
 
         if (null === $expectedVersion) {
             if ($this->optimisticConcurrency) {
-                $expectedVersion = $this->aggregateTranslator->extractNextExpectedVersion($eventSourcedAggregateRoot);
+                $expectedVersion = $this->aggregateTranslator->extractExpectedVersion($eventSourcedAggregateRoot);
             } else {
                 $expectedVersion = ExpectedVersion::Any;
             }
@@ -126,7 +126,7 @@ class AggregateRepository
             }
         } while (! $streamEventsSlice->isEndOfStream());
 
-        $this->aggregateTranslator->setNextExpectedVersion($eventSourcedAggregateRoot, $streamEventsSlice->lastEventNumber());
+        $this->aggregateTranslator->setExpectedVersion($eventSourcedAggregateRoot, $streamEventsSlice->lastEventNumber());
 
         return $eventSourcedAggregateRoot;
     }

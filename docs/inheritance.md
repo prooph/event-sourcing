@@ -71,14 +71,14 @@ final class UserAggregateTranslator implements \Prooph\EventSourcing\Aggregate\A
      */
     protected $aggregateRootDecorator;
     
-    public function extractNextExpectedVersion(object $eventSourcedAggregateRoot): int
+    public function extractExpectedVersion(object $eventSourcedAggregateRoot): int
     {
-        return $this->getAggregateRootDecorator->extractNextExpectedVersion($eventSourcedAggregateRoot);
+        return $this->getAggregateRootDecorator->extractExpectedVersion($eventSourcedAggregateRoot);
     }
 
-    public function setNextExpectedVersion(object $eventSourcedAggregateRoot, int $nextExpectedVersion): void
+    public function setExpectedVersion(object $eventSourcedAggregateRoot, int $expectedVersion): void
     {
-        $this->getAggregateRootDecorator->setNextExpectedVersion($eventSourcedAggregateRoot, $nextExpectedVersion);
+        $this->getAggregateRootDecorator->setExpectedVersion($eventSourcedAggregateRoot, $expectedVersion);
     }
 
     public function extractAggregateId(object $eventSourcedAggregateRoot): string

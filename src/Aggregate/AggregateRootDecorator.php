@@ -25,19 +25,17 @@ class AggregateRootDecorator extends AggregateRoot
         return new static();
     }
 
-    public function extractNextExpectedVersion(AggregateRoot $eventSourcedAggregateRoot): int
+    public function extractExpectedVersion(AggregateRoot $eventSourcedAggregateRoot): int
     {
-        return $eventSourcedAggregateRoot->nextExpectedVersion;
+        return $eventSourcedAggregateRoot->expectedVersion;
     }
 
-    public function setNextExpectedVersion(AggregateRoot $eventSourcedAggregateRoot, int $nextExpectedVersion): void
+    public function setExpectedVersion(AggregateRoot $eventSourcedAggregateRoot, int $expectedVersion): void
     {
-        $eventSourcedAggregateRoot->nextExpectedVersion = $nextExpectedVersion;
+        $eventSourcedAggregateRoot->expectedVersion = $expectedVersion;
     }
 
     /**
-     * @param AggregateRoot $anAggregateRoot
-     *
      * @return \Prooph\EventSourcing\AggregateChanged[]
      */
     public function extractRecordedEvents(AggregateRoot $anAggregateRoot): array

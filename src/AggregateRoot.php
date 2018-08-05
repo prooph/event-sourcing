@@ -22,7 +22,7 @@ abstract class AggregateRoot
     use EventSourcedTrait;
 
     /** @var int */
-    protected $nextExpectedVersion = ExpectedVersion::EmptyStream;
+    protected $expectedVersion = ExpectedVersion::EmptyStream;
 
     /**
      * We do not allow public access to __construct, this way we make sure that an aggregate root can only

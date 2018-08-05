@@ -35,8 +35,8 @@ For prooph/event-store such a translation adapter is called a `Prooph\EventSourc
 
 The interface requires you to implement 6 methods:
 
-- extractNextExpectedVersion
-- setNextExpectedVersion
+- extractExpectedVersion
+- setExpectedVersion
 - extractAggregateId
 - extractPendingStreamEvents
 - reconstituteAggregateFromHistory

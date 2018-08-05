@@ -17,9 +17,9 @@ use Prooph\Common\Messaging\Message;
 
 interface AggregateTranslator
 {
-    public function extractNextExpectedVersion(object $eventSourcedAggregateRoot): int;
+    public function extractExpectedVersion(object $eventSourcedAggregateRoot): int;
 
-    public function setNextExpectedVersion(object $eventSourcedAggregateRoot, int $nextExpectedVersion): void;
+    public function setExpectedVersion(object $eventSourcedAggregateRoot, int $expectedVersion): void;
 
     public function extractAggregateId(object $eventSourcedAggregateRoot): string;
 
