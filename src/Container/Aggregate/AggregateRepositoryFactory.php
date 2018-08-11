@@ -17,6 +17,7 @@ use Interop\Config\ProvidesDefaultOptions;
 use Interop\Config\RequiresConfigId;
 use Interop\Config\RequiresMandatoryOptions;
 use InvalidArgumentException;
+use Prooph\Common\Messaging\MappedMessageFactory;
 use Prooph\EventSourcing\Aggregate\AggregateRepository;
 use Prooph\EventSourcing\Aggregate\AggregateRootTranslator;
 use Prooph\EventSourcing\Aggregate\AggregateType;
@@ -92,11 +93,15 @@ final class AggregateRepositoryFactory implements RequiresConfigId, RequiresMand
             ? $container->get($config['aggregate_translator'])
             : new AggregateRootTranslator();
 
+        $messageFactory = isset($config['message_factory'])
+            ? $config->get($config['message_factory'])
+            : new MappedMessageFactory($config['message_map']);
+
         return new $repositoryClass(
             $container->get($config['event_store_connection']),
             new AggregateType($config['aggregate_type']),
             $aggregateTranslator,
-            new MessageTransformer($config['message_map']),
+            new MessageTransformer($messageFactory),
             $config['use_optimistic_concurrency_by_default']
         );
     }

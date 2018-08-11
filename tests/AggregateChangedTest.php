@@ -14,7 +14,7 @@ namespace ProophTest\EventSourcing;
 
 use DateTimeImmutable;
 use PHPUnit\Framework\TestCase;
-use Prooph\EventSourcing\AggregateChanged;
+use ProophTest\EventSourcing\Mock\UserNameChanged;
 use Ramsey\Uuid\Uuid;
 
 class AggregateChangedTest extends TestCase
@@ -24,7 +24,7 @@ class AggregateChangedTest extends TestCase
      */
     public function it_has_a_new_uuid_after_construct(): void
     {
-        $event = AggregateChanged::occur('1', []);
+        $event = UserNameChanged::occur('1', []);
 
         $this->assertInstanceOf(Uuid::class, $event->uuid());
     }
@@ -34,7 +34,7 @@ class AggregateChangedTest extends TestCase
      */
     public function it_references_an_aggregate(): void
     {
-        $event = AggregateChanged::occur('1', []);
+        $event = UserNameChanged::occur('1', []);
 
         $this->assertEquals(1, $event->aggregateId());
     }
@@ -44,7 +44,7 @@ class AggregateChangedTest extends TestCase
      */
     public function it_has_an_occurred_on_datetime_after_construct(): void
     {
-        $event = AggregateChanged::occur('1', []);
+        $event = UserNameChanged::occur('1', []);
 
         $this->assertInstanceOf(DateTimeImmutable::class, $event->createdAt());
     }
@@ -56,7 +56,7 @@ class AggregateChangedTest extends TestCase
     {
         $payload = ['test payload'];
 
-        $event = AggregateChanged::occur('1', $payload);
+        $event = UserNameChanged::occur('1', $payload);
 
         $this->assertEquals($payload, $event->payload());
     }

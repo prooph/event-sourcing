@@ -12,52 +12,36 @@ declare(strict_types=1);
 
 namespace Prooph\EventSourcing;
 
-use Prooph\Common\Messaging\DomainMessage;
 use Prooph\Common\Messaging\Message;
+use Prooph\Common\Messaging\MessageFactory;
 use Prooph\EventStoreClient\EventData;
 use Prooph\EventStoreClient\EventId;
 use Prooph\EventStoreClient\ResolvedEvent;
 
 class MessageTransformer
 {
-    protected $messageMap = [];
+    /** @var MessageFactory */
+    protected $messageFactory;
 
-    // key = event-type, value = class-name
-    public function __construct(array $messageMap)
+    // key = event-type, value = aggregate-root-class
+    public function __construct(MessageFactory $messageFactory)
     {
-        $this->messageMap = $messageMap;
+        $this->messageFactory = $messageFactory;
     }
 
     public function toMessage(ResolvedEvent $event): Message
     {
         $event = $event->originalEvent();
-        $type = $event->eventType();
 
-        if (isset($this->messageMap[$type])) {
-            $messageClass = $this->messageMap[$type];
-        } else {
-            throw new \InvalidArgumentException('Unknown event type given: ' . $type);
-        }
-
-        if (! \class_exists($messageClass)) {
-            throw new \UnexpectedValueException('Given message name is not a valid class: ' . (string) $messageClass);
-        }
-
-        if (! \is_subclass_of($messageClass, DomainMessage::class)) {
-            throw new \UnexpectedValueException(\sprintf(
-                'Message class %s is not a sub class of %s',
-                $messageClass,
-                DomainMessage::class
-            ));
-        }
-
-        return $messageClass::fromArray([
+        $messageData = [
             'uuid' => $event->eventId()->toString(),
             'message_name' => $event->eventType(),
             'payload' => \json_decode($event->data(), true),
             'metadata' => \json_decode($event->metaData(), true),
-            'created_at' => $event->created(),
-        ]);
+            'created_at' => $event->created()->format('Y-m-d\TH:i:s.uP'),
+        ];
+
+        return $this->messageFactory->createMessageFromArray($messageData);
     }
 
     public function toEventData(Message $message): EventData

@@ -44,6 +44,7 @@ configuration to our application configuration:
                         'user-registered' => UserRegistered::class,
                         'user-renamed' => UserRenamed::class,
                     ],
+                    'message_factory' => CustomMessageFactory::class, //<- Custom message factory
                     'use_optimistic_concurrency_by_default' => true,
                 ],
             ],

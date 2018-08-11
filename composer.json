@@ -24,7 +24,7 @@
     "prefer-stable": true,
     "require": {
         "php": "^7.2",
-        "prooph/common" : "^4.2.2",
+        "prooph/common" : "dev-develop",
         "prooph/event-store-client" : "dev-master"
     },
     "require-dev": {

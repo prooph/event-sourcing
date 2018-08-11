@@ -13,6 +13,7 @@ declare(strict_types=1);
 namespace ProophTest\EventSourcing\Aggregate;
 
 use PHPUnit\Framework\TestCase;
+use Prooph\Common\Messaging\MappedMessageFactory;
 use Prooph\EventSourcing\Aggregate\AggregateRepository;
 use Prooph\EventSourcing\Aggregate\AggregateRootTranslator;
 use Prooph\EventSourcing\Aggregate\AggregateType;
@@ -43,9 +44,11 @@ class AggregateRepositoryTest extends TestCase
             $this->eventStoreConnection,
             new AggregateType(['user' => User::class]),
             new AggregateRootTranslator(),
-            new MessageTransformer([
-                'user_created' => UserCreated::class,
-            ]),
+            new MessageTransformer(
+                new MappedMessageFactory([
+                    'user_created' => UserCreated::class,
+                ])
+            ),
             true
         );
     }

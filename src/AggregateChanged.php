@@ -15,7 +15,7 @@ namespace Prooph\EventSourcing;
 use Assert\Assertion;
 use Prooph\Common\Messaging\DomainEvent;
 
-class AggregateChanged extends DomainEvent
+abstract class AggregateChanged extends DomainEvent
 {
     /** @var array */
     protected $payload = [];

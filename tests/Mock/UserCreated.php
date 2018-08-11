@@ -16,7 +16,10 @@ use Prooph\EventSourcing\AggregateChanged;
 
 class UserCreated extends AggregateChanged
 {
-    protected $messageName = 'user_created';
+    public function messageName(): string
+    {
+        return 'user_created';
+    }
 
     public function userId(): string
     {
