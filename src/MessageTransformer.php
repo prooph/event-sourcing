@@ -13,6 +13,7 @@ declare(strict_types=1);
 namespace Prooph\EventSourcing;
 
 use Prooph\Common\Messaging\Message;
+use Prooph\Common\Messaging\MessageConverter;
 use Prooph\Common\Messaging\MessageFactory;
 use Prooph\EventStoreClient\EventData;
 use Prooph\EventStoreClient\EventId;
@@ -22,11 +23,14 @@ class MessageTransformer
 {
     /** @var MessageFactory */
     protected $messageFactory;
+    /** @var MessageConverter */
+    protected $messageConverter;
 
     // key = event-type, value = aggregate-root-class
-    public function __construct(MessageFactory $messageFactory)
+    public function __construct(MessageFactory $messageFactory, MessageConverter $messageConverter)
     {
         $this->messageFactory = $messageFactory;
+        $this->messageConverter = $messageConverter;
     }
 
     public function toMessage(ResolvedEvent $event): Message
@@ -46,12 +50,14 @@ class MessageTransformer
 
     public function toEventData(Message $message): EventData
     {
+        $messageData = $this->messageConverter->convertToArray($message);
+
         return new EventData(
-            EventId::fromString($message->uuid()->toString()),
-            $message->messageName(),
+            EventId::fromString($messageData['uuid']),
+            $messageData['message_name'],
             true,
-            \json_encode($message->payload()),
-            \json_encode($message->metadata())
+            \json_encode($messageData['payload']),
+            \json_encode($messageData['metadata'])
         );
     }
 }

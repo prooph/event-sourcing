@@ -14,6 +14,7 @@ namespace ProophTest\EventSourcing\Aggregate;
 
 use PHPUnit\Framework\TestCase;
 use Prooph\Common\Messaging\MappedMessageFactory;
+use Prooph\Common\Messaging\NoOpMessageConverter;
 use Prooph\EventSourcing\Aggregate\AggregateRepository;
 use Prooph\EventSourcing\Aggregate\AggregateRootTranslator;
 use Prooph\EventSourcing\Aggregate\AggregateType;
@@ -47,7 +48,8 @@ class AggregateRepositoryTest extends TestCase
             new MessageTransformer(
                 new MappedMessageFactory([
                     'user_created' => UserCreated::class,
-                ])
+                ]),
+                new NoOpMessageConverter()
             ),
             true
         );

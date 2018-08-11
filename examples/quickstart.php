@@ -144,6 +144,8 @@ namespace My\Infrastructure {
     use My\Model\UserRepository;
     use My\Model\UserWasCreated;
     use My\Model\UserWasRenamed;
+    use Prooph\Common\Messaging\MappedMessageFactory;
+    use Prooph\Common\Messaging\NoOpMessageConverter;
     use Prooph\EventSourcing\Aggregate\AggregateRepository;
     use Prooph\EventSourcing\Aggregate\AggregateRootTranslator;
     use Prooph\EventSourcing\Aggregate\AggregateType;
@@ -160,10 +162,13 @@ namespace My\Infrastructure {
                 $eventStoreClient,
                 new AggregateType(['user' => 'My\Model\User']),
                 new AggregateRootTranslator(),
-                new MessageTransformer([
-                    'user_was_created' => UserWasCreated::class,
-                    'user_was_renamed' => UserWasRenamed::class,
-                ]),
+                new MessageTransformer(
+                    new MappedMessageFactory([
+                        'user_was_created' => UserWasCreated::class,
+                        'user_was_renamed' => UserWasRenamed::class,
+                    ]),
+                    new NoOpMessageConverter()
+                ),
                 true
             );
         }
