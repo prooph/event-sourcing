@@ -46,7 +46,6 @@ class AggregateRepositoryTest extends TestCase
             new MessageTransformer([
                 'user_created' => UserCreated::class,
             ]),
-            'user',
             true
         );
     }

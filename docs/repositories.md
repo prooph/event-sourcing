@@ -19,13 +19,13 @@ Sounds bad? It isn't!
 
 It is your job to write something like `Buttercup.Protects` for your model. Don't be lazy in this case.
 
-The event store doesn't know anything about aggregates. It is just interested in `Prooph\Common\Messaging\Message events`.
-These events are organized in `Prooph\EventStore\Stream`s.
+The event store doesn't know anything about aggregates.
 A repository is responsible for extracting pending events from aggregates and putting them in the correct stream.
 And the repository must also be able to load persisted events from a stream and reconstitute an aggregate.
 To provide this functionality the repository makes use of various helper classes explained below.
 
 ## AggregateType
+
 Each repository is responsible for one `\Prooph\EventSourcing\Aggregate\AggregateType`.
 
 ## AggregateTranslator
@@ -51,53 +51,27 @@ A repository can be set up with a snapshot store to speed up loading of aggregat
 You need to install [Prooph SnapshotStore](https://github.com/prooph/snapshot-store) and a persistable implementation of it,
 like [pdo-snapshot-store](https://github.com/prooph/pdo-snapshot-store/) or [mongodb-snapshot-store](https://github.com/prooph/mongodb-snapshot-store/).
 
+## Aggregate Type Mapping
+
+Every aggregate type has a mapping of aggregate type to aggregate root class.
+The first aggregate type will be used as stream-category.
+
+F.e.
+
+```php
+[
+    'user' => User::class,
+    'admin' => Admin::class,
+]
+```
+
+Your aggregate type is here 'user' or 'admin' (we are using here inheritance aggregate roots) and your stream category is 'user'.
+
 ## Event Streams
 
-An event stream can be compared with a table in a relational database (and in case of the pdo-event-store it is a table).
-By default the repository puts all events of all aggregates (no matter the type) in a single stream called **event_stream**.
-If you wish to use another name, you can pass a custom `Prooph\EventStore\StreamName` to the repository.
-This is especially useful when you want to have an event stream per aggregate type, for example store all user related events
-in a `user_stream`.
-
-The repository can also be configured to create a new stream for each new aggregate instance. You'll need to turn the last
-constructor parameter `oneStreamPerAggregate` to true to enable the mode.
-If the mode is enabled the repository builds a unique stream name for each aggregate by using the `AggregateType` and append
-the `aggregateId` of the aggregate. The stream name for a new `Acme\User` with id `123` would look like this: `Acme\User-123`.
-
-Depending on the event store implementation used the stream name is maybe modified by the implementation to replace or removed non supported characters.
-Check your event store implemtation of choice for details. You can also override `AggregateRepository::determineStreamName` to apply a custom logic
-for building the stream name.
+An event stream is your stream category + "-" + the aggregate id.
+F.e. "user-30a00d47-70e3-4ee2-b8fb-1bdd160259d7".
 
 ## Wiring It Together
 
 Best way to see a repository in action is by looking at the `\ProophTest\EventSourcing\Aggregate\AggregateRepositoryTest`.
-
-## Aggregate Type Mapping
-
-It's possible to map an aggregate type `user` to an aggregate root class like `My\Model\User`. To do that, add the
-aggregate type mapping to your repository and use the provided aggregate type. The aggregate type mapping is implemented
-in the AggregateType class like this:
-
-```php
-$aggregateType = new AggregateType(['user' => MyUser::class]);
-```
-
-Example configuration:
-
-```php
-[
-    'prooph' => [
-        'event_sourcing' => [
-            'aggregate_repository' => [
-                'user_repository' => [
-                    'repository_class' => MyUserRepository::class,
-                    'aggregate_type' => [
-                        'user' => MyUser::class, // <- custom name to class mapping 
-                    ],
-                    'aggregate_translator' => 'user_translator',
-                ],
-            ],
-        ],
-    ],
-]
-```

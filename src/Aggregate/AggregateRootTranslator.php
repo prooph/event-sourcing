@@ -15,7 +15,7 @@ namespace Prooph\EventSourcing\Aggregate;
 use Iterator;
 use Prooph\Common\Messaging\Message;
 
-final class AggregateRootTranslator implements AggregateTranslator
+class AggregateRootTranslator implements AggregateTranslator
 {
     /**
      * @var AggregateRootDecorator
@@ -45,9 +45,12 @@ final class AggregateRootTranslator implements AggregateTranslator
 
         $firstEvent = $historyEvents->current();
         /* @var Message $firstEvent */
-        $aggregateTypeString = $firstEvent->metadata()['aggregate_type'] ?? ''; // @todo
 
-        $aggregateRootClass = $aggregateType->className($aggregateTypeString);
+        if (! isset($firstEvent->metadata()['aggregate_type'])) {
+            throw new Exception\RuntimeException('First event does not contain key "aggregate_type" in metadata');
+        }
+
+        $aggregateRootClass = $aggregateType->className($firstEvent->metadata()['aggregate_type']);
 
         return $this->getAggregateRootDecorator()
             ->fromHistory($aggregateRootClass, $historyEvents);

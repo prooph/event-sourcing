@@ -164,7 +164,6 @@ namespace My\Infrastructure {
                     'user_was_created' => UserWasCreated::class,
                     'user_was_renamed' => UserWasRenamed::class,
                 ]),
-                'user',
                 true
             );
         }

@@ -4,7 +4,6 @@
     {"intro": "introduction.md"},
     {"repositories": "repositories.md"},
     {"snapshots": "snapshots/bookdown.json"},
-    {"inheritance": "inheritance.md"},
     {"interop_factories": "interop_factories.md"},
     {"migration": "migration.md"}
   ],

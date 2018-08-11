@@ -50,7 +50,6 @@ class AggregateRootTranslatorTest extends TestCase
                 'user_created' => UserCreated::class,
                 'user_name_changed' => UserNameChanged::class,
             ]),
-            'user',
             true
         );
     }

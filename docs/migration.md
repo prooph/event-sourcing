@@ -1,6 +1,42 @@
 # Migration from v5 to v6
 
-[Todo]
+## event-store-client only
+
+Starting with v6 `prooph/event-sourcing` will communicate with the event-store via
+`prooph\event-store-client`. This client supports sync & async connection.
+So does the aggregate repository, hence we have two classes:
+
+- AggregateRepository
+- AsyncAggregateRepository
+
+You need to extend from one of them and inject the appropriate event-store-client.
+
+## Aggregate version, expected version & optimistic concurrency
+
+- The aggregate version has been removed
+- The saveAggregateRoot expects 2 new optional arguments
+    - expectedVersion (the last expected version on the event-stream)
+    - UserCredentials (custom user credentials to pass to event-store-client)
+- Optimistic concurrency can be disabled in the constructor and be enforced again by passing the expected version.
+
+## Aggregate type
+
+The aggregate type now requires type => class mapping.
+
+## Aggregate translator
+
+The aggregate translator interface has some small changes, take a look at the new interface
+in case you use a custom translator.
+
+## MessageTransformer & Message Map
+
+The aggregate root expects you to pass an instance of MessageTransformer containing the message map.
+`prooph\event-sourcing` doesn't expect that you have FQCN as message name, hence you need to provide the details.
+
+## Inheritance
+
+No customization is needed anymore for inheritance.
+Just add multiple type => class mappings to your aggregate type, that's it.   
 
 # Migration from v4 to v5
 

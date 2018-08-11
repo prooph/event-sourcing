@@ -14,15 +14,27 @@ namespace Prooph\EventSourcing\Aggregate;
 
 class AggregateType
 {
-    /**
-     * @var array
-     */
+    /** @var array */
     protected $map = [];
 
     // key = aggregate-type, value = aggregate-root-class
     public function __construct(array $map)
     {
-        $this->map = $map;
+        if (empty($map)) {
+            throw new Exception\InvalidArgumentException('Map cannot be empty');
+        }
+
+        foreach ($map as $type => $class) {
+            if (! \is_string($type) || empty($type)) {
+                throw new Exception\InvalidArgumentException('Aggregate type must be a non-empty string');
+            }
+
+            if (! \is_string($class) || empty($class)) {
+                throw new Exception\InvalidArgumentException('Aggregate root class must be a non-empty string');
+            }
+
+            $this->map[$type] = $class;
+        }
     }
 
     public function className(string $type): string
@@ -50,6 +62,11 @@ class AggregateType
         $className = \get_class($aggregateRoot);
 
         return $this->typeFromClassName($className);
+    }
+
+    public function streamCategory(): string
+    {
+        return \key($this->map);
     }
 
     /**

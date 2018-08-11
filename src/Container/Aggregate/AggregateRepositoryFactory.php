@@ -18,6 +18,7 @@ use Interop\Config\RequiresConfigId;
 use Interop\Config\RequiresMandatoryOptions;
 use InvalidArgumentException;
 use Prooph\EventSourcing\Aggregate\AggregateRepository;
+use Prooph\EventSourcing\Aggregate\AggregateRootTranslator;
 use Prooph\EventSourcing\Aggregate\AggregateType;
 use Prooph\EventSourcing\MessageTransformer;
 use Psr\Container\ContainerInterface;
@@ -87,12 +88,15 @@ final class AggregateRepositoryFactory implements RequiresConfigId, RequiresMand
             ));
         }
 
+        $aggregateTranslator = isset($config['aggregate_translator'])
+            ? $container->get($config['aggregate_translator'])
+            : new AggregateRootTranslator();
+
         return new $repositoryClass(
             $container->get($config['event_store_connection']),
             new AggregateType($config['aggregate_type']),
-            $container->get($config['aggregate_translator']),
+            $aggregateTranslator,
             new MessageTransformer($config['message_map']),
-            $config['category'],
             $config['use_optimistic_concurrency_by_default']
         );
     }
@@ -109,7 +113,6 @@ final class AggregateRepositoryFactory implements RequiresConfigId, RequiresMand
             'repository_class',
             'aggregate_type',
             'message_map',
-            'category',
         ];
     }
 

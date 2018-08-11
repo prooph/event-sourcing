@@ -40,7 +40,11 @@ configuration to our application configuration:
                         'user' => MyUser::class, //<-- The aggregate root FQCN the repository is responsible for
                     ],
                     'aggregate_translator' => 'user_translator', //<-- The aggregate translator must be available as service in the container
-                    'category' => 'user', // this is your prefix for all streams
+                    'message_map' => [
+                        'user-registered' => UserRegistered::class,
+                        'user-renamed' => UserRenamed::class,
+                    ],
+                    'use_optimistic_concurrency_by_default' => true,
                 ],
             ],
         ],

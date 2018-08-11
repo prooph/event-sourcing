@@ -19,6 +19,7 @@ use Prooph\EventStoreClient\EventStoreSyncConnection;
 use Prooph\EventStoreClient\ExpectedVersion;
 use Prooph\EventStoreClient\Internal\Consts;
 use Prooph\EventStoreClient\SliceReadStatus;
+use Prooph\EventStoreClient\UserCredentials;
 
 class AggregateRepository
 {
@@ -30,8 +31,6 @@ class AggregateRepository
     protected $aggregateType;
     /** @var MessageTransformer */
     protected $transformer;
-    /** @var string */
-    protected $category;
     /** @var bool */
     protected $optimisticConcurrency;
 
@@ -40,19 +39,20 @@ class AggregateRepository
         AggregateType $aggregateType,
         AggregateTranslator $aggregateTranslator,
         MessageTransformer $transformer,
-        string $category,
         bool $useOptimisticConcurrencyByDefault = true
     ) {
         $this->eventStoreConnection = $eventStoreConnection;
         $this->aggregateType = $aggregateType;
         $this->aggregateTranslator = $aggregateTranslator;
         $this->transformer = $transformer;
-        $this->category = $category;
         $this->optimisticConcurrency = $useOptimisticConcurrencyByDefault;
     }
 
-    public function saveAggregateRoot(object $eventSourcedAggregateRoot, int $expectedVersion = null): void
-    {
+    public function saveAggregateRoot(
+        object $eventSourcedAggregateRoot,
+        int $expectedVersion = null,
+        UserCredentials $credentials = null
+    ): void {
         $this->aggregateType->assert($eventSourcedAggregateRoot);
 
         $domainEvents = $this->aggregateTranslator->extractPendingStreamEvents($eventSourcedAggregateRoot);
@@ -62,7 +62,7 @@ class AggregateRepository
         }
 
         $aggregateId = $this->aggregateTranslator->extractAggregateId($eventSourcedAggregateRoot);
-        $stream = $this->category . '-' . $aggregateId;
+        $stream = $this->aggregateType->streamCategory() . '-' . $aggregateId;
 
         $eventData = [];
 
@@ -82,7 +82,8 @@ class AggregateRepository
         $writeResult = $this->eventStoreConnection->appendToStream(
             $stream,
             $expectedVersion,
-            $eventData
+            $eventData,
+            $credentials
         );
 
         $this->aggregateTranslator->setExpectedVersion($eventSourcedAggregateRoot, $writeResult->nextExpectedVersion());
@@ -91,9 +92,9 @@ class AggregateRepository
     /**
      * Returns null if no stream events can be found for aggregate root otherwise the reconstituted aggregate root
      */
-    public function getAggregateRoot(string $aggregateId): ?object
+    public function getAggregateRoot(string $aggregateId, UserCredentials $credentials = null): ?object
     {
-        $stream = $this->category . '-' . $aggregateId;
+        $stream = $this->aggregateType->streamCategory() . '-' . $aggregateId;
 
         $start = 0;
         $count = Consts::MaxReadSize;
@@ -105,7 +106,8 @@ class AggregateRepository
                 $stream,
                 $start,
                 $count,
-                true
+                true,
+                $credentials
             );
 
             if (! $streamEventsSlice->status()->equals(SliceReadStatus::success())) {
