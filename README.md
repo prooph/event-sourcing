@@ -7,6 +7,12 @@ Simple and lightweight event sourcing library with out of the box support for [P
 [![Coverage Status](https://img.shields.io/coveralls/prooph/event-sourcing.svg)](https://coveralls.io/r/prooph/event-sourcing?branch=master)
 [![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/prooph/improoph)
 
+## Important
+
+This library will receive support until December 31, 2019 and will then be deprecated.
+
+For further information see the official announcement here: [https://www.sasaprolic.com/2018/08/the-future-of-prooph-components.html](https://www.sasaprolic.com/2018/08/the-future-of-prooph-components.html)
+
 # Installation
 
 You can install ProophEventSourcing via composer by adding `"prooph/event-sourcing": "^5.0"` as requirement to your composer.json.
