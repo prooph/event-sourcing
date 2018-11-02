@@ -15,6 +15,7 @@ namespace ProophTest\EventSourcing;
 
 use DateTimeImmutable;
 use PHPUnit\Framework\TestCase;
+use Prooph\EventSourcing\Aggregate\Exception\InvalidArgumentException;
 use Prooph\EventSourcing\AggregateChanged;
 use Ramsey\Uuid\Uuid;
 
@@ -73,5 +74,14 @@ class AggregateChangedTest extends TestCase
 
         $this->assertEquals(1, $orgEvent->version());
         $this->assertEquals(2, $newEvent->version());
+    }
+
+    /**
+     * @test
+     */
+    public function it_requires_non_empty_aggregate_id(): void
+    {
+        $this->expectException(InvalidArgumentException::class);
+        $orgEvent = AggregateChanged::occur('');
     }
 }

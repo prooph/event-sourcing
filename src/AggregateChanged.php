@@ -15,6 +15,7 @@ namespace Prooph\EventSourcing;
 
 use Assert\Assertion;
 use Prooph\Common\Messaging\DomainEvent;
+use Prooph\EventSourcing\Aggregate\Exception\InvalidArgumentException;
 
 class AggregateChanged extends DomainEvent
 {
@@ -33,6 +34,10 @@ class AggregateChanged extends DomainEvent
 
     protected function __construct(string $aggregateId, array $payload, array $metadata = [])
     {
+        if ('' === $aggregateId) {
+            throw new InvalidArgumentException('Aggregate ID cannot be empty');
+        }
+
         //Metadata needs to be set before setAggregateId and setVersion is called
         $this->metadata = $metadata;
         $this->setAggregateId($aggregateId);
