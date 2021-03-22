@@ -1,12 +1,34 @@
-# Change Log
+# Changelog
 
-## [v5.6.0](https://github.com/prooph/event-sourcing/tree/v5.6.0)
+## [v5.7.0](https://github.com/prooph/event-sourcing/tree/v5.7.0)
+
+[Full Changelog](https://github.com/prooph/event-sourcing/compare/v5.6.0...v5.7.0)
+
+**Implemented enhancements:**
+
+- PHP8 compability [\#91](https://github.com/prooph/event-sourcing/pull/91) ([fritz-gerneth](https://github.com/fritz-gerneth))
+
+**Closed issues:**
+
+- Blueprint idea [\#88](https://github.com/prooph/event-sourcing/issues/88)
+- Use DossierAggregateRepository::get\(\) with ID of different AR Type [\#85](https://github.com/prooph/event-sourcing/issues/85)
+- Allow encapsulation of AggregateRepository [\#84](https://github.com/prooph/event-sourcing/issues/84)
+- Missing aggregate ID [\#83](https://github.com/prooph/event-sourcing/issues/83)
+- Delay event uuid generation until it is requested or external generator supplied [\#82](https://github.com/prooph/event-sourcing/issues/82)
+- How to check if an aggregate ID exists? [\#79](https://github.com/prooph/event-sourcing/issues/79)
+
+**Merged pull requests:**
+
+- Change copyright [\#89](https://github.com/prooph/event-sourcing/pull/89) ([codeliner](https://github.com/codeliner))
+- Update cs headers [\#86](https://github.com/prooph/event-sourcing/pull/86) ([basz](https://github.com/basz))
+
+## [v5.6.0](https://github.com/prooph/event-sourcing/tree/v5.6.0) (2018-07-09)
 
 [Full Changelog](https://github.com/prooph/event-sourcing/compare/v5.5.0...v5.6.0)
 
 **Implemented enhancements:**
 
-- add metadata to create stream [\#81](https://github.com/prooph/event-sourcing/pull/81) ([hiddeb](https://github.com/hiddeb))
+- add metadata to create stream [\#81](https://github.com/prooph/event-sourcing/pull/81) ([hiddeb-zz](https://github.com/hiddeb-zz))
 
 **Closed issues:**
 
@@ -17,6 +39,7 @@
 - Added .gitattributes file [\#80](https://github.com/prooph/event-sourcing/pull/80) ([Brammm](https://github.com/Brammm))
 
 ## [v5.5.0](https://github.com/prooph/event-sourcing/tree/v5.5.0) (2018-05-10)
+
 [Full Changelog](https://github.com/prooph/event-sourcing/compare/v5.4.0...v5.5.0)
 
 **Implemented enhancements:**
@@ -24,6 +47,7 @@
 - add option to disable identity map [\#77](https://github.com/prooph/event-sourcing/pull/77) ([prolic](https://github.com/prolic))
 
 ## [v5.4.0](https://github.com/prooph/event-sourcing/tree/v5.4.0) (2018-04-30)
+
 [Full Changelog](https://github.com/prooph/event-sourcing/compare/v5.3.0...v5.4.0)
 
 **Implemented enhancements:**
@@ -39,6 +63,7 @@
 - Update documentation on aggregate root inheritance [\#75](https://github.com/prooph/event-sourcing/pull/75) ([fritz-gerneth](https://github.com/fritz-gerneth))
 
 ## [v5.3.0](https://github.com/prooph/event-sourcing/tree/v5.3.0) (2017-12-17)
+
 [Full Changelog](https://github.com/prooph/event-sourcing/compare/v5.2.0...v5.3.0)
 
 **Implemented enhancements:**
@@ -52,6 +77,7 @@
 - Restructure docs [\#69](https://github.com/prooph/event-sourcing/pull/69) ([codeliner](https://github.com/codeliner))
 
 ## [v5.2.0](https://github.com/prooph/event-sourcing/tree/v5.2.0) (2017-06-21)
+
 [Full Changelog](https://github.com/prooph/event-sourcing/compare/v5.1...v5.2.0)
 
 **Implemented enhancements:**
@@ -61,6 +87,7 @@
 - use custom aggregate type mapping [\#65](https://github.com/prooph/event-sourcing/pull/65) ([prolic](https://github.com/prolic))
 
 ## [v5.1](https://github.com/prooph/event-sourcing/tree/v5.1) (2017-05-24)
+
 [Full Changelog](https://github.com/prooph/event-sourcing/compare/v5.0.1...v5.1)
 
 **Implemented enhancements:**
@@ -72,6 +99,7 @@
 - minor corrections - README.md [\#63](https://github.com/prooph/event-sourcing/pull/63) ([geekcom](https://github.com/geekcom))
 
 ## [v5.0.1](https://github.com/prooph/event-sourcing/tree/v5.0.1) (2017-05-09)
+
 [Full Changelog](https://github.com/prooph/event-sourcing/compare/v5.0.0...v5.0.1)
 
 **Merged pull requests:**
@@ -79,6 +107,7 @@
 - Bump snapshot store dependency to stable [\#61](https://github.com/prooph/event-sourcing/pull/61) ([Xerkus](https://github.com/Xerkus))
 
 ## [v5.0.0](https://github.com/prooph/event-sourcing/tree/v5.0.0) (2017-03-30)
+
 [Full Changelog](https://github.com/prooph/event-sourcing/compare/v5.0.0-beta3...v5.0.0)
 
 **Closed issues:**
@@ -86,11 +115,8 @@
 - Aggregates not automatically saving [\#59](https://github.com/prooph/event-sourcing/issues/59)
 - New beta release [\#58](https://github.com/prooph/event-sourcing/issues/58)
 
-**Merged pull requests:**
-
-- Docs [\#60](https://github.com/prooph/event-sourcing/pull/60) ([prolic](https://github.com/prolic))
-
 ## [v5.0.0-beta3](https://github.com/prooph/event-sourcing/tree/v5.0.0-beta3) (2017-03-14)
+
 [Full Changelog](https://github.com/prooph/event-sourcing/compare/v5.0.0-beta2...v5.0.0-beta3)
 
 **Implemented enhancements:**
@@ -111,12 +137,14 @@
 - lets use an available util class [\#53](https://github.com/prooph/event-sourcing/pull/53) ([basz](https://github.com/basz))
 
 ## [v5.0.0-beta2](https://github.com/prooph/event-sourcing/tree/v5.0.0-beta2) (2017-01-12)
+
 [Full Changelog](https://github.com/prooph/event-sourcing/compare/v5.0.0-beta1...v5.0.0-beta2)
 
 **Implemented enhancements:**
 
 - Remove JsonSerializable mock [\#44](https://github.com/prooph/event-sourcing/issues/44)
 - Remove configurable aggregate translator [\#46](https://github.com/prooph/event-sourcing/pull/46) ([prolic](https://github.com/prolic))
+- Add JsonSerializable Mock objects for User and UserNameChanged [\#39](https://github.com/prooph/event-sourcing/pull/39) ([sandrokeil](https://github.com/sandrokeil))
 
 **Fixed bugs:**
 
@@ -132,14 +160,15 @@
 - adds early return if no pending event is present [\#47](https://github.com/prooph/event-sourcing/pull/47) ([oqq](https://github.com/oqq))
 - Remove JsonSerializable Mock objects for User and UserNameChanged [\#45](https://github.com/prooph/event-sourcing/pull/45) ([sandrokeil](https://github.com/sandrokeil))
 - Add docs [\#41](https://github.com/prooph/event-sourcing/pull/41) ([prolic](https://github.com/prolic))
+- Use static instead of self to allow inheritance [\#40](https://github.com/prooph/event-sourcing/pull/40) ([sandrokeil](https://github.com/sandrokeil))
 
 ## [v5.0.0-beta1](https://github.com/prooph/event-sourcing/tree/v5.0.0-beta1) (2016-12-13)
+
 [Full Changelog](https://github.com/prooph/event-sourcing/compare/v4.0...v5.0.0-beta1)
 
 **Implemented enhancements:**
 
 - Change event handling methods [\#33](https://github.com/prooph/event-sourcing/issues/33)
-- Add JsonSerializable Mock objects for User and UserNameChanged [\#39](https://github.com/prooph/event-sourcing/pull/39) ([sandrokeil](https://github.com/sandrokeil))
 - remove determine handler method from aggregate root [\#36](https://github.com/prooph/event-sourcing/pull/36) ([prolic](https://github.com/prolic))
 - Updates [\#35](https://github.com/prooph/event-sourcing/pull/35) ([prolic](https://github.com/prolic))
 - update event sourcing for new interface [\#34](https://github.com/prooph/event-sourcing/pull/34) ([prolic](https://github.com/prolic))
@@ -156,13 +185,13 @@
 
 **Merged pull requests:**
 
-- Use static instead of self to allow inheritance [\#40](https://github.com/prooph/event-sourcing/pull/40) ([sandrokeil](https://github.com/sandrokeil))
 - Allow basic event store interface in repository [\#38](https://github.com/prooph/event-sourcing/pull/38) ([codeliner](https://github.com/codeliner))
 - moves ramsey/uuid dependency to require-dev [\#30](https://github.com/prooph/event-sourcing/pull/30) ([oqq](https://github.com/oqq))
 - Minor changes [\#26](https://github.com/prooph/event-sourcing/pull/26) ([malukenho](https://github.com/malukenho))
 - rhumsaa/uuid package name has changed to ramsey/uuid [\#25](https://github.com/prooph/event-sourcing/pull/25) ([jpkleemans](https://github.com/jpkleemans))
 
 ## [v4.0](https://github.com/prooph/event-sourcing/tree/v4.0) (2015-11-22)
+
 [Full Changelog](https://github.com/prooph/event-sourcing/compare/v4.0-beta.1...v4.0)
 
 **Implemented enhancements:**
@@ -184,6 +213,7 @@
 - Align translator and decorator to fix replay bug [\#18](https://github.com/prooph/event-sourcing/pull/18) ([codeliner](https://github.com/codeliner))
 
 ## [v4.0-beta.1](https://github.com/prooph/event-sourcing/tree/v4.0-beta.1) (2015-10-21)
+
 [Full Changelog](https://github.com/prooph/event-sourcing/compare/v3.0...v4.0-beta.1)
 
 **Implemented enhancements:**
@@ -201,9 +231,17 @@
 - Adjustments for prooph/event-store v6 [\#10](https://github.com/prooph/event-sourcing/pull/10) ([codeliner](https://github.com/codeliner))
 
 ## [v3.0](https://github.com/prooph/event-sourcing/tree/v3.0) (2015-09-08)
+
 [Full Changelog](https://github.com/prooph/event-sourcing/compare/v3.0-beta.2...v3.0)
 
+**Merged pull requests:**
+
+- Cleanup .php\_cs config file [\#7](https://github.com/prooph/event-sourcing/pull/7) ([prolic](https://github.com/prolic))
+- Fix php-cs for all files in repo [\#6](https://github.com/prooph/event-sourcing/pull/6) ([prolic](https://github.com/prolic))
+- Add php-cs-fixer [\#5](https://github.com/prooph/event-sourcing/pull/5) ([prolic](https://github.com/prolic))
+
 ## [v3.0-beta.2](https://github.com/prooph/event-sourcing/tree/v3.0-beta.2) (2015-08-28)
+
 [Full Changelog](https://github.com/prooph/event-sourcing/compare/v3.0-beta.1...v3.0-beta.2)
 
 **Implemented enhancements:**
@@ -217,11 +255,9 @@
 **Merged pull requests:**
 
 - test php7 on travis [\#9](https://github.com/prooph/event-sourcing/pull/9) ([prolic](https://github.com/prolic))
-- Cleanup .php\_cs config file [\#7](https://github.com/prooph/event-sourcing/pull/7) ([prolic](https://github.com/prolic))
-- Fix php-cs for all files in repo [\#6](https://github.com/prooph/event-sourcing/pull/6) ([prolic](https://github.com/prolic))
-- Add php-cs-fixer [\#5](https://github.com/prooph/event-sourcing/pull/5) ([prolic](https://github.com/prolic))
 
 ## [v3.0-beta.1](https://github.com/prooph/event-sourcing/tree/v3.0-beta.1) (2015-08-05)
+
 [Full Changelog](https://github.com/prooph/event-sourcing/compare/v2.1...v3.0-beta.1)
 
 **Merged pull requests:**
@@ -230,27 +266,37 @@
 - Update composer.json [\#2](https://github.com/prooph/event-sourcing/pull/2) ([prolic](https://github.com/prolic))
 
 ## [v2.1](https://github.com/prooph/event-sourcing/tree/v2.1) (2015-05-09)
+
 [Full Changelog](https://github.com/prooph/event-sourcing/compare/v2.0.2...v2.1)
 
 ## [v2.0.2](https://github.com/prooph/event-sourcing/tree/v2.0.2) (2015-05-04)
+
 [Full Changelog](https://github.com/prooph/event-sourcing/compare/2.0.1...v2.0.2)
 
 ## [2.0.1](https://github.com/prooph/event-sourcing/tree/2.0.1) (2015-05-02)
+
 [Full Changelog](https://github.com/prooph/event-sourcing/compare/v2.0...2.0.1)
 
 ## [v2.0](https://github.com/prooph/event-sourcing/tree/v2.0) (2015-05-01)
+
 [Full Changelog](https://github.com/prooph/event-sourcing/compare/v1.0.0...v2.0)
 
 ## [v1.0.0](https://github.com/prooph/event-sourcing/tree/v1.0.0) (2014-09-28)
+
 [Full Changelog](https://github.com/prooph/event-sourcing/compare/0.2.0...v1.0.0)
 
 ## [0.2.0](https://github.com/prooph/event-sourcing/tree/0.2.0) (2014-09-07)
+
 [Full Changelog](https://github.com/prooph/event-sourcing/compare/0.1.1...0.2.0)
 
 ## [0.1.1](https://github.com/prooph/event-sourcing/tree/0.1.1) (2014-07-05)
+
 [Full Changelog](https://github.com/prooph/event-sourcing/compare/0.1.0...0.1.1)
 
 ## [0.1.0](https://github.com/prooph/event-sourcing/tree/0.1.0) (2014-06-08)
 
+[Full Changelog](https://github.com/prooph/event-sourcing/compare/95454d3ce328b56f7201d863940e50415f9668d7...0.1.0)
 
-\* *This Change Log was automatically generated by [github_changelog_generator](https://github.com/skywinder/Github-Changelog-Generator)*
+
+
+\* *This Changelog was automatically generated by [github_changelog_generator](https://github.com/github-changelog-generator/github-changelog-generator)*
